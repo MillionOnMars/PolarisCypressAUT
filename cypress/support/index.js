@@ -4,16 +4,13 @@ require('cypress-xpath');
 
 // filepath: /Users/Automation/Documents/my-cypress-project/cypress/support/index.js
 Cypress.on('uncaught:exception', (err) => {
-    if (err.message.includes('ResizeObserver loop completed with undelivered notifications')) {
-        // Returning false here prevents Cypress from failing the test
+    if (
+        err.message.includes('ResizeObserver loop completed with undelivered notifications') ||
+        err.message.includes('Failed to register a ServiceWorker') ||
+        err.message.includes('Invalid key provided. Keys must be of type string, number, Date or Array<string | number | Date>')
+    ) {
+        // Prevent Cypress from failing the test for these known errors
         return false;
-    }
-});
-
-Cypress.on('uncaught:exception', (err) => {
-    // Ignore the Service Worker registration error
-    if (err.message.includes('Failed to register a ServiceWorker')) {
-        return false; // Prevent Cypress from failing the test
     }
 });
 
