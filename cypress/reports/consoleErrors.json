@@ -1,0 +1,21 @@
+{
+  "lastUpdate": "2025-07-08T10:09:21.808Z",
+  "totalErrors": 3,
+  "errors": [
+    {
+      "message": "Axios Error: Unauthorized",
+      "suite": "Auth",
+      "test": "Should log in with correct credentials"
+    },
+    {
+      "message": "{}",
+      "suite": "Auth",
+      "test": "Should log in with correct credentials"
+    },
+    {
+      "message": "A client-side exception has occurred, see here for more info: https://nextjs.org/docs/messages/client-side-exception-occurred",
+      "suite": "Auth",
+      "test": "Should log in with correct credentials"
+    }
+  ]
+}

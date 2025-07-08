@@ -15,12 +15,12 @@ const authenticateUser = (username, password) => {
 // Verify successful login by checking username and URL
 const verifySuccessfulLogin = (username) => {
     cy.contains(username, { timeout: TIMEOUT }).should('exist');
-    cy.url().should('contain', '/new');
+    cy.url().should('contain', '/home');
 };
 
-// Verify logout by checking the welcome message and URL
+    // Verify logout by checking the welcome message and URL
 const verifyLogout = () => {
-    cy.contains('Welcome to Bike4Mind', { timeout: TIMEOUT }).should('exist');
+    cy.contains('Welcome to Futurum Intelligence', { timeout: TIMEOUT }).should('exist');
     cy.url().should('contain', '/login');
 };
 
@@ -41,8 +41,8 @@ class Auth {
     static correctCredentials() {
         it('Should log in with correct credentials', () => {
             navigateToLoginPage();
-            authenticateUser('wescarda', 'Password12345!');
-            verifySuccessfulLogin('wescarda!');
+            authenticateUser('chadtest0808', 'Testing12345!');
+            verifySuccessfulLogin('Chad Test0808!');
         });
     }
 
@@ -50,14 +50,14 @@ class Auth {
         it('Should not log in with incorrect credentials', () => {
             navigateToLoginPage();
             authenticateUser('Test', 'IncorrectPassword.');
-            cy.contains('Invalid username or password', { timeout: TIMEOUT }).should('exist');
+            cy.contains('Incorrect username & password', { timeout: TIMEOUT }).should('exist');
             cy.url().should('contain', '/login');
         });
     }
 
     static directNotebookAccessWithoutLogin() {
         it('Should redirect to login when accessing notebook without authentication', () => {
-            cy.visit(`${Cypress.env('appUrl')}notebooks/67e0b7c5995108235f62b359`);
+            cy.visit(`${Cypress.env('appUrl')}/#/account_overview/home`);
             verifyLogout();
         });
     }

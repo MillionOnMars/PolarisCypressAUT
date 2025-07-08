@@ -4,15 +4,14 @@ const path = require('path');
 
 // Define global environment URLs
 const environments = {
-  // staging: 'https://app.staging.bike4mind.com/',
-  // production: 'https://app.bike4mind.com/'
+   staging: 'https://app.staging.futurumgroup.com/'
 };
 
 module.exports = defineConfig({
   retries: 0,
   e2e: {    
     specPattern: [
-      // 'cypress/e2e/Auth.cy.js',
+      'cypress/e2e/Auth.cy.js',
     ],
     supportFile: 'cypress/support/index.js',
     env: {
