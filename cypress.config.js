@@ -11,7 +11,7 @@ module.exports = defineConfig({
   retries: 0,
   e2e: {    
     specPattern: [
-      'cypress/e2e/Auth.cy.js',
+      'cypress/e2e/Data.cy.js',
     ],
     supportFile: 'cypress/support/index.js',
     env: {
