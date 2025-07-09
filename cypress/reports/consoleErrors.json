@@ -1,0 +1,81 @@
+{
+  "lastUpdate": "2025-07-09T04:11:59.317Z",
+  "totalErrors": 15,
+  "errors": [
+    {
+      "message": "Axios Error: Unauthorized",
+      "suite": "Verify QA datas",
+      "test": "Should select QA:AWS_QA and verify data."
+    },
+    {
+      "message": "{}",
+      "suite": "Verify QA datas",
+      "test": "Should select QA:AWS_QA and verify data."
+    },
+    {
+      "message": "A client-side exception has occurred, see here for more info: https://nextjs.org/docs/messages/client-side-exception-occurred",
+      "suite": "Verify QA datas",
+      "test": "Should select QA:AWS_QA and verify data."
+    },
+    {
+      "message": "Axios Error: Unauthorized",
+      "suite": "Verify QA datas",
+      "test": "Should select QA:Zoho_QA and verify data."
+    },
+    {
+      "message": "{}",
+      "suite": "Verify QA datas",
+      "test": "Should select QA:Zoho_QA and verify data."
+    },
+    {
+      "message": "A client-side exception has occurred, see here for more info: https://nextjs.org/docs/messages/client-side-exception-occurred",
+      "suite": "Verify QA datas",
+      "test": "Should select QA:Zoho_QA and verify data."
+    },
+    {
+      "message": "Axios Error: Unauthorized",
+      "suite": "Verify QA datas",
+      "test": "Should select QA:Logitech_QA and verify data."
+    },
+    {
+      "message": "{}",
+      "suite": "Verify QA datas",
+      "test": "Should select QA:Logitech_QA and verify data."
+    },
+    {
+      "message": "A client-side exception has occurred, see here for more info: https://nextjs.org/docs/messages/client-side-exception-occurred",
+      "suite": "Verify QA datas",
+      "test": "Should select QA:Logitech_QA and verify data."
+    },
+    {
+      "message": "Axios Error: Unauthorized",
+      "suite": "Verify QA datas",
+      "test": "Should select QA:Commvault_QA and verify data."
+    },
+    {
+      "message": "{}",
+      "suite": "Verify QA datas",
+      "test": "Should select QA:Commvault_QA and verify data."
+    },
+    {
+      "message": "A client-side exception has occurred, see here for more info: https://nextjs.org/docs/messages/client-side-exception-occurred",
+      "suite": "Verify QA datas",
+      "test": "Should select QA:Commvault_QA and verify data."
+    },
+    {
+      "message": "Axios Error: Unauthorized",
+      "suite": "Verify QA datas",
+      "test": "Should select QA:Broadcom_QA and verify data."
+    },
+    {
+      "message": "{}",
+      "suite": "Verify QA datas",
+      "test": "Should select QA:Broadcom_QA and verify data."
+    },
+    {
+      "message": "A client-side exception has occurred, see here for more info: https://nextjs.org/docs/messages/client-side-exception-occurred",
+      "suite": "Verify QA datas",
+      "test": "Should select QA:Broadcom_QA and verify data."
+    }
+  ]
+}
