@@ -2,7 +2,7 @@ import { login } from '../support/login.js';
 import Data, { getRandomQA }  from '../support/data.js';
 
 describe('Verify QA datas', () => { 
-    const randomQAs = getRandomQA(5); 
+    const randomQAs = getRandomQA(35); 
 
     beforeEach(() => {
         // Load existing user credentials from accounts.json

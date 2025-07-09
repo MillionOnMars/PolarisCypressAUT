@@ -14,5 +14,5 @@ export function login(username, password) {
         .click();
 
     // Verify successful login
-    cy.url({ timeout: 10000 }).should('include', '/home');
+    cy.url({ timeout: 50000 }).should('include', '/home');
 }

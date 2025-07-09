@@ -5,10 +5,10 @@ const getRandomQA = (count) => {
 };
 
 const verifyQA = (qa) => {
-    // Click the "New Chat" button
+    // ORG Selection
     cy.get("button[title='Open'] svg").click()
     cy.contains(qa, { timeout: 10000 }).click()
-    cy.wait(3000); // wait for 5 second
+    cy.wait(3000); // wait for 3 second
 
     cy.get("button[role='combobox']")
         .should('be.visible')
