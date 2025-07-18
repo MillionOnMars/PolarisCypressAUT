@@ -2,6 +2,9 @@
 const openAI = () => {
     cy.xpath("//button[@class='MuiIconButton-root MuiIconButton-variantPlain MuiIconButton-colorNeutral MuiIconButton-sizeLg css-1g9bxi6']")
         .click({ force: true });
+    // Wait for the chat window or textarea to appear
+    cy.xpath("//textarea[@placeholder='Type your question here']", { timeout: 20000 })
+        .should('be.visible');
 }
 
 const sendPrompt = () => {
