@@ -5,6 +5,8 @@ const openAI = () => {
     // Wait for the chat window or textarea to appear
     cy.xpath("//textarea[@placeholder='Type your question here']", { timeout: 20000 })
         .should('be.visible');
+    // cy.xpath("//button[@aria-label='Maximize']//*[name()='svg']")
+    //     .click({ force: true });
 }
 
 const sendPrompt = () => {
@@ -13,10 +15,8 @@ const sendPrompt = () => {
         .type('What is the next prime number after 29?{enter}', { force: true })
         .click();
     
-        // Wait for the answer and scroll into view
-    cy.contains('31', { timeout: 20000 })
-        .scrollIntoView()
-        .should('be.visible');
+    // Wait for the answer and scroll into view   
+    cy.xpath("//span[contains(text(),'31.')]").last().should('be.visible');
         
 }
 
