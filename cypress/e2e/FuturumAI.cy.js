@@ -1,9 +1,8 @@
 import { login } from '../support/login.js';
-import Data, { getRandomQA }  from '../support/data.js';
+import Chat from '../support/chat.js'; 
 
-describe('Verify QA datas', () => { 
-    const randomQAs = getRandomQA(5); 
-
+describe('Futurum AI operations', () => {
+    // Log in to the application before running the tests
     beforeEach(() => {
         // Load existing user credentials from accounts.json
         cy.fixture('accounts.json').then((accounts) => {
@@ -11,9 +10,5 @@ describe('Verify QA datas', () => {
             login(username, password);
         });
     });
-
-    //Choose 5 random QAs
-    randomQAs.forEach((qa) => {
-        Data.verifyQAData(qa);
-    });
+    Chat.createChat();
 });
