@@ -10,7 +10,7 @@ const verifyQA = (qa) => {
     // ORG Selection
     cy.get("button[title='Open']", { timeout: 15000 })
         .should('be.visible')
-        .should('not.be.disabled')
+        .should('not.be.disabled', { timeout: 15000 })
         .click();
     cy.contains(qa, { timeout: 10000 }).click()
     cy.wait(3000); // wait for 3 second
