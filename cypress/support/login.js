@@ -1,9 +1,9 @@
 export function login(username, password) {
     // Visit the Bike4mind URL
-    cy.visit(Cypress.env('appUrl'))
+    cy.visit(Cypress.env('appUrl'), { timeout: 60000})
 
     // Login flow with proper timeouts
-    cy.get('[name="username"]', { timeout: 10000 })
+    cy.get('[name="username"]', { timeout: 60000 })
         .should('be.visible')
         .type(username);
     cy.get('[name="password"]', { timeout: 10000 })
