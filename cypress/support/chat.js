@@ -5,8 +5,6 @@ const openAI = () => {
     // Wait for the chat window or textarea to appear
     cy.xpath("//textarea[@placeholder='Type your question here']", { timeout: 20000 })
         .should('be.visible');
-    // cy.xpath("//button[@aria-label='Maximize']//*[name()='svg']")
-    //     .click({ force: true });
 }
 
 const sendPrompt = () => {
@@ -16,7 +14,7 @@ const sendPrompt = () => {
         .click();
     
     // Wait for the answer and scroll into view   
-    cy.xpath("//span[contains(text(),'31.')]").last().should('be.visible');
+    cy.xpath("//span[contains(text(),'31.')]", { timeout: 50000 }).last().should('be.visible');
         
 }
 
