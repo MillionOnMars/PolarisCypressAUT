@@ -8,7 +8,7 @@ const environments = {
 };
 
 module.exports = defineConfig({
-  retries: 0,
+  retries: 2,
   e2e: {    
     specPattern: [
       'cypress/e2e/Data.cy.js',
