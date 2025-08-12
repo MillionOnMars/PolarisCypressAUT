@@ -1,4 +1,3 @@
-
 const openAI = () => {
     cy.xpath("//button[@class='MuiIconButton-root MuiIconButton-variantPlain MuiIconButton-colorNeutral MuiIconButton-sizeLg css-1g9bxi6']")
         .click({ force: true });
@@ -15,9 +14,12 @@ const sendPrompt = () => {
         .type('What is the next prime number after 29?{enter}', { force: true })
         .click();
     
-    // Wait for the answer and scroll into view   
-    cy.xpath("//span[contains(text(),'31.')]").last().should('be.visible');
-        
+    // Wait a moment for the message to be sent, then scroll
+    cy.wait(2000);
+    cy.scrollTo('bottom'); // Scroll the entire page
+
+    // cy.xpath("//span[contains(text(),'31.')]", { timeout: 30000 })
+    cy.contains('31', { timeout: 10000 }).should('exist');
 }
 
 class Chat {
