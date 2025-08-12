@@ -57,7 +57,42 @@ jobs:
         CYPRESS_APP_URL: ${{ secrets.CYPRESS_APP_URL }}
       continue-on-error: true
 
-      # Add step to get console errors count
+    - name: Parse test results
+      id: test-results
+      if: always()
+      run: |
+        # Parse results.json created by cypress.config.js
+        if [ -f "cypress/reports/results.json" ]; then
+          TOTAL=$(jq -r '.totalTests' cypress/reports/results.json)
+          PASSED=$(jq -r '.totalPassed' cypress/reports/results.json)
+          FAILED=$(jq -r '.totalFailed' cypress/reports/results.json)
+          PENDING=$(jq -r '.totalPending' cypress/reports/results.json)
+          SKIPPED=$(jq -r '.totalSkipped' cypress/reports/results.json)
+          
+          echo "total=$TOTAL" >> "$GITHUB_OUTPUT"
+          echo "passed=$PASSED" >> "$GITHUB_OUTPUT"
+          echo "failed=$FAILED" >> "$GITHUB_OUTPUT"
+          echo "pending=$PENDING" >> "$GITHUB_OUTPUT"
+          echo "skipped=$SKIPPED" >> "$GITHUB_OUTPUT"
+          
+          # Determine overall status
+          if [ "$FAILED" -gt 0 ]; then
+            echo "status=failed" >> "$GITHUB_OUTPUT"
+          else
+            echo "status=passed" >> "$GITHUB_OUTPUT"
+          fi
+          
+          echo "Test Results: $PASSED passed, $FAILED failed, $PENDING pending, $SKIPPED skipped, $TOTAL total"
+        else
+          echo "total=0" >> "$GITHUB_OUTPUT"
+          echo "passed=0" >> "$GITHUB_OUTPUT"
+          echo "failed=0" >> "$GITHUB_OUTPUT"
+          echo "pending=0" >> "$GITHUB_OUTPUT"
+          echo "skipped=0" >> "$GITHUB_OUTPUT"
+          echo "status=unknown" >> "$GITHUB_OUTPUT"
+          echo "No results.json found"
+        fi
+
     - name: Get console errors
       id: console-errors
       if: always()
@@ -95,7 +130,7 @@ jobs:
           {
             "username": "GitHub Actions",
             "icon_emoji": ":github:",
-            "text": "*🤖 Cypress Test Results*\n\n*Environment:* ${{ env.CYPRESS_APP_URL || 'Staging' }}\n*Status:* ${{ steps.cypress.outcome }}\n\n*Console Errors*\n• Total: ${{ steps.console-errors.outputs.total }}\n\n*View Full Report:* <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|Click Here> 📊"
+            "text": "*🤖 Cypress Test Results*\n\n*Environment:* ${{ env.CYPRESS_APP_URL || 'Staging' }}\n*Status:* ${{ steps.test-results.outputs.status == 'passed' && '✅ PASSED' || '❌ FAILED' }}\n\n*Test Summary*\n• Total: ${{ steps.test-results.outputs.total }}\n• Passed: ${{ steps.test-results.outputs.passed }} ✅\n• Failed: ${{ steps.test-results.outputs.failed }} ❌\n• Pending: ${{ steps.test-results.outputs.pending }} ⏸️\n• Skipped: ${{ steps.test-results.outputs.skipped }} ⏭️\n\n*Console Errors*\n• Total: ${{ steps.console-errors.outputs.total }}\n\n*View Full Report:* <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|Click Here> 📊"
           }
       env:
         SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
