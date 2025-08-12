@@ -130,7 +130,7 @@ jobs:
           {
             "username": "GitHub Actions",
             "icon_emoji": ":github:",
-            "text": "*🤖 Cypress Test Results*\n\n*Environment:* ${{ env.CYPRESS_APP_URL || 'Staging' }}\n*Status:* ${{ steps.test-results.outputs.status == 'passed' && '✅ PASSED' || '❌ FAILED' }}\n\n*Test Summary*\n• Total: ${{ steps.test-results.outputs.total }}\n• Passed: ${{ steps.test-results.outputs.passed }} ✅\n• Failed: ${{ steps.test-results.outputs.failed }} ❌\n• Pending: ${{ steps.test-results.outputs.pending }} ⏸️\n• Skipped: ${{ steps.test-results.outputs.skipped }} ⏭️\n\n*Console Errors*\n• Total: ${{ steps.console-errors.outputs.total }}\n\n*View Full Report:* <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|Click Here> 📊"
+            "text": "*🤖 Cypress Test Results*\n\n*Environment:* ${{ env.CYPRESS_APP_URL || 'Staging' }}\n*Status:* ${{ steps.test-results.outputs.status == 'passed' && '✅ PASSED' || '❌ FAILED' }}\n\n*Test Summary*\n• Total: ${{ steps.test-results.outputs.total }}\n• Passed: ${{ steps.test-results.outputs.passed }} \n• Failed: ${{ steps.test-results.outputs.failed }} \n• Pending: ${{ steps.test-results.outputs.pending }} \n• Skipped: ${{ steps.test-results.outputs.skipped }} \n\n*Console Errors*\n• Total: ${{ steps.console-errors.outputs.total }}\n\n*View Full Report:* <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|Click Here> 📊"
           }
       env:
         SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
