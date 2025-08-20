@@ -106,6 +106,22 @@ jobs:
           echo "No consoleErrors.json found"
         fi
 
+    - name: Get response time
+      id: response-time
+      if: always()
+      run: |
+        if [ -f "cypress/reports/responseTime.json" ]; then
+          RESPONSE_TIME=$(jq -r '.responseTime' cypress/reports/responseTime.json)
+          RESPONSE_TIME_SEC=$(jq -r '.responseTimeSeconds' cypress/reports/responseTime.json)
+          echo "ms=$RESPONSE_TIME" >> "$GITHUB_OUTPUT"
+          echo "seconds=$RESPONSE_TIME_SEC" >> "$GITHUB_OUTPUT"
+          echo "Found response time: ${RESPONSE_TIME}ms (${RESPONSE_TIME_SEC}s)"
+        else
+          echo "ms=0" >> "$GITHUB_OUTPUT"
+          echo "seconds=0" >> "$GITHUB_OUTPUT"
+          echo "No responseTime.json found"
+        fi
+
     - name: Upload test results
       if: always()
       uses: actions/upload-artifact@v4
@@ -119,6 +135,7 @@ jobs:
           cypress/fixtures/credits.json
           cypress/reports/consoleErrors.json
           cypress/reports/results.json
+          cypress/reports/responseTime.json
         if-no-files-found: warn
         retention-days: 14
 
@@ -130,7 +147,7 @@ jobs:
           {
             "username": "GitHub Actions",
             "icon_emoji": ":github:",
-            "text": "*🤖 Cypress Test Results*\n\n*Environment:* ${{ env.CYPRESS_APP_URL || 'Staging' }}\n*Status:* ${{ steps.test-results.outputs.status == 'passed' && '✅ PASSED' || '❌ FAILED' }}\n\n*Test Summary*\n• Total: ${{ steps.test-results.outputs.total }}\n• Passed: ${{ steps.test-results.outputs.passed }} \n• Failed: ${{ steps.test-results.outputs.failed }} \n• Pending: ${{ steps.test-results.outputs.pending }} \n• Skipped: ${{ steps.test-results.outputs.skipped }} \n\n*Console Errors*\n• Total: ${{ steps.console-errors.outputs.total }}\n• Prompt Response Time: ${{ steps.response-time.outputs.seconds }}s\n\n*View Full Report:* <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|Click Here> 📊"
+            "text": "*🤖 Cypress Test Results*\n\n*Environment:* ${{ env.CYPRESS_APP_URL || 'Staging' }}\n*Status:* ${{ steps.test-results.outputs.status == 'passed' && '✅ PASSED' || '❌ FAILED' }}\n\n*Test Summary*\n• Total: ${{ steps.test-results.outputs.total }}\n• Passed: ${{ steps.test-results.outputs.passed }} \n• Failed: ${{ steps.test-results.outputs.failed }} \n• Pending: ${{ steps.test-results.outputs.pending }} \n• Skipped: ${{ steps.test-results.outputs.skipped }} \n\n*Console Errors*\n• Total: ${{ steps.console-errors.outputs.total }}\n\n *Prompt Response*\n• Time: ${{ steps.response-time.outputs.seconds }}\n\n*View Full Report:* <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|Click Here> 📊"
           }
       env:
         SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
