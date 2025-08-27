@@ -22,55 +22,6 @@ module.exports = defineConfig({
     viewportWidth: 1920,
     viewportHeight: 1080,
     setupNodeEvents(on, config) {
-      on('after:run', (results) => {
-        if (results) {
-          // Create a comprehensive test summary
-          const summary = {
-            totalTests: results.totalTests || 0,
-            totalPassed: results.totalPassed || 0,
-            totalFailed: results.totalFailed || 0,
-            totalPending: results.totalPending || 0,
-            totalSkipped: results.totalSkipped || 0,
-            browserName: results.browserName,
-            browserVersion: results.browserVersion,
-            osName: results.osName,
-            osVersion: results.osVersion,
-            startedAt: results.startedAt,
-            endedAt: results.endedAt,
-            specs: results.runs.map(run => ({
-              specName: run.spec.name,
-              tests: run.stats.tests,
-              passes: run.stats.passes,
-              failures: run.stats.failures,
-              pending: run.stats.pending,
-              skipped: run.stats.skipped
-            }))
-          };
-
-          // Ensure directory exists
-          const resultsDir = 'cypress/reports';
-          if (!fs.existsSync(resultsDir)) {
-            fs.mkdirSync(resultsDir, { recursive: true });
-          }
-
-          // Write summary to file
-          fs.writeFileSync(
-            path.join(resultsDir, 'results.json'),
-            JSON.stringify(summary, null, 2)
-          );
-
-          // Log summary to console for debugging
-          console.log('Test Results Summary:');
-          console.log('=====================');
-          console.log(`Total: ${summary.totalTests}`);
-          console.log(`Passed: ${summary.totalPassed}`);
-          console.log(`Failed: ${summary.totalFailed}`);
-          console.log(`Pending: ${summary.totalPending}`);
-          console.log(`Skipped: ${summary.totalSkipped}`);
-          console.log('=====================');
-        }
-      });
-
       on('task', {
         writeFile({ filePath, content }) {
           const dir = path.dirname(filePath);
@@ -80,10 +31,60 @@ module.exports = defineConfig({
           fs.writeFileSync(filePath, JSON.stringify(content, null, 2));
           return null;
         },
+        
+        updateResponseTime({ filePath, modelData }) {
+          const dir = path.dirname(filePath);
+          if (!fs.existsSync(dir)) {
+              fs.mkdirSync(dir, { recursive: true });
+          }
+
+          // Read existing data or create new array
+          let responseTimeArray = [];
+          if (fs.existsSync(filePath)) {
+              try {
+                  const fileContent = fs.readFileSync(filePath, 'utf8');
+                  responseTimeArray = JSON.parse(fileContent);
+              } catch (error) {
+                  console.log('Error reading existing file, creating new array');
+                  responseTimeArray = [];
+              }
+          }
+
+          // Check if model already exists, update or add
+          const existingIndex = responseTimeArray.findIndex(item => item.textModel === modelData.textModel);
+          if (existingIndex !== -1) {
+              responseTimeArray[existingIndex] = modelData;
+          } else {
+              responseTimeArray.push(modelData);
+          }
+
+          // Write updated array back to file
+          fs.writeFileSync(filePath, JSON.stringify(responseTimeArray, null, 2));
+          console.log(`Updated response time for ${modelData.textModel}: ${modelData.ResponseTime}`);
+          
+          return null;
+        },
+
         updateErrorLog({ filePath, newErrors }) {
+          const dir = path.dirname(filePath);
+          if (!fs.existsSync(dir)) {
+            fs.mkdirSync(dir, { recursive: true });
+          }
+
           let existingData = { errors: [], totalErrors: 0 };
           if (fs.existsSync(filePath)) {
-            existingData = JSON.parse(fs.readFileSync(filePath));
+            try {
+              const fileContent = fs.readFileSync(filePath, 'utf8');
+              existingData = JSON.parse(fileContent);
+            } catch (error) {
+              console.log('Error reading existing consoleErrors file, creating new structure');
+              existingData = { errors: [], totalErrors: 0 };
+            }
+          }
+
+          // Ensure existingData has the correct structure
+          if (!existingData.errors) {
+            existingData.errors = [];
           }
 
           // Deduplicate existing errors
@@ -118,6 +119,8 @@ module.exports = defineConfig({
           };
 
           fs.writeFileSync(filePath, JSON.stringify(updatedData, null, 2));
+          console.log(`Updated console errors log with ${newErrors.length} new errors. Total: ${updatedData.totalErrors}`);
+          
           return null;
         }
       });

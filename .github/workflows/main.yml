@@ -111,14 +111,33 @@ jobs:
       if: always()
       run: |
         if [ -f "cypress/reports/responseTime.json" ]; then
-          RESPONSE_TIME=$(jq -r '.responseTime' cypress/reports/responseTime.json)
-          RESPONSE_TIME_SEC=$(jq -r '.responseTimeSeconds' cypress/reports/responseTime.json)
-          echo "ms=$RESPONSE_TIME" >> "$GITHUB_OUTPUT"
-          echo "seconds=$RESPONSE_TIME_SEC" >> "$GITHUB_OUTPUT"
-          echo "Found response time: ${RESPONSE_TIME}ms (${RESPONSE_TIME_SEC}s)"
+          # Check if it's an array format (new) or object format (old)
+          if jq -e 'type == "array"' cypress/reports/responseTime.json > /dev/null; then
+            # New array format with multiple models
+            CLAUDE_TIME=$(jq -r '.[] | select(.textModel == "claude-3-5-sonnet") | .ResponseTime' cypress/reports/responseTime.json || echo "N/A")
+            GPT5_TIME=$(jq -r '.[] | select(.textModel == "GPT-5") | .ResponseTime' cypress/reports/responseTime.json || echo "N/A")
+            GPT41_TIME=$(jq -r '.[] | select(.textModel == "GPT-4.1") | .ResponseTime' cypress/reports/responseTime.json || echo "N/A")
+            
+            echo "claude_time=$CLAUDE_TIME" >> "$GITHUB_OUTPUT"
+            echo "gpt5_time=$GPT5_TIME" >> "$GITHUB_OUTPUT"
+            echo "gpt41_time=$GPT41_TIME" >> "$GITHUB_OUTPUT"
+            echo "format=array" >> "$GITHUB_OUTPUT"
+            
+            echo "Found response times - Claude: $CLAUDE_TIME, GPT-5: $GPT5_TIME, GPT-4.1: $GPT41_TIME"
+          else
+            # Old single object format (fallback)
+            RESPONSE_TIME=$(jq -r '.responseTime' cypress/reports/responseTime.json)
+            RESPONSE_TIME_SEC=$(jq -r '.responseTimeSeconds' cypress/reports/responseTime.json)
+            echo "ms=$RESPONSE_TIME" >> "$GITHUB_OUTPUT"
+            echo "seconds=$RESPONSE_TIME_SEC" >> "$GITHUB_OUTPUT"
+            echo "format=object" >> "$GITHUB_OUTPUT"
+            echo "Found single response time: ${RESPONSE_TIME}ms (${RESPONSE_TIME_SEC}s)"
+          fi
         else
-          echo "ms=0" >> "$GITHUB_OUTPUT"
-          echo "seconds=0" >> "$GITHUB_OUTPUT"
+          echo "claude_time=N/A" >> "$GITHUB_OUTPUT"
+          echo "gpt5_time=N/A" >> "$GITHUB_OUTPUT"
+          echo "gpt41_time=N/A" >> "$GITHUB_OUTPUT"
+          echo "format=none" >> "$GITHUB_OUTPUT"
           echo "No responseTime.json found"
         fi
 
@@ -147,7 +166,7 @@ jobs:
           {
             "username": "GitHub Actions",
             "icon_emoji": ":github:",
-            "text": "*🤖 Cypress Test Results*\n\n*Environment:* ${{ env.CYPRESS_APP_URL || 'Staging' }}\n*Status:* ${{ steps.test-results.outputs.status == 'passed' && '✅ PASSED' || '❌ FAILED' }}\n\n*Test Summary*\n• Total: ${{ steps.test-results.outputs.total }}\n• Passed: ${{ steps.test-results.outputs.passed }} \n• Failed: ${{ steps.test-results.outputs.failed }} \n• Pending: ${{ steps.test-results.outputs.pending }} \n• Skipped: ${{ steps.test-results.outputs.skipped }} \n\n*Console Errors*\n• Total: ${{ steps.console-errors.outputs.total }}\n\n *Prompt Response*\n• Time: ${{ steps.response-time.outputs.seconds }} secs\n\n*View Full Report:* <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|Click Here> 📊"
+            "text": "*🤖 Cypress Test Results*\n\n*Environment:* ${{ env.CYPRESS_APP_URL || 'Staging' }}\n*Status:* ${{ steps.test-results.outputs.status == 'passed' && '✅ PASSED' || '❌ FAILED' }}\n\n*Test Summary*\n• Total: ${{ steps.test-results.outputs.total }}\n• Passed: ${{ steps.test-results.outputs.passed }} \n• Failed: ${{ steps.test-results.outputs.failed }} \n\n*Console Errors*\n• Total: ${{ steps.console-errors.outputs.total }} \n\n*AI Model Response Times*\n• Claude 3.5 Sonnet: ${{ steps.response-time.outputs.claude_time }} \n• GPT-5: ${{ steps.response-time.outputs.gpt5_time }} \n• GPT-4.1: ${{ steps.response-time.outputs.gpt41_time }} ⚡\n\n*View Full Report:* <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|Click Here> 📊"
           }
       env:
         SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
