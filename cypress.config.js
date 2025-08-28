@@ -22,6 +22,29 @@ module.exports = defineConfig({
     viewportWidth: 1920,
     viewportHeight: 1080,
     setupNodeEvents(on, config) {
+      // Add this hook to generate results.json
+      on('after:run', (results) => {
+        const testResults = {
+          totalTests: results.totalTests,
+          totalPassed: results.totalPassed,
+          totalFailed: results.totalFailed,
+          totalPending: results.totalPending,
+          totalSkipped: results.totalSkipped,
+          runs: results.runs,
+          startedTestsAt: results.startedTestsAt,
+          endedTestsAt: results.endedTestsAt,
+          duration: results.totalDuration
+        };
+
+        const dir = path.dirname('cypress/reports/results.json');
+        if (!fs.existsSync(dir)) {
+          fs.mkdirSync(dir, { recursive: true });
+        }
+
+        fs.writeFileSync('cypress/reports/results.json', JSON.stringify(testResults, null, 2));
+        console.log(`Test results saved: ${results.totalPassed} passed, ${results.totalFailed} failed`);
+      });
+
       on('task', {
         writeFile({ filePath, content }) {
           const dir = path.dirname(filePath);
