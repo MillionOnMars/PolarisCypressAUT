@@ -114,7 +114,7 @@ jobs:
           # Check if it's an array format (new) or object format (old)
           if jq -e 'type == "array"' cypress/reports/responseTime.json > /dev/null; then
             # New array format with multiple models
-            CLAUDE_TIME=$(jq -r '.[] | select(.textModel == "claude-3-5-sonnet") | .ResponseTime' cypress/reports/responseTime.json || echo "N/A")
+            CLAUDE_TIME=$(jq -r '.[] | select(.textModel == "claude-3-opus") | .ResponseTime' cypress/reports/responseTime.json || echo "N/A")
             GPT5_TIME=$(jq -r '.[] | select(.textModel == "GPT-5") | .ResponseTime' cypress/reports/responseTime.json || echo "N/A")
             GPT41_TIME=$(jq -r '.[] | select(.textModel == "GPT-4.1") | .ResponseTime' cypress/reports/responseTime.json || echo "N/A")
             
