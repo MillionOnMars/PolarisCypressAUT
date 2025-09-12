@@ -1,4 +1,4 @@
-const textModels = ['claude-3-opus', 'GPT-5', 'GPT-4.1'];
+const textModels = ['claude-3-opus','GPT-4.1', 'GPT-5'];
 
 const openAI = () => {
     cy.xpath("(//*[name()='path'])[1]")
@@ -14,7 +14,7 @@ const mathQuestions = [
     { question: 'What planet is known as the Red Planet?', answer: 'Mars' },
     { question: 'What element has the chemical symbol "O"?', answer: 'Oxygen' },
     { question: 'What organ pumps blood through the body?', answer: 'Heart' },
-    { question: 'What is the largest mammal on Earth?', answer: 'Bluewhale' },
+    { question: 'What is the largest mammal on Earth?', answer: 'Blue Whale' },
     { question: 'What language is primarily spoken in Brazil?', answer: 'Portuguese' },
     { question: 'What is the hardest natural substance?', answer: 'Diamond' },
     { question: 'What ocean is the largest on Earth?', answer: 'Pacific' },
@@ -38,7 +38,7 @@ const sendPrompt = (modelName) => {
     
     cy.wait(2000);
     
-    cy.contains(answer, { timeout: 30000 })
+    cy.contains(answer, { timeout: 30000 }, { matchCase: false }) // Case insensitive match
         .scrollIntoView()
         .should('be.visible')
         .then(() => {
@@ -61,11 +61,7 @@ const sendPrompt = (modelName) => {
 }
 
 const selectTextModel = (modelName) => {
-    //click new notebook
-    // cy.xpath("//button[normalize-space()='+']").should('be.visible', {timeout: 15000})
-    // .click();
-    // Click the dropdown/button to open model selection
-    cy.get('.MuiBox-root.css-1jdsw35 > div > div > button', { timeout: 30000 })
+    cy.get('.MuiBox-root.css-bduy2x > div > div > div > button', { timeout: 30000 })
         .should('be.visible')
         .click();
     
@@ -73,7 +69,7 @@ const selectTextModel = (modelName) => {
     cy.wait(1000);
     
     // Select the specific model from the textModels array
-    cy.contains(modelName, { timeout: 10000 })
+    cy.contains(modelName, { timeout: 10000 }, { matchCase: false })
         .should('be.visible')
         .click({ force: true });
     
@@ -81,15 +77,15 @@ const selectTextModel = (modelName) => {
 };
 
 const deleteNotebook = () => {
-    cy.get('.MuiTypography-root.MuiTypography-body-xs.css-o9tzp0', { timeout: 10000})
+    cy.get('[data-testid="MoreVertIcon"]', { timeout: 10000})
         .should('be.visible')
         .should('not.be.disabled', { timeout: 10000 })
         .click();
 
-    cy.get('.MuiGrid-grid-xs-1.css-12ufn3n > div > button', { timeout: 10000 })
-        .click({ force: true });
+    // cy.get('.MuiGrid-grid-xs-1.css-12ufn3n > div > button', { timeout: 10000 })
+    //     .click({ force: true });
     // Then click the "Delete" button
-    cy.get('li[role="menuitem"]', { timeout: 10000 }).eq(6)
+    cy.get('li[role="menuitem"]', { timeout: 10000 }).eq(7)
         .should('be.visible')
         .click();
     
