@@ -61,7 +61,8 @@ const sendPrompt = (modelName) => {
 }
 
 const selectTextModel = (modelName) => {
-    cy.get('.MuiBox-root.css-bduy2x > div > div > div > button', { timeout: 30000 })
+    cy.get('.MuiSelect-button', { timeout: 30000 })
+        .eq(0)
         .should('be.visible')
         .click();
     
