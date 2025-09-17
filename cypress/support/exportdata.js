@@ -16,11 +16,11 @@ const exportData = (pracArea) => {
     switch(pracArea) {
         case 'AI Platforms':
             //Market Data
-            cy.get("(//button[@type='button'])[184]").click(); // Export Data button - Actual Revenue
-            cy.get("(//button[@type='button'])[189]").click(); // Export Data button - Forecast Revenue
+            cy.xpath("(//span[contains(text(),'Export')])[1]").click(); // Export Data button - Actual Revenue
+            cy.xpath("(//span[contains(text(),'Export')])[2]").click(); // Export Data button - Forecast Revenue
             //Decision Maker
-            cy.get("(//button[@type='button'])[195]").click(); // Export Data button - AI Practices
-            cy.get("(//button[@type='button'])[201]").click(); // Export Data button - Consultants & Integrators
+            cy.xpath("(//span[contains(text(),'Export')])[3]").click(); // Export Data button - AI Practices
+            cy.xpath("(//span[contains(text(),'Export')])[4]").click(); // Export Data button - Consultants & Integrators
             //Check Downloaded Files
             cy.readFile('cypress/downloads/Actual Revenue.csv', { timeout: 15000 })
                 .should('exist')
@@ -48,8 +48,8 @@ const exportData = (pracArea) => {
             break;
         case 'Cybersecurity':
             //Decision Maker
-            cy.get("(//button[@type='button'])[184]").click(); // Export Data button - Cyber Security Usage
-            cy.get("(//button[@type='button'])[190 ]").click(); // Export Data button - Data Protection
+            cy.xpath("(//span[contains(text(),'Export')])[1]").click(); // Export Data button - Cyber Security Usage
+            cy.xpath("(//span[contains(text(),'Export')])[2]").click(); // Export Data button - Data Protection
             //Check Downloaded Files
             cy.readFile('cypress/downloads/Cyber Security Usage.csv', { timeout: 15000 })
                 .should('exist')
@@ -67,11 +67,11 @@ const exportData = (pracArea) => {
             break;
         case 'Semiconductors':
             //Decision Maker
-            cy.get("(//button[@type='button'])[184]").click(); // Export Data button - AI Chipsets Practices
-            cy.get("(//button[@type='button'])[190]").click(); // Export Data button - AI Chipsets On Premise
+            cy.xpath("(//span[contains(text(),'Export')])[1]").click(); // Export Data button - AI Chipsets Practices
+            cy.xpath("(//span[contains(text(),'Export')])[2]").click(); // Export Data button - AI Chipsets On Premise
             //Market Data
-            cy.get("(//button[@type='button'])[210]").click(); // Export Data button - Actual Revenue
-            cy.get("(//button[@type='button'])[217]").click(); // Export Data button - Forecast Revenue
+            cy.xpath("(//span[contains(text(),'Export')])[5]").click(); // Export Data button - Actual Revenue
+            cy.xpath("(//span[contains(text(),'Export')])[6]").click(); // Export Data button - Forecast Revenue
             //Check Downloaded Files
             cy.readFile('cypress/downloads/AI Chipsets Practices.csv', { timeout: 15000 })
                 .should('exist')
@@ -99,10 +99,13 @@ const exportData = (pracArea) => {
             cy.task('deleteFile', 'cypress/downloads/Actual Revenue.csv');
             cy.task('deleteFile', 'cypress/downloads/Forecast Revenue.csv');
             break;
-            case: 
 
-        }
-}
+            default:
+                cy.log(`Practice area "${pracArea}" is not recognized.`);
+                break;
+            }
+    }
+
 
 export default exportData;
 export { getRandomPracticeArea };
