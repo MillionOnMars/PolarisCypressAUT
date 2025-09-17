@@ -15,6 +15,7 @@ module.exports = defineConfig({
       'cypress/e2e/FuturumAI.cy.js',
     ],
     supportFile: 'cypress/support/index.js',
+    downloadsFolder: 'cypress/downloads', // Add this line to specify the downloads folder
     env: {
       //set appURL to production or staging
       appUrl: process.env.CYPRESS_APP_URL || environments.staging
