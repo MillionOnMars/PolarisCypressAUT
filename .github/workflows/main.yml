@@ -166,8 +166,8 @@ jobs:
           {
             "username": "GitHub Actions",
             "icon_emoji": ":github:",
-            "text": "*🤖 Cypress Test Results*\n\n*Environment:* ${{ env.CYPRESS_APP_URL || 'Staging' }}\nBranch: `${{ github.ref_name }}`\n*Status:* ${{ steps.test-results.outputs.status == 'passed' && '✅ PASSED' || '❌ FAILED' }}\n\n*Test Summary*\n• Total: ${{ steps.test-results.outputs.total }}\n• Passed: ${{ steps.test-results.outputs.passed }} \n• Failed: ${{ steps.test-results.outputs.failed }} \n\n*Console Errors*\n• Total: ${{ steps.console-errors.outputs.total }} \n\n*AI Model Response Times*\n• Claude 3.5 Opus: ${{ steps.response-time.outputs.claude_time }} \n• GPT-5: ${{ steps.response-time.outputs.gpt5_time }} \n• GPT-4.1: ${{ steps.response-time.outputs.gpt41_time }} \n\n*View Full Report:* <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|Click Here> 📊"
-          }
+            "text": "${{ steps.test-results.outputs.failed > 0 && '🔴 CYPRESS TESTS FAILED' || '✅ CYPRESS TESTS PASSED' }}\nEnvironment: ${{ env.CYPRESS_APP_URL || 'Staging' }}\nBranch: `${{ github.ref_name }}`\n\n📊 Test Results\n✅ Passed: ${{ steps.test-results.outputs.passed || 0 }}\n❌ Failed: ${{ steps.test-results.outputs.failed || 0 }}\n📝 Total: ${{ steps.test-results.outputs.total || 0 }}\n\n*Console Errors*\n• Total: ${{ steps.console-errors.outputs.total }}\n\n*AI Model Response Times*\n• Claude 3 Opus: ${{ steps.response-time.outputs.claude_time }}\n• GPT-5: ${{ steps.response-time.outputs.gpt5_time }}\n• GPT-4.1: ${{ steps.response-time.outputs.gpt41_time }}\n\n<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|View Full Report> 📋"
+            }
       env:
         SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
 
