@@ -1,5 +1,5 @@
 import { login } from "../support/login";
-import exportdata, { getRandomPracticeArea } from "../support/export-data";
+import { getRandomPracticeArea, ExportData } from "../support/exportdata";
 
 describe('Verify Export Data functionality', () => {
     const randomPracticeAreas = getRandomPracticeArea(3); // Get 3 random practice areas
@@ -14,6 +14,6 @@ describe('Verify Export Data functionality', () => {
 
     // Choose 3 random Practice Areas and verify export data functionality
     randomPracticeAreas.forEach((area) => {
-        exportData(area);
+        ExportData.verifyExportData(area);
     });
 });
