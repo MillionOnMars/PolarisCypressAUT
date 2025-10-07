@@ -13,6 +13,7 @@ module.exports = defineConfig({
     specPattern: [
       'cypress/e2e/Data.cy.js',
       'cypress/e2e/FuturumAI.cy.js',
+      'cypress/e2e/Users.cy.js'
     ],
     supportFile: 'cypress/support/index.js',
     env: {
