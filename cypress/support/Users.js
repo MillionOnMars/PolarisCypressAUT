@@ -1,5 +1,3 @@
-import { add } from "lodash";
-
 const TIMEOUT = 10000;
 
 const navigateToUserProfile = () => {
@@ -16,6 +14,15 @@ const navigateToSubscriptionPage = () => {
         .should('exist')
         .click({ force: true });
     cy.contains('Manage My Subscriptions', { timeout: TIMEOUT })
+        .should('exist')
+        .click({ force: true });
+};
+const navigateToAdminDashboard = () => {
+    cy.contains('Admin Settings', { timeout: TIMEOUT })
+        .should('exist')
+        .click({ force: true });
+    
+    cy.contains('Admin Dashboard', { timeout: TIMEOUT })
         .should('exist')
         .click({ force: true });
 };
@@ -71,6 +78,38 @@ const addSubscriptionPlan = (subscriptionName) => {
     
     saveChanges();
 };
+const changeOrganization = (newOrgName, username) => {
+    navigateToAdminDashboard();
+    
+    // Search for the specific user
+    cy.get('input[placeholder="Search users..."]', { timeout: TIMEOUT })
+        .should('exist')
+        .should('be.visible')
+        .clear()
+        .type(username);
+
+    // Click the Profile button for the user
+    cy.get('button[aria-label="Profile"][class*="MuiButton-colorWarning"]', { timeout: TIMEOUT })
+        .eq(0) // Assuming the first matched button is the correct one
+        .should('exist')
+        .should('be.visible')
+        .click({ force: true });
+    
+    // Clear current organization and type new organization name
+    cy.get('input[role="combobox"][class*="MuiAutocomplete-input"]', { timeout: TIMEOUT })
+        .should('exist')
+        .should('be.visible')
+        .clear()
+        .type(newOrgName);
+    
+    // Select the organization from dropdown
+    cy.get('[role="option"]', { timeout: TIMEOUT })
+        .contains(newOrgName)
+        .click({ force: true });
+    
+    // Use existing saveChanges helper and add double-save logic there if needed
+    saveChanges();
+};
 
 class Users {
     static updateSubscription(subscriptionName) {
@@ -83,6 +122,17 @@ class Users {
             addSubscriptionPlan(subscriptionName);
         });
     }
+    static changeOrganization(newOrgName, oldOrgName, username) {
+        it('Update user organization', () => {
+            navigateToUserProfile();
+            changeOrganization(newOrgName, username);
+        });
+        it('Revert user organization', () => {
+            navigateToUserProfile();
+            changeOrganization(oldOrgName, username);
+        });
+    }
+
 }
 
 export default Users;
