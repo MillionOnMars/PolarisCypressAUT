@@ -1,5 +1,5 @@
 import { login } from '../support/login.js';
-import Chat from '../support/chat.js'; 
+import Research from '../support/research.js'; 
 
 describe('Futurum AI operations', () => {
     // Log in to the application before running the tests
@@ -10,5 +10,10 @@ describe('Futurum AI operations', () => {
             login(username, password);
         });
     });
-    Chat.createChat();
+    // Test all chat models (GPT-3.5, GPT-4, Gemini Pro)
+    Research.createChat();
+    // Test file operations with the 'recipe' file
+    Research.Files('recipe');
+    // Add tags to the notebook
+    Research.manageTags();
 });

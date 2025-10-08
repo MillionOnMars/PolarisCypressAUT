@@ -1,0 +1,8 @@
+{
+    "recipe": {
+        "filepath": "cypress/fixtures/upload/recipe.txt"
+    },
+    "sinigang": {
+        "filepath": "cypress/fixtures/upload/xxxx.pdf"
+    }
+}
