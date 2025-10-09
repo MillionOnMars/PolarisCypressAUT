@@ -111,6 +111,49 @@ const changeOrganization = (newOrgName, username) => {
     saveChanges();
 };
 
+const resetPassword = (newPassword) => {
+    cy.contains('Reset Password', { timeout: TIMEOUT })
+        .scrollIntoView()
+        .should('exist')
+        .should('be.visible')
+        .click({ force: true });
+    
+    // Enter new password
+    cy.get('input[name="newPassword"][type="password"]', { timeout: TIMEOUT })
+        .should('exist')
+        .should('be.visible')
+        .clear()
+        .type(newPassword);
+    
+    // Confirm new password
+    cy.get('input[name="confirmNewPassword"][type="password"]', { timeout: TIMEOUT })
+        .should('exist')
+        .should('be.visible')
+        .clear()
+        .type(newPassword);
+    
+    // Update password
+    cy.contains('button', 'Update Password', { timeout: TIMEOUT })
+        .should('exist')
+        .should('be.visible')
+        .click({ force: true });
+    
+    // Verify success message
+    cy.contains('Password updated successfully', { timeout: TIMEOUT })
+        .should('exist')
+        .should('be.visible');
+};
+
+const changePassword = (newPassword, originalPassword) => {
+    // Change to new password
+    resetPassword(newPassword);
+    
+    // Revert back to original password
+    resetPassword(originalPassword);
+};
+
+
+// Update the class method
 class Users {
     static updateSubscription(subscriptionName) {
         it('Remove user subscription', () => {
@@ -122,6 +165,7 @@ class Users {
             addSubscriptionPlan(subscriptionName);
         });
     }
+    
     static changeOrganization(newOrgName, oldOrgName, username) {
         it('Update user organization', () => {
             navigateToUserProfile();
@@ -132,7 +176,13 @@ class Users {
             changeOrganization(oldOrgName, username);
         });
     }
-
+    
+    static resetPassword(newPassword, originalPassword) {
+        it('Change user password and revert', () => {
+            navigateToUserProfile();
+            changePassword(newPassword, originalPassword);
+        }); 
+    }
 }
 
 export default Users;
