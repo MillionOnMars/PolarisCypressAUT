@@ -4,5 +4,10 @@
     },
     "sinigang": {
         "filepath": "cypress/fixtures/upload/xxxx.pdf"
+    },
+    "emailTemplate": {
+        "name": "Welcome Template",
+        "subject": "Welcome to Our Service",
+        "body": "<h1>Welcome!</h1><p>We are glad to have you.</p>"
     }
 }
