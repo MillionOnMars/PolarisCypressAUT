@@ -1,113 +1,117 @@
+import { timeInterval } from "rxjs";
 import { verify } from "tweetnacl";
-
+const TIMEOUT = 10000;
 const navigateToAdmin = () => {
-    cy.wait(2000);
-    cy.get('[aria-haspopup="menu"]', {timeout: 10000})
+    cy.get('[aria-haspopup="menu"]', {timeout: TIMEOUT})
     .eq(1)
     .should('exist')
     .click()
 
-    cy.contains('Admin', {timeout: 10000})
+    cy.contains('Admin', {timeout: TIMEOUT})
     .should('exist')
     .click()
 }
 
 const navigateToAccountsOrg = () => {
-    cy.wait(5000);
-    cy.xpath("(//button[normalize-space()='Accounts'])[1]", {timeout: 10000})
+    cy.contains('User Tags', {timeout: TIMEOUT})
+    cy.xpath("(//button[normalize-space()='Accounts'])[1]", {timeout: TIMEOUT})
     .should('exist')
     .click()
 }
 
 const createOrg = (OrgName) => {
-    cy.wait(3000);
-    cy.get('textarea[placeholder="Organization Name"]')
+    
+    cy.get('textarea[placeholder="Organization Name"]', {timeout: TIMEOUT})
     .should('exist') // Ensure the element exists
     .type(OrgName); // Type into the textarea
     
-    cy.get("[aria-label='Create a new organization']", {timeout: 10000})
+    cy.get("[aria-label='Create a new organization']", {timeout: TIMEOUT})
     .should('exist')
     .click()
+    
 }
 
 const verifyOrgCreated = (OrgName) => {
-    cy.get('.css-1lv7pyi').type(OrgName).type('{enter}');
+    cy.get('.css-1lv7pyi', {timeout: TIMEOUT}).type(OrgName).type('{enter}');
     cy.contains(OrgName).click();
-    cy.contains('Profile', {timeout: 10000})
+    cy.contains('Profile', {timeout: TIMEOUT})
     .should('exist')
     .click()
-    cy.wait(2000);
 }
 
 const updateOrg = (NewOrgName) => {
-    cy.get('.css-1u0jcuo')
+    cy.get('.css-1u0jcuo', {timeout: TIMEOUT})
     .eq(0)
     .clear()
     .type(NewOrgName);
-    cy.contains('Update', {timeout: 5000})
+    cy.contains('Update', {timeout: TIMEOUT})
     .should('exist')
     .click()
+    cy.contains('Organization updated successfully!', {timeout: TIMEOUT})
+    .should('exist');
 }
 
 const linkSalesforce = () => {
-    cy.wait(2000);
-    cy.get('.css-1g5jyb9').should('exist').click().type('Acme{enter}');
-    cy.wait(2000);
-    cy.contains('Acme (Sample)', {timeout: 10000})
+
+    cy.get('.css-1g5jyb9', {timeout: TIMEOUT})
+    .should('exist').click().type('Acme{enter}');
+    cy.contains('Acme (Sample)', {timeout: TIMEOUT})
     .should('exist')
     .click()
-    cy.contains('Update', {timeout: 5000})
+    cy.contains('Update', {timeout: TIMEOUT})
     .should('exist')
     .click()
+    cy.contains('Salesforce account linked successfully', {timeout: TIMEOUT})
+    .should('exist');
 }
 
 const addSubscription = (OrgName) => {
-    cy.contains('Subscriptions', {timeout: 10000}).click()
-    cy.contains('Add All', {timeout: 10000})
+    cy.contains('Subscriptions', {timeout: TIMEOUT}).click()
+    cy.contains('Add All', {timeout: TIMEOUT})
     .should('exist')
     .click()
-    cy.contains('Save Changes', {timeout: 10000}).should('exist')
+    cy.contains('Save Changes', {timeout: TIMEOUT}).should('exist')
     .click()
+    cy.contains('Subscriptions updated successfully', {timeout: TIMEOUT})
+    .should('exist');
 }
 
 const removeSubscription = () => {
-    cy.contains('Subscriptions', {timeout: 10000}).click()
-    cy.contains('Remove All', {timeout: 10000})
+    cy.contains('Subscriptions', {timeout: TIMEOUT}).click()
+    cy.contains('Remove All', {timeout: TIMEOUT})
     .should('exist')
     .click()
-    cy.contains('Save Changes', {timeout: 10000}).should('exist')
+    cy.contains('Save Changes', {timeout: TIMEOUT}).should('exist')
     .click()
+    cy.contains('Subscriptions updated successfully', {timeout: TIMEOUT})
+    .should('exist');
 }
 
 const deleteOrg = (OrgName) => {
     cy.get('.css-1lv7pyi').type(OrgName).type('{enter}');
     cy.contains(OrgName).click();
-    cy.contains('Delete', {timeout: 10000})
+    cy.contains('Delete', {timeout: TIMEOUT})
     .should('exist')
     .click()
     cy.get('.css-1q3ylrc')
     .eq(1)
     .should('exist')
     .click()
+    cy.contains('Organization deleted successfully', {timeout: TIMEOUT})
+    .should('exist');
 }
 
 class AccountsOrg {
 
     static createNewOrg(OrgName) {
-        it('Should create a new organization', () => {
+        it('Should create and verify the new organization', () => {
             navigateToAdmin();
             navigateToAccountsOrg();
             createOrg(OrgName);
-        });
-    }
-    
-    static verifyOrgCreated(OrgName) {
-        it('Should verify the organization is created', () => {
-            navigateToAdmin();
-            navigateToAccountsOrg();
             verifyOrgCreated(OrgName);
         });
     }
+    
     static updateOrg(OldOrgName, NewOrgName) {
         it('Should update the organization name and link salesforce', () => {
             navigateToAdmin();

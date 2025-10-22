@@ -1,6 +1,8 @@
 import AccountsOrg from "../support/accounts-org";
 import { login } from "../support/login";
 
+let OrgName = "TestAUT_Org";
+let NewOrgName = "Updated_TestAUT_Org";
 
 describe('Organization Creation', () => {
     beforeEach(() => {
@@ -12,23 +14,19 @@ describe('Organization Creation', () => {
     });
 
    describe('Create New Organization', () => {
-        AccountsOrg.createNewOrg('TestAUT_Org');
-    });
-
-   describe('Verify Organization Creation', () => {
-        AccountsOrg.verifyOrgCreated('TestAUT_Org');
+        AccountsOrg.createNewOrg(OrgName);
     });
 
    describe('Update Existing Organization', () => {
-       AccountsOrg.updateOrg('TestAUT_Org', 'Updated_TestAUT_Org');
+       AccountsOrg.updateOrg(OrgName, NewOrgName);
     });
     describe('Add Subscription to Organization', () => {
-        AccountsOrg.addSubscription('Updated_TestAUT_Org');
+        AccountsOrg.addSubscription(NewOrgName);
     });
     describe('Remove Subscription from Organization', () => {
-        AccountsOrg.removeSubscription('Updated_TestAUT_Org');
+        AccountsOrg.removeSubscription(NewOrgName);
     });
     describe('Delete Organization', () => {
-        AccountsOrg.deleteOrg('Updated_TestAUT_Org');
+        AccountsOrg.deleteOrg(NewOrgName);
     });
 });
