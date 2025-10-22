@@ -1,7 +1,7 @@
 import { login } from '../support/login.js';
 import EmailTemplates from '../support/emailTemplates.js';
 
-describe('Email Template Management Tests', () => {
+describe('Email Management Tests', () => {
     // Log in to the application before running the tests
     beforeEach(() => {
         // Load existing user credentials from accounts.json
@@ -10,9 +10,13 @@ describe('Email Template Management Tests', () => {
             login(username, password);
         });
     });
-    
+     // Test create, edit, and delete email templates
     describe('Email Template Operations', () => {
         EmailTemplates.manageEmailTemplate();
+    });
+    // Test create, edit, and delete dataset templates
+    describe('Dataset Email Template Operations', () => {
+        EmailTemplates.manageDatasetEmailTemplate();
     });
     
 });

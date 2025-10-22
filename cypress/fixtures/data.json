@@ -9,5 +9,16 @@
         "name": "Welcome Template",
         "subject": "Welcome to Our Service",
         "body": "<h1>Welcome!</h1><p>We are glad to have you.</p>"
+    },
+    "datasetEmailTemplate": {
+        "practiceArea": "AI Platforms",
+        "title": "Dataset Template",
+        "description": "This is a template for dataset.",
+        "imageUrl":"https://futurumgroup.com/wp-content/uploads/2025/09/SOC-Challenges-by-Regulatory-Burden-Skills-Sophistication-and-Compliance.jpg.webp",
+        "url": "https://futurumgroup.com/research-reports/a-multi-layered-approach-to-data-infrastructure-protection-and-security/",
+        "leadAnalyst": "Krista Case",
+        "leadAnalystUrl":"https://futurumgroup.com/author/krista-case/",
+        "additionalAnalysts": "Mitch Ashley",
+        "additionalAnalystsUrl": "https://futurumgroup.com/mitch-ashley/"
     }
 }
