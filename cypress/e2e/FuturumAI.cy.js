@@ -10,8 +10,10 @@ describe('Futurum AI operations', () => {
             login(username, password);
         });
     });
-    // Test all chat models (GPT-3.5, GPT-4, Gemini Pro)
+    // Test all chat models 
     Research.createChat();
+    //test tool operations
+    Research.testAllTools();
     // Test file operations with the 'recipe' file
     Research.Files('recipe');
     // Add tags to the notebook
