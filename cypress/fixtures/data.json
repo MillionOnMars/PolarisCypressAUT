@@ -20,5 +20,17 @@
         "leadAnalystUrl":"https://futurumgroup.com/author/krista-case/",
         "additionalAnalysts": "Mitch Ashley",
         "additionalAnalystsUrl": "https://futurumgroup.com/mitch-ashley/"
+    },
+    "emailJob": {
+        "name": "monthly IBM emails",
+        "organization": "AMD_QA (3 users)"
+    },
+    "report": {
+        "name": "Ungated Report on Quantum Computing",
+        "title": "Workplace CEO DevOps Quantum",
+        "practiceArea": "Software Engineering",
+        "reportType": "Market Landscape Report",
+        "year": "2025",
+        "quarter": "Q1"
     }
 }
