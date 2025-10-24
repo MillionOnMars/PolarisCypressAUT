@@ -19,6 +19,7 @@ import './commands';
 import Data from './data.js'; 
 import Auth from './auth.js'
 import Chat from './chat.js';
+import 'cypress-iframe';
 
 export {
     Data,
