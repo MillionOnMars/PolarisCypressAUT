@@ -1,6 +1,6 @@
 import { timeout } from "async";
 
-const textModels = ['claude-3-opus','GPT-4.1', 'GPT-5'];
+const textModels = ['GPT-4.1', 'claude-3-5-sonnet', 'GPT-5'];
 
 let prompts;
 
@@ -47,9 +47,10 @@ const sendPrompt = (modelName) => {
         });
     
     cy.wait(2000);
-    
-    cy.contains(answer, { timeout: 30000 }, { matchCase: false }) // Case insensitive match
+
+    cy.contains(answer, { timeout: 30000, matchCase: false }) // Case insensitive match
         .scrollIntoView()
+        .should('exist')
         .should('be.visible')
         .then(() => {
             cy.get('@startTime').then((startTime) => {
@@ -72,18 +73,20 @@ const sendPrompt = (modelName) => {
 
 const selectTextModel = (modelName) => {
     cy.get('.MuiSelect-button', { timeout: 30000 })
-        .eq(0)
+        .first()
         .should('be.visible')
         .click();
-    
-    // Wait for dropdown to appear
-    cy.wait(1000);
     
     // Select the specific model from the textModels array
     cy.contains(modelName, { timeout: 10000 }, { matchCase: false })
         .should('be.visible')
-        .click({ force: true });
-    
+        .click();
+
+    //verify the selected model is displayed
+    cy.contains('button[role="combobox"]', modelName, { timeout: 10000 })
+        .first()
+        .should('be.visible');
+
     cy.log(`Selected text model: ${modelName}`);
 };
 
@@ -92,8 +95,8 @@ const deleteNotebook = () => {
         .should('be.visible')
         .should('not.be.disabled', { timeout: 10000 })
         .click();
-        
-    cy.get('li[role="menuitem"]', { timeout: 10000 }).eq(7)
+
+    cy.contains('li[role="menuitem"]', 'Delete', { timeout: 10000 })
         .should('be.visible')
         .click();
     
@@ -320,6 +323,16 @@ const tagOperations = (operation, tagName) => {
         .click();
 };
 
+const openToolsMenu = (tools) => {
+    cy.contains('div[role="button"]', 'Tools', { timeout: 10000 })
+        .should('be.visible')
+        .click();
+    cy.log('Tools menu opened successfully');
+    cy.contains('li[role="menuitem"]', tools, { timeout: 10000, matchCase: false })
+        .should('be.visible')
+        .click();
+};
+
 // Update your Research class to test all 3 models
 class Research {
     static createChat() {
@@ -393,6 +406,37 @@ class Research {
 
             it('Should delete a tag', () => {
                 tagOperations('deleteTag', testTag);
+            });
+        });
+    }
+    static testAllTools() {
+        describe('Complete Tools Testing Suite', () => {
+            const allTools = [
+                'System Prompts',
+                'Suggested Prompts', 
+                'Experimental Features',
+                'Web Search',
+                'Deep Research',
+                'Recharts'
+            ];
+
+            beforeEach(() => {
+                openAI();
+            });
+
+            allTools.forEach((tool, index) => {
+                it(`Should test ${tool} tool`, () => {
+                    openToolsMenu(tool);
+                    
+                    // Add delay between tools
+                    if (index < allTools.length - 1) {
+                        cy.wait(2000);
+                    }
+                });
+            });
+
+            afterEach(() => {
+                deleteNotebook();
             });
         });
     }
