@@ -21,6 +21,32 @@
         "additionalAnalysts": "Mitch Ashley",
         "additionalAnalystsUrl": "https://futurumgroup.com/mitch-ashley/"
     },
+    "practiceAreas": {
+        "subscribed": [
+            "AI Platforms",
+            "Software Engineering", 
+            "Cybersecurity",
+            "Enterprise Software"
+        ],
+        "unsubscribed": [
+            "AI Devices",
+            "Data Intelligence",
+            "CEO Insights",
+            "Channel Ecosystems"
+        ],
+        "specificNavItems": {
+            "AI Platforms": "Overall AI Market",
+            "Software Engineering": "DevOps Market",
+            "Cybersecurity": "Forecast Overview",
+            "Enterprise Software": "Overall Market"
+        },
+        "expectedTiles": {
+            "AI Platforms": "AI Revenue",
+            "Software Engineering": "2023 Revenue",
+            "Cybersecurity": "Market Segment",
+            "Enterprise Software": "2024 Revenue"
+        }
+    },
     "emailJob": {
         "name": "monthly IBM emails",
         "organization": "AMD_QA (3 users)"

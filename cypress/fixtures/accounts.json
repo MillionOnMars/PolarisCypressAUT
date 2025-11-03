@@ -28,6 +28,12 @@
             "email": "chad+test0808@milliononmars.com",
             "password": "Testing12345!",
             "fullname": "Chad Test0808"
+        },
+        "subscribedUser": {
+            "username": "chadtest0923",
+            "email": "chad+test0923@milliononmars.com",
+            "password": "Testing12345!",
+            "fullname": "chadtest0923"
         }
     }
 }
