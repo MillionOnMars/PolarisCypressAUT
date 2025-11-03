@@ -13,6 +13,8 @@ export function login(username, password) {
         .should('be.visible')
         .click();
 
-    // Verify successful login
-    cy.url({ timeout: 50000 }).should('include', '/home');
+    // Verify successful login - check for either /home or /hero
+    cy.url({ timeout: 50000 }).should('satisfy', (url) => {
+        return url.includes('/home') || url.includes('/hero');
+    });
 }

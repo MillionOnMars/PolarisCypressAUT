@@ -16,7 +16,8 @@ module.exports = defineConfig({
       'cypress/e2e/Users.cy.js',
       'cypress/e2e/export_data.cy.js',
       'cypress/e2e/Email_Templates.cy.js',
-      'cypress/e2e/Email_Jobs.cy.js'
+      'cypress/e2e/Email_Jobs.cy.js',
+      'cypress/e2e/Practice_Area.cy.js'
     ],
     supportFile: 'cypress/support/index.js',
     downloadsFolder: 'cypress/downloads', // Add this line to specify the downloads folder
