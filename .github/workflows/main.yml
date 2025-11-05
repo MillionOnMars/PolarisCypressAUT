@@ -113,17 +113,41 @@ jobs:
         if [ -f "cypress/reports/responseTime.json" ]; then
           # Check if it's an array format (new) or object format (old)
           if jq -e 'type == "array"' cypress/reports/responseTime.json > /dev/null; then
-            # New array format with multiple models
-            CLAUDE_TIME=$(jq -r '.[] | select(.textModel == "claude-3-opus") | .ResponseTime' cypress/reports/responseTime.json || echo "N/A")
-            GPT5_TIME=$(jq -r '.[] | select(.textModel == "GPT-5") | .ResponseTime' cypress/reports/responseTime.json || echo "N/A")
-            GPT41_TIME=$(jq -r '.[] | select(.textModel == "GPT-4.1") | .ResponseTime' cypress/reports/responseTime.json || echo "N/A")
+            # New array format with multiple models - get all models dynamically
+            MODELS=$(jq -r '.[].textModel' cypress/reports/responseTime.json | tr '\n' ',' | sed 's/,$//')
+            MODEL_COUNT=$(jq '. | length' cypress/reports/responseTime.json)
             
-            echo "claude_time=$CLAUDE_TIME" >> "$GITHUB_OUTPUT"
-            echo "gpt5_time=$GPT5_TIME" >> "$GITHUB_OUTPUT"
-            echo "gpt41_time=$GPT41_TIME" >> "$GITHUB_OUTPUT"
+            # Create dynamic variables for each model
+            MODEL_1_NAME=$(jq -r '.[0].textModel // "N/A"' cypress/reports/responseTime.json)
+            MODEL_1_TIME=$(jq -r '.[0].ResponseTime // "N/A"' cypress/reports/responseTime.json)
+            
+            MODEL_2_NAME=$(jq -r '.[1].textModel // "N/A"' cypress/reports/responseTime.json)
+            MODEL_2_TIME=$(jq -r '.[1].ResponseTime // "N/A"' cypress/reports/responseTime.json)
+            
+            MODEL_3_NAME=$(jq -r '.[2].textModel // "N/A"' cypress/reports/responseTime.json)
+            MODEL_3_TIME=$(jq -r '.[2].ResponseTime // "N/A"' cypress/reports/responseTime.json)
+            
+            # Output all models data
+            echo "models=$MODELS" >> "$GITHUB_OUTPUT"
+            echo "model_count=$MODEL_COUNT" >> "$GITHUB_OUTPUT"
+            echo "model1_name=$MODEL_1_NAME" >> "$GITHUB_OUTPUT"
+            echo "model1_time=$MODEL_1_TIME" >> "$GITHUB_OUTPUT"
+            echo "model2_name=$MODEL_2_NAME" >> "$GITHUB_OUTPUT"
+            echo "model2_time=$MODEL_2_TIME" >> "$GITHUB_OUTPUT"
+            echo "model3_name=$MODEL_3_NAME" >> "$GITHUB_OUTPUT"
+            echo "model3_time=$MODEL_3_TIME" >> "$GITHUB_OUTPUT"
             echo "format=array" >> "$GITHUB_OUTPUT"
             
-            echo "Found response times - Claude: $CLAUDE_TIME, GPT-5: $GPT5_TIME, GPT-4.1: $GPT41_TIME"
+            # Create formatted response times for Slack
+            FORMATTED_TIMES=""
+            for i in $(seq 0 $((MODEL_COUNT-1))); do
+              MODEL_NAME=$(jq -r ".[$i].textModel" cypress/reports/responseTime.json)
+              MODEL_TIME=$(jq -r ".[$i].ResponseTime" cypress/reports/responseTime.json)
+              FORMATTED_TIMES="${FORMATTED_TIMES}• ${MODEL_NAME}: ${MODEL_TIME}\n"
+            done
+            echo "formatted_times=$FORMATTED_TIMES" >> "$GITHUB_OUTPUT"
+            
+            echo "Found response times for models: $MODELS"
           else
             # Old single object format (fallback)
             RESPONSE_TIME=$(jq -r '.responseTime' cypress/reports/responseTime.json)
@@ -134,9 +158,13 @@ jobs:
             echo "Found single response time: ${RESPONSE_TIME}ms (${RESPONSE_TIME_SEC}s)"
           fi
         else
-          echo "claude_time=N/A" >> "$GITHUB_OUTPUT"
-          echo "gpt5_time=N/A" >> "$GITHUB_OUTPUT"
-          echo "gpt41_time=N/A" >> "$GITHUB_OUTPUT"
+          echo "model1_name=N/A" >> "$GITHUB_OUTPUT"
+          echo "model1_time=N/A" >> "$GITHUB_OUTPUT"
+          echo "model2_name=N/A" >> "$GITHUB_OUTPUT"
+          echo "model2_time=N/A" >> "$GITHUB_OUTPUT"
+          echo "model3_name=N/A" >> "$GITHUB_OUTPUT"
+          echo "model3_time=N/A" >> "$GITHUB_OUTPUT"
+          echo "formatted_times=• No models tested" >> "$GITHUB_OUTPUT"
           echo "format=none" >> "$GITHUB_OUTPUT"
           echo "No responseTime.json found"
         fi
@@ -166,7 +194,7 @@ jobs:
           {
             "username": "GitHub Actions",
             "icon_emoji": ":github:",
-            "text": "${{ steps.test-results.outputs.failed > 0 && '🔴 CYPRESS TESTS FAILED' || '✅ CYPRESS TESTS PASSED' }}\nEnvironment: ${{ env.CYPRESS_APP_URL || 'Staging' }}\nBranch: `${{ github.ref_name }}`\n\n📊 Test Results\n✅ Passed: ${{ steps.test-results.outputs.passed || 0 }}\n❌ Failed: ${{ steps.test-results.outputs.failed || 0 }}\n📝 Total: ${{ steps.test-results.outputs.total || 0 }}\n\n*Console Errors*\n• Total: ${{ steps.console-errors.outputs.total }}\n\n*AI Model Response Times*\n• Claude 3 Opus: ${{ steps.response-time.outputs.claude_time }}\n• GPT-5: ${{ steps.response-time.outputs.gpt5_time }}\n• GPT-4.1: ${{ steps.response-time.outputs.gpt41_time }}\n\n<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|View Full Report> 📋"
+            "text": "${{ steps.test-results.outputs.failed > 0 && '🔴 CYPRESS TESTS FAILED' || '✅ CYPRESS TESTS PASSED' }}\nEnvironment: ${{ env.CYPRESS_APP_URL || 'Staging' }}\nBranch: `${{ github.ref_name }}`\n\n📊 Test Results\n✅ Passed: ${{ steps.test-results.outputs.passed || 0 }}\n❌ Failed: ${{ steps.test-results.outputs.failed || 0 }}\n📝 Total: ${{ steps.test-results.outputs.total || 0 }}\n\n🐛 Console Errors\n• Total: ${{ steps.console-errors.outputs.total }}\n\n🤖 AI Model Response Times\n• ${{ steps.response-time.outputs.model1_name }}: ${{ steps.response-time.outputs.model1_time }} 🧠\n• ${{ steps.response-time.outputs.model2_name }}: ${{ steps.response-time.outputs.model2_time }} 🤖\n• ${{ steps.response-time.outputs.model3_name }}: ${{ steps.response-time.outputs.model3_time }} ⚡\n\n<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|View Full Report> 📋"
             }
       env:
         SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
