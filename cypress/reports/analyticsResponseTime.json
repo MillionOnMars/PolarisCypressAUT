@@ -1,0 +1,12 @@
+[
+  {
+    "textModel": "GPT-4.1",
+    "ResponseTime": "15.05 secs.",
+    "questionType": "Analytics"
+  },
+  {
+    "textModel": "claude-3-5-sonnet",
+    "ResponseTime": "3.44 secs.",
+    "questionType": "Analytics"
+  }
+]
