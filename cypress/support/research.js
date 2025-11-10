@@ -31,9 +31,42 @@ const mathQuestions = [
     { question: 'What is the currency of Philippines?', answer: 'Peso' }
 ];
 
+const analyticsQuestions = [
+    { 
+        question: 'How many points from 6/10/2024 - 3/26/2025 were purchased?', 
+        answer: '75 points',
+        category: 'Points'
+    },
+    { 
+        question: 'How many used inquiries for year 3/27/2025 - 6/30/2026?', 
+        answer: '5',
+        category: 'Inquiries'
+    },
+    { 
+        question: 'In Briefings, how many completed in year 7/1/2023 - 6/30/2024?', 
+        answer: '56',
+        category: 'Briefings'
+    },
+    { 
+        question: 'In Market Data, The data management and analytics market valued at approximately how much in 2024?', 
+        answer: '$409.3 billion',
+        category: 'Market Data'
+    },
+    { 
+        question: 'For AI Platform > Decision Maker > Demographics, What is the Respondent Vertical Market Breakdown (N = 838) for Information technology for the date 8/25/25?', 
+        answer: '14.4%',
+        category: 'Decision Maker insights'
+    }
+];
+
 const getRandomMathQuestion = () => {
     const randomIndex = Math.floor(Math.random() * mathQuestions.length);
     return mathQuestions[randomIndex];
+};
+
+const getRandomAnalyticsQuestions = (count = 3) => {
+    const shuffled = [...analyticsQuestions].sort(() => 0.5 - Math.random());
+    return shuffled.slice(0, Math.min(count, analyticsQuestions.length));
 };
 
 const sendPrompt = (modelName) => {
@@ -89,6 +122,42 @@ const selectTextModel = (modelName) => {
 
     cy.log(`Selected text model: ${modelName}`);
 };
+
+// Update the sendAnalyticsPrompt function to remove category parameter
+const sendAnalyticsPrompt = (modelName, question, answer) => {
+    cy.xpath("//textarea[@placeholder='Type your question here']")
+        .should('be.visible', {timeout: 15000})
+        .type(`${question}{enter}`, { force: true })
+        .then(() => {
+            cy.wrap(Date.now()).as('startTime');
+            cy.log(`Analytics question submitted: "${question}", expected answer: "${answer}", using model: "${modelName}"`);
+        });
+    
+    cy.wait(3000); // Slightly longer wait for analytics questions
+    
+    cy.contains(answer, { timeout: 60000, matchCase: false }) // Longer timeout for complex analytics
+        .scrollIntoView()
+        .should('exist')
+        .should('be.visible')
+        .then(() => {
+            cy.get('@startTime').then((startTime) => {
+                const endTime = Date.now();
+                const responseTime = endTime - startTime;
+                const responseTimeSeconds = (responseTime/1000).toFixed(2);
+                cy.log(`Analytics response time: ${responseTime}ms (${responseTimeSeconds} seconds) using model: "${modelName}"`);
+                
+                // Update the response time array - removed category info
+                cy.task('updateResponseTime', {
+                    filePath: 'cypress/reports/AnalyticsResponseTime.json',
+                    modelData: {
+                        textModel: modelName,
+                        ResponseTime: `${responseTimeSeconds} secs.`,
+                        questionType: 'Analytics'
+                    }
+                });
+            });
+        });
+}
 
 const deleteNotebook = () => {
     cy.get('[data-testid="MoreVertIcon"]', { timeout: 10000})
@@ -436,6 +505,57 @@ class Research {
             });
 
             afterEach(() => {
+                deleteNotebook();
+            });
+        });
+    }
+    static createChatWithAnalyticsQuestions() {
+        describe(`Should test all text models to check ingest engine.`, () => {
+            // Initialize the response time file
+            before(() => {
+                cy.task('writeFile', {
+                    filePath: 'cypress/reports/analyticsResponseTime.json',
+                    content: []
+                });
+            });
+
+            textModels.forEach((model, modelIndex) => {
+                it(`Should test ${model} model with 3 random analytics questions.`, () => {
+                    openAI();
+                    selectTextModel(model);
+                    
+                    // Get 3 random analytics questions for this model
+                    const randomQuestions = getRandomAnalyticsQuestions(3);
+                    
+                    randomQuestions.forEach((questionData, questionIndex) => {
+                        cy.log(`Testing question ${questionIndex + 1}/3 for model ${model}`);
+                        
+                        sendAnalyticsPrompt(
+                            model, 
+                            questionData.question, 
+                            questionData.answer
+                            // Removed category parameter
+                        );
+                        
+                        // Wait between questions (except last one)
+                        if (questionIndex < randomQuestions.length - 1) {
+                            cy.wait(2000);
+                            // Clear the textarea for next question
+                            cy.xpath("//textarea[@placeholder='Type your question here']")
+                                .clear();
+                        }
+                    });
+                    
+                    // Clean up between models (except last one)
+                    if (modelIndex < textModels.length - 1) {
+                        deleteNotebook();
+                        cy.wait(3000);
+                    }
+                });
+            });
+
+            // Final cleanup
+            after(() => {
                 deleteNotebook();
             });
         });

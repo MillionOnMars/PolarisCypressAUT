@@ -12,7 +12,9 @@ describe('Futurum AI operations', () => {
     });
     // Test all chat models 
     Research.createChat();
-    //test tool operations
+    // Check ingest engine with analytics questions
+    Research.createChatWithAnalyticsQuestions();
+    // Test tool operations
     Research.testAllTools();
     // Test file operations with the 'recipe' file
     Research.Files('recipe');
