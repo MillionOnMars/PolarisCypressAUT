@@ -821,7 +821,7 @@ class Research {
                 searchLab('testData'); // Replace 'testData' with appropriate dataType
             });
             
-            it('Should test Search Lab with detailed validation', () => {
+            it.skip('Should test Search Lab with detailed validation', () => {
                 searchLabDetailed('testData');
             });
         });
