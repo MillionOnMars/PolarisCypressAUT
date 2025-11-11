@@ -21,6 +21,17 @@
         "additionalAnalysts": "Mitch Ashley",
         "additionalAnalystsUrl": "https://futurumgroup.com/mitch-ashley/"
     },
+    "researchEngine": {
+        "agentName": "Test Automation Agent",
+        "agentDescription": "This is an automated test agent for research purposes",
+        "task": {
+            "researchType": "Web Scrape",
+            "title": "Automation Test Research Task",
+            "description": "This is an automated test task for web scraping research",
+            "targetUrl": "https://futurumgroup.com",
+            "prompt": "What are the latest technology trends?"
+        }
+    },
     "practiceAreas": {
         "subscribed": [
             "AI Platforms",
