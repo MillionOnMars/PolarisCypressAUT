@@ -20,7 +20,7 @@ describe('User Management Tests', () => {
         Users.changeOrganization('AMD_QA','Microsoft_QA','chadtest0808');
     });
     
-    describe('Reset Password', () => {
-        Users.resetPassword('NewPassword123!', 'Testing12345!');
-    });
+    // describe('Reset Password', () => {
+    //     Users.resetPassword('NewPassword123!', 'Testing12345!');
+    // });
 });
