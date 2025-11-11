@@ -64,18 +64,19 @@ const removeSubscriptionPlan = (subscriptionName) => {
 const addSubscriptionPlan = (subscriptionName) => {
     navigateToSubscriptionPage();
     
-    // verify checkbox is checked (even if text has strikethrough)
-    cy.get('.MuiCheckbox-root.Mui-checked', { timeout: TIMEOUT })
-        .contains(subscriptionName)
-        .should('exist');
-    
     //Add new subscription
     cy.contains('Add Subscription', { timeout: TIMEOUT })
         .scrollIntoView()
         .should('exist')
         .should('be.visible')
         .click({ force: true });
-    
+
+    //Verify subscription is added
+    cy.contains(subscriptionName, { timeout: TIMEOUT })
+        .scrollIntoView()
+        .should('exist')
+        .should('be.visible');
+
     saveChanges();
 };
 const changeOrganization = (newOrgName, username) => {
@@ -145,18 +146,22 @@ const resetPassword = (newPassword, originalPassword) => {
         .should('be.visible')
         .click({ force: true });
     
-    // Verify success message
+    // Verify success message appears
     cy.contains('Password changed successfully', { timeout: TIMEOUT })
         .should('exist')
         .should('be.visible');
+    
+    // Wait for success message to disappear
+    cy.contains('Password changed successfully', { timeout: TIMEOUT })
+        .should('not.exist');
 };
 
 const changePassword = (newPassword, originalPassword) => {
     // Change to new password
-    resetPassword(newPassword,originalPassword);
+    resetPassword(newPassword, originalPassword);
     
     // Revert back to original password
-    resetPassword(originalPassword,newPassword);
+    resetPassword(originalPassword, newPassword);
 };
 
 
