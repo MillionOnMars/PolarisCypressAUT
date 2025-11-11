@@ -64,18 +64,19 @@ const removeSubscriptionPlan = (subscriptionName) => {
 const addSubscriptionPlan = (subscriptionName) => {
     navigateToSubscriptionPage();
     
-    // verify checkbox is checked (even if text has strikethrough)
-    cy.get('.MuiCheckbox-root.Mui-checked', { timeout: TIMEOUT })
-        .contains(subscriptionName)
-        .should('exist');
-    
     //Add new subscription
     cy.contains('Add Subscription', { timeout: TIMEOUT })
         .scrollIntoView()
         .should('exist')
         .should('be.visible')
         .click({ force: true });
-    
+
+    //Verify subscription is added
+    cy.contains(subscriptionName, { timeout: TIMEOUT })
+        .scrollIntoView()
+        .should('exist')
+        .should('be.visible');
+
     saveChanges();
 };
 const changeOrganization = (newOrgName, username) => {
@@ -111,13 +112,20 @@ const changeOrganization = (newOrgName, username) => {
     saveChanges();
 };
 
-const resetPassword = (newPassword) => {
-    cy.contains('Reset Password', { timeout: TIMEOUT })
+const resetPassword = (newPassword, originalPassword) => {
+    cy.contains('Change Password', { timeout: TIMEOUT })
         .scrollIntoView()
         .should('exist')
         .should('be.visible')
         .click({ force: true });
-    
+
+    //Enter current password
+    cy.get('[data-testid="change-password-current-input"]', { timeout: TIMEOUT })
+        .should('exist')
+        .should('be.visible')
+        .clear()
+        .type(originalPassword);
+
     // Enter new password
     cy.get('input[name="newPassword"][type="password"]', { timeout: TIMEOUT })
         .should('exist')
@@ -126,30 +134,34 @@ const resetPassword = (newPassword) => {
         .type(newPassword);
     
     // Confirm new password
-    cy.get('input[name="confirmNewPassword"][type="password"]', { timeout: TIMEOUT })
+    cy.get('input[name="confirmPassword"][type="password"]', { timeout: TIMEOUT })
         .should('exist')
         .should('be.visible')
         .clear()
         .type(newPassword);
     
     // Update password
-    cy.contains('button', 'Update Password', { timeout: TIMEOUT })
+    cy.get('[data-testid="change-password-submit-button"]', { timeout: TIMEOUT })
         .should('exist')
         .should('be.visible')
         .click({ force: true });
     
-    // Verify success message
-    cy.contains('Password updated successfully', { timeout: TIMEOUT })
+    // Verify success message appears
+    cy.contains('Password changed successfully', { timeout: TIMEOUT })
         .should('exist')
         .should('be.visible');
+    
+    // Wait for success message to disappear
+    cy.contains('Password changed successfully', { timeout: TIMEOUT })
+        .should('not.exist');
 };
 
 const changePassword = (newPassword, originalPassword) => {
     // Change to new password
-    resetPassword(newPassword);
+    resetPassword(newPassword, originalPassword);
     
     // Revert back to original password
-    resetPassword(originalPassword);
+    resetPassword(originalPassword, newPassword);
 };
 
 

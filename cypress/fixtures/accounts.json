@@ -34,6 +34,12 @@
             "email": "chad+test0923@milliononmars.com",
             "password": "Testing12345!",
             "fullname": "chadtest0923"
+        },
+        "resetPasswordUser": {
+            "username": "chadtest09231",
+            "email": "chad+0923test@milliononmars.com",
+            "password": "Testing12345!",
+            "fullname": "chadtest09231"
         }
     }
 }
