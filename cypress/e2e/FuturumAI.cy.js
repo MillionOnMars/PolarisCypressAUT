@@ -20,4 +20,6 @@ describe('Futurum AI operations', () => {
     Research.Files('recipe');
     // Add tags to the notebook
     Research.manageTags();
+    // Search Lab
+    Research.testSearchLab();
 });

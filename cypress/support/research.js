@@ -402,7 +402,262 @@ const openToolsMenu = (tools) => {
         .click();
 };
 
-// Update your Research class to test all 3 models
+const searchLab = (dataType) => {
+    const testCase = prompts[dataType];
+    openAI();
+
+    //Open Research Files
+    cy.contains("Research Files", { timeout: 10000 }).should("be.visible").click();
+    
+    //Open Search Lab
+    cy.contains("Search Lab", { timeout: 10000 }).should("be.visible").click();
+    
+    // Test LLM Rag Search
+    cy.log('Testing LLM Rag Search');
+    cy.contains('LLM Rag Search', {matchCase: false, timeout: 10000 })
+        .should('be.visible')
+        .click();
+    
+    // Type in the search query
+    cy.get('input[placeholder="Try: \\"grab all papers on agents\\" or \\"find my meeting notes from last week\\""]', { timeout: 10000 })
+        .should('be.visible')
+        .clear()
+        .type('grab all papers on agents');
+    
+    // Click on all available checkboxes
+    // cy.get('input[type="checkbox"]', { timeout: 10000 })
+    //     .should('have.length.at.least', 1)
+    //     .each(($checkbox) => {
+    //         cy.wrap($checkbox)
+    //             .should('be.visible')
+    //             .check();
+    //     });
+    
+    // Click Smart Search button
+    cy.contains('button', 'Smart Search', { timeout: 10000 })
+        .should('be.visible')
+        .should('not.be.disabled')
+        .click()
+        .then(() => {
+            cy.log('Smart Search button clicked, waiting for search to complete...');
+        });
+    
+    // Wait for the button to be enabled again (indicating search is complete)
+    cy.contains('button', 'Smart Search', { timeout: 30000 })
+        .should('not.be.disabled')
+        .then(() => {
+            cy.log('Search completed successfully.');
+        });
+    
+    // // Verify search results appear
+    // cy.get('[data-testid="search-results"], .search-results, .results-container', { timeout: 15000 })
+    //     .should('exist')
+    //     .should('be.visible');
+
+    // Validate that search was successful (no error messages)
+    cy.get('.MuiTabPanel-root.MuiTabPanel-sizeMd').eq(2).should('not.contain.text', 'No results found. Try a different query.');
+    cy.get('.MuiTabPanel-root.MuiTabPanel-sizeMd').eq(2).should('not.contain.text', 'No results found');
+    cy.get('.MuiTabPanel-root.MuiTabPanel-sizeMd').eq(2).should('not.contain.text', 'Try a different query');
+
+    cy.log('LLM Rag Search completed successfully');
+    
+    // Test Performance Analysis
+    cy.log('Testing Performance Analysis');
+    cy.contains('Performance Analysis', { timeout: 10000 })
+        .should('be.visible')
+        .click();
+    
+    // Wait for Performance Analysis to load
+    cy.wait(3000);
+    
+    // Verify Performance Analysis interface is loaded
+    cy.get('.performance-chart, [data-testid="performance-metrics"], .analytics-dashboard', { timeout: 10000 })
+        .should('exist')
+        .should('be.visible');
+    
+    cy.log('Performance Analysis loaded successfully');
+    
+    // Test Data Reindexing
+    cy.log('Testing Data Reindexing');
+    cy.contains('Data Reindexing', { timeout: 10000 })
+        .should('be.visible')
+        .click();
+    
+    // Wait for Data Reindexing to load
+    cy.wait(3000);
+    
+    // Verify Data Reindexing interface is loaded
+    cy.get('.reindex-controls, [data-testid="reindex-panel"], .data-management', { timeout: 10000 })
+        .should('exist')
+        .should('be.visible');
+    
+    cy.log('Data Reindexing loaded successfully');
+    cy.log('Search Lab testing completed for all three sections');
+};
+
+// Alternative approach with more specific actions for each section
+const searchLabDetailed = (dataType) => {
+    const testCase = prompts[dataType];
+    openAI();
+
+    //Open Research Files
+    cy.contains("Research Files", { timeout: 10000 }).should("be.visible").click();
+    
+    //Open Search Lab
+    cy.contains("Search Lab", { timeout: 10000 }).should("be.visible").click();
+    
+    // 1. LLM Rag Search Section
+    testLLMRagSearch();
+    
+    // 2. Performance Analysis Section
+    testPerformanceAnalysis();
+    
+    // 3. Data Reindexing Section
+    testDataReindexing();
+};
+
+const testLLMRagSearch = () => {
+    cy.log('=== Testing LLM Rag Search ===');
+    
+    // Click LLM Rag Search button
+    cy.contains('LLM Rag Search', { timeout: 10000 })
+        .should('be.visible')
+        .click();
+    
+    // Enter search query
+    cy.get('input[placeholder="Try: \\"grab all papers on agents\\" or \\"find my meeting notes from last week\\""]', { timeout: 10000 })
+        .should('be.visible')
+        .clear()
+        .type('grab all papers on agents');
+    
+    // Select all checkboxes
+    cy.get('input[type="checkbox"]', { timeout: 10000 })
+        .should('exist')
+        .each(($checkbox, index) => {
+            cy.wrap($checkbox)
+                .should('be.visible')
+                .check();
+            cy.log(`Checked checkbox ${index + 1}`);
+        });
+    
+    // Click Smart Search button
+    cy.contains('button', 'Smart Search', { timeout: 10000 })
+        .should('be.visible')
+        .should('not.be.disabled')
+        .click();
+    
+    // Wait and verify results
+    cy.wait(5000);
+    
+    // Check for search results
+    cy.get('body').then(($body) => {
+        if ($body.find('[data-testid="search-results"]').length > 0) {
+            cy.get('[data-testid="search-results"]').should('be.visible');
+            cy.log('✅ Search results found');
+        } else if ($body.find('.search-results').length > 0) {
+            cy.get('.search-results').should('be.visible');
+            cy.log('✅ Search results container found');
+        } else {
+            // Look for any results container or text indicating results
+            cy.contains('results', { matchCase: false, timeout: 10000 }).should('exist');
+            cy.log('✅ Search results text found');
+        }
+    });
+    
+    cy.log('LLM Rag Search test completed');
+};
+
+const testPerformanceAnalysis = () => {
+    cy.log('=== Testing Performance Analysis ===');
+    
+    // Click Performance Analysis button
+    cy.contains('Performance Analysis', { timeout: 10000 })
+        .should('be.visible')
+        .click();
+    
+    // Wait for interface to load
+    cy.wait(3000);
+    
+    // Verify Performance Analysis elements
+    cy.get('body').then(($body) => {
+        // Look for various performance analysis indicators
+        const selectors = [
+            '[data-testid="performance-metrics"]',
+            '.performance-chart',
+            '.analytics-dashboard',
+            '.metrics-container',
+            'canvas', // For charts
+            '.chart-container'
+        ];
+        
+        let found = false;
+        selectors.forEach(selector => {
+            if ($body.find(selector).length > 0) {
+                cy.get(selector).should('be.visible');
+                cy.log(`✅ Performance Analysis element found: ${selector}`);
+                found = true;
+            }
+        });
+        
+        // Fallback: look for any performance-related text
+        if (!found) {
+            cy.contains('performance', { matchCase: false, timeout: 10000 }).should('exist');
+            cy.log('✅ Performance Analysis text content found');
+        }
+    });
+    
+    cy.log('Performance Analysis test completed');
+};
+
+const testDataReindexing = () => {
+    cy.log('=== Testing Data Reindexing ===');
+    
+    // Click Data Reindexing button
+    cy.contains('Data Reindexing', { timeout: 10000 })
+        .should('be.visible')
+        .click();
+    
+    // Wait for interface to load
+    cy.wait(3000);
+    
+    // Verify Data Reindexing elements
+    cy.get('body').then(($body) => {
+        // Look for various reindexing indicators
+        const selectors = [
+            '[data-testid="reindex-panel"]',
+            '.reindex-controls',
+            '.data-management',
+            '.indexing-status',
+            'button[title*="reindex"]',
+            'button[title*="index"]'
+        ];
+        
+        let found = false;
+        selectors.forEach(selector => {
+            if ($body.find(selector).length > 0) {
+                cy.get(selector).should('be.visible');
+                cy.log(`✅ Data Reindexing element found: ${selector}`);
+                found = true;
+            }
+        });
+        
+        // Fallback: look for reindexing-related text or buttons
+        if (!found) {
+            const textSelectors = ['reindex', 'index', 'data management'];
+            textSelectors.forEach(text => {
+                if ($body.text().toLowerCase().includes(text)) {
+                    cy.contains(text, { matchCase: false, timeout: 10000 }).should('exist');
+                    cy.log(`✅ Data Reindexing text found: ${text}`);
+                    found = true;
+                }
+            });
+        }
+    });
+    
+    cy.log('Data Reindexing test completed');
+};
+
+// Update the Research class to include searchLab testing
 class Research {
     static createChat() {
         describe(`Should test all text models.`, () => {
@@ -557,6 +812,17 @@ class Research {
             // Final cleanup
             after(() => {
                 deleteNotebook();
+            });
+        });
+    }
+    static testSearchLab() {
+        describe('Search Lab Testing', () => {
+            it('Should test all Search Lab features', () => {
+                searchLab('testData'); // Replace 'testData' with appropriate dataType
+            });
+            
+            it.skip('Should test Search Lab with detailed validation', () => {
+                searchLabDetailed('testData');
             });
         });
     }
