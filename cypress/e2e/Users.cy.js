@@ -21,6 +21,6 @@ describe('User Management Tests', () => {
     });
     
     describe('Reset Password', () => {
-        Users.resetPassword('NewPassword123', 'Testing12345!');
+        Users.resetPassword('NewPassword123!', 'Testing12345!');
     });
 });
