@@ -38,7 +38,22 @@ jobs:
     - name: Install dependencies
       run: npm install
 
-    - name: Run Cypress tests
+    - name: 🔍 Analyze Selectors Quality
+      id: analyze-selectors
+      if: always()
+      run: |
+        echo "Running selector analysis..."
+        npm run analyze:selectors
+        
+        # Check if analysis completed successfully
+        if [ $? -eq 0 ]; then
+          echo "✅ Selector analysis completed successfully"
+        else
+          echo "⚠️ Selector analysis encountered issues"
+        fi
+      continue-on-error: true
+
+    - name: 🚀 Launch Cypress Test Suite 🧪
       id: cypress
       uses: cypress-io/github-action@v5
       with:
@@ -57,42 +72,48 @@ jobs:
         CYPRESS_APP_URL: ${{ secrets.CYPRESS_APP_URL }}
       continue-on-error: true
 
-    - name: Parse test results
+    - name: Process test results
       id: test-results
       if: always()
       run: |
-        # Parse results.json created by cypress.config.js
         if [ -f "cypress/reports/results.json" ]; then
-          TOTAL=$(jq -r '.totalTests' cypress/reports/results.json)
-          PASSED=$(jq -r '.totalPassed' cypress/reports/results.json)
-          FAILED=$(jq -r '.totalFailed' cypress/reports/results.json)
-          PENDING=$(jq -r '.totalPending' cypress/reports/results.json)
-          SKIPPED=$(jq -r '.totalSkipped' cypress/reports/results.json)
+          # Extract test counts including skipped
+          TOTAL=$(jq '.totalTests' cypress/reports/results.json)
+          PASSING=$(jq '.totalPassed' cypress/reports/results.json)
+          FAILING=$(jq '.totalFailed' cypress/reports/results.json)
+          SKIPPED=$(jq '(.totalSkipped + .totalPending)' cypress/reports/results.json)
           
-          echo "total=$TOTAL" >> "$GITHUB_OUTPUT"
-          echo "passed=$PASSED" >> "$GITHUB_OUTPUT"
-          echo "failed=$FAILED" >> "$GITHUB_OUTPUT"
-          echo "pending=$PENDING" >> "$GITHUB_OUTPUT"
-          echo "skipped=$SKIPPED" >> "$GITHUB_OUTPUT"
+          echo "Found test results:"
+          echo "Total: $TOTAL"
+          echo "Passing: $PASSING"
+          echo "Failing: $FAILING"
+          echo "Skipped: $SKIPPED"
           
-          # Determine overall status
-          if [ "$FAILED" -gt 0 ]; then
-            echo "status=failed" >> "$GITHUB_OUTPUT"
-          else
-            echo "status=passed" >> "$GITHUB_OUTPUT"
-          fi
-          
-          echo "Test Results: $PASSED passed, $FAILED failed, $PENDING pending, $SKIPPED skipped, $TOTAL total"
+          # Set outputs
+          echo "total=$TOTAL" >> $GITHUB_OUTPUT
+          echo "passing=$PASSING" >> $GITHUB_OUTPUT
+          echo "failing=$FAILING" >> $GITHUB_OUTPUT
+          echo "skipped=$SKIPPED" >> $GITHUB_OUTPUT
         else
-          echo "total=0" >> "$GITHUB_OUTPUT"
-          echo "passed=0" >> "$GITHUB_OUTPUT"
-          echo "failed=0" >> "$GITHUB_OUTPUT"
-          echo "pending=0" >> "$GITHUB_OUTPUT"
-          echo "skipped=0" >> "$GITHUB_OUTPUT"
-          echo "status=unknown" >> "$GITHUB_OUTPUT"
-          echo "No results.json found"
+          echo "No results.json file found"
+          echo "total=0" >> $GITHUB_OUTPUT
+          echo "passing=0" >> $GITHUB_OUTPUT
+          echo "failing=0" >> $GITHUB_OUTPUT
+          echo "skipped=0" >> $GITHUB_OUTPUT
         fi
 
+    - name: Display test results
+      if: always()
+      run: |
+        echo "📊 Final Test Results:"
+        echo "┌────────────────────────────────┐"
+        echo "│ Total Tests: ${{ steps.test-results.outputs.total }}"
+        echo "│ Passing: ${{ steps.test-results.outputs.passing }}"
+        echo "│ Failing: ${{ steps.test-results.outputs.failing }}"
+        echo "│ Skipped: ${{ steps.test-results.outputs.skipped }}"
+        echo "└────────────────────────────────┘"
+
+    # Add step to get console errors count
     - name: Get console errors
       id: console-errors
       if: always()
@@ -106,67 +127,58 @@ jobs:
           echo "No consoleErrors.json found"
         fi
 
-    - name: Get response time
-      id: response-time
+    - name: Get quality issues
+      id: selector-quality
       if: always()
       run: |
-        if [ -f "cypress/reports/responseTime.json" ]; then
-          # Check if it's an array format (new) or object format (old)
-          if jq -e 'type == "array"' cypress/reports/responseTime.json > /dev/null; then
-            # New array format with multiple models - get all models dynamically
-            MODELS=$(jq -r '.[].textModel' cypress/reports/responseTime.json | tr '\n' ',' | sed 's/,$//')
-            MODEL_COUNT=$(jq '. | length' cypress/reports/responseTime.json)
-            
-            # Create dynamic variables for each model
-            MODEL_1_NAME=$(jq -r '.[0].textModel // "N/A"' cypress/reports/responseTime.json)
-            MODEL_1_TIME=$(jq -r '.[0].ResponseTime // "N/A"' cypress/reports/responseTime.json)
-            
-            MODEL_2_NAME=$(jq -r '.[1].textModel // "N/A"' cypress/reports/responseTime.json)
-            MODEL_2_TIME=$(jq -r '.[1].ResponseTime // "N/A"' cypress/reports/responseTime.json)
-            
-            MODEL_3_NAME=$(jq -r '.[2].textModel // "N/A"' cypress/reports/responseTime.json)
-            MODEL_3_TIME=$(jq -r '.[2].ResponseTime // "N/A"' cypress/reports/responseTime.json)
-            
-            # Output all models data
-            echo "models=$MODELS" >> "$GITHUB_OUTPUT"
-            echo "model_count=$MODEL_COUNT" >> "$GITHUB_OUTPUT"
-            echo "model1_name=$MODEL_1_NAME" >> "$GITHUB_OUTPUT"
-            echo "model1_time=$MODEL_1_TIME" >> "$GITHUB_OUTPUT"
-            echo "model2_name=$MODEL_2_NAME" >> "$GITHUB_OUTPUT"
-            echo "model2_time=$MODEL_2_TIME" >> "$GITHUB_OUTPUT"
-            echo "model3_name=$MODEL_3_NAME" >> "$GITHUB_OUTPUT"
-            echo "model3_time=$MODEL_3_TIME" >> "$GITHUB_OUTPUT"
-            echo "format=array" >> "$GITHUB_OUTPUT"
-            
-            # Create formatted response times for Slack
-            FORMATTED_TIMES=""
-            for i in $(seq 0 $((MODEL_COUNT-1))); do
-              MODEL_NAME=$(jq -r ".[$i].textModel" cypress/reports/responseTime.json)
-              MODEL_TIME=$(jq -r ".[$i].ResponseTime" cypress/reports/responseTime.json)
-              FORMATTED_TIMES="${FORMATTED_TIMES}• ${MODEL_NAME}: ${MODEL_TIME}\n"
-            done
-            echo "formatted_times=$FORMATTED_TIMES" >> "$GITHUB_OUTPUT"
-            
-            echo "Found response times for models: $MODELS"
-          else
-            # Old single object format (fallback)
-            RESPONSE_TIME=$(jq -r '.responseTime' cypress/reports/responseTime.json)
-            RESPONSE_TIME_SEC=$(jq -r '.responseTimeSeconds' cypress/reports/responseTime.json)
-            echo "ms=$RESPONSE_TIME" >> "$GITHUB_OUTPUT"
-            echo "seconds=$RESPONSE_TIME_SEC" >> "$GITHUB_OUTPUT"
-            echo "format=object" >> "$GITHUB_OUTPUT"
-            echo "Found single response time: ${RESPONSE_TIME}ms (${RESPONSE_TIME_SEC}s)"
-          fi
+        if [ -f "cypress/reports/testQuality.json" ]; then
+          TOTAL_ISSUES=$(jq -r '.totalIssues' cypress/reports/testQuality.json)
+          
+          # By Category
+          SELECTOR_ISSUES=$(jq -r '.summary.selectorIssues' cypress/reports/testQuality.json)
+          DATA_VALIDATION=$(jq -r '.summary.dataValidation' cypress/reports/testQuality.json)
+          VISIBILITY_ISSUES=$(jq -r '.summary.visibilityIssues' cypress/reports/testQuality.json)
+          PERFORMANCE=$(jq -r '.summary.performance' cypress/reports/testQuality.json)
+          ASSERTION_ERRORS=$(jq -r '.summary.assertionErrors' cypress/reports/testQuality.json)
+          
+          # Extract top 3 specific issues for Slack (prioritize high severity)
+          SPECIFIC_ISSUES=$(jq -r '
+            [.issues[] | select(.severity == "high")] as $high |
+            [.issues[] | select(.severity == "medium")] as $medium |
+            ($high + $medium)[0:3] |
+            map("⚠️ \(.test) -> \(.category)") |
+            join("\n")
+          ' cypress/reports/testQuality.json)
+          
+          # Escape newlines for GitHub Actions output
+          SPECIFIC_ISSUES="${SPECIFIC_ISSUES//$'\n'/'\n'}"
+          
+          echo "total=$TOTAL_ISSUES" >> "$GITHUB_OUTPUT"
+          
+          # By Category
+          echo "selectorIssues=$SELECTOR_ISSUES" >> "$GITHUB_OUTPUT"
+          echo "dataValidation=$DATA_VALIDATION" >> "$GITHUB_OUTPUT"
+          echo "visibilityIssues=$VISIBILITY_ISSUES" >> "$GITHUB_OUTPUT"
+          echo "performance=$PERFORMANCE" >> "$GITHUB_OUTPUT"
+          echo "assertionErrors=$ASSERTION_ERRORS" >> "$GITHUB_OUTPUT"
+          echo "examples=$SPECIFIC_ISSUES" >> "$GITHUB_OUTPUT"
+
+          echo "Found $TOTAL_ISSUES test quality issues"
+          echo "  By Category:"
+          echo "    - Selector Issues: $SELECTOR_ISSUES"
+          echo "    - Data Validation: $DATA_VALIDATION"
+          echo "    - Visibility Issues: $VISIBILITY_ISSUES"
+          echo "    - Performance: $PERFORMANCE"
+          echo "    - Assertion Errors: $ASSERTION_ERRORS"
         else
-          echo "model1_name=N/A" >> "$GITHUB_OUTPUT"
-          echo "model1_time=N/A" >> "$GITHUB_OUTPUT"
-          echo "model2_name=N/A" >> "$GITHUB_OUTPUT"
-          echo "model2_time=N/A" >> "$GITHUB_OUTPUT"
-          echo "model3_name=N/A" >> "$GITHUB_OUTPUT"
-          echo "model3_time=N/A" >> "$GITHUB_OUTPUT"
-          echo "formatted_times=• No models tested" >> "$GITHUB_OUTPUT"
-          echo "format=none" >> "$GITHUB_OUTPUT"
-          echo "No responseTime.json found"
+          echo "total=0" >> "$GITHUB_OUTPUT"
+          echo "selectorIssues=0" >> "$GITHUB_OUTPUT"
+          echo "dataValidation=0" >> "$GITHUB_OUTPUT"
+          echo "visibilityIssues=0" >> "$GITHUB_OUTPUT"
+          echo "performance=0" >> "$GITHUB_OUTPUT"
+          echo "assertionErrors=0" >> "$GITHUB_OUTPUT"
+          echo "examples=" >> "$GITHUB_OUTPUT"
+          echo "No testQuality.json found"
         fi
 
     - name: Upload test results
@@ -181,21 +193,165 @@ jobs:
           cypress/videos/**/*.mp4
           cypress/fixtures/credits.json
           cypress/reports/consoleErrors.json
+          cypress/reports/testQuality.json
           cypress/reports/results.json
-          cypress/reports/responseTime.json
+          cypress/reports/selectorAnalysis.json
         if-no-files-found: warn
         retention-days: 14
 
-    - name: Send Slack notification
+    - name: Get credits data
+      id: credits
       if: always()
+      run: |
+        if [ -f "cypress/fixtures/credits.json" ]; then
+          # Format credits data including RepRate using jq
+          CREDITS=$(jq -r 'map("\(.textModel), credits: \(.Credits), avgtime: \(.ResponseTime), success rate: \(.RepRate)") | join("\n")' cypress/fixtures/credits.json)
+          # Escape newlines for GitHub Actions output
+          CREDITS="${CREDITS//$'\n'/'\n'}"
+          echo "credits=$CREDITS" >> $GITHUB_OUTPUT
+          echo "Found credits data:"
+          echo "$CREDITS" 
+        else
+          echo "No credits.json file found"
+          echo "credits=No credits data available" >> $GITHUB_OUTPUT
+        fi
+
+    - name: Get selector analysis data
+      id: selector-analysis
+      if: always()
+      run: |
+        if [ -f "cypress/reports/selectorAnalysis.json" ]; then
+          # Extract selector analysis summary
+          TOTAL_SELECTORS=$(jq -r '.summary.totalSelectors // 0' cypress/reports/selectorAnalysis.json)
+          FRAGILE_SELECTORS=$(jq -r '.summary.fragileSelectors // 0' cypress/reports/selectorAnalysis.json)
+          ROBUST_SELECTORS=$(jq -r '.summary.robustSelectors // 0' cypress/reports/selectorAnalysis.json)
+          SCORE=$(jq -r '.summary.overallScore // "N/A"' cypress/reports/selectorAnalysis.json)
+          
+          # Get top fragile selectors for display
+          TOP_FRAGILE=$(jq -r '.fragileSelectors[0:3] | map("• \(.selector) (Score: \(.score))") | join("\n")' cypress/reports/selectorAnalysis.json)
+          TOP_FRAGILE="${TOP_FRAGILE//$'\n'/'\n'}"
+          
+          echo "totalSelectors=$TOTAL_SELECTORS" >> "$GITHUB_OUTPUT"
+          echo "fragileSelectors=$FRAGILE_SELECTORS" >> "$GITHUB_OUTPUT"
+          echo "robustSelectors=$ROBUST_SELECTORS" >> "$GITHUB_OUTPUT"
+          echo "score=$SCORE" >> "$GITHUB_OUTPUT"
+          echo "topFragile=$TOP_FRAGILE" >> "$GITHUB_OUTPUT"
+          
+          echo "Selector Analysis Summary:"
+          echo "  Total Selectors: $TOTAL_SELECTORS"
+          echo "  Fragile Selectors: $FRAGILE_SELECTORS"
+          echo "  Robust Selectors: $ROBUST_SELECTORS"
+          echo "  Overall Score: $SCORE"
+        else
+          echo "totalSelectors=0" >> "$GITHUB_OUTPUT"
+          echo "fragileSelectors=0" >> "$GITHUB_OUTPUT"
+          echo "robustSelectors=0" >> "$GITHUB_OUTPUT"
+          echo "score=N/A" >> "$GITHUB_OUTPUT"
+          echo "topFragile=No analysis data" >> "$GITHUB_OUTPUT"
+          echo "No selectorAnalysis.json found"
+        fi
+
+    - name: Send Slack notification
+      if: always() && !cancelled()
       uses: slackapi/slack-github-action@v1.24.0
       with:
         payload: |
           {
             "username": "GitHub Actions",
             "icon_emoji": ":github:",
-            "text": "${{ steps.test-results.outputs.failed > 0 && '🔴 CYPRESS TESTS FAILED' || '✅ CYPRESS TESTS PASSED' }}\nEnvironment: ${{ env.CYPRESS_APP_URL || 'Staging' }}\nBranch: `${{ github.ref_name }}`\n\n📊 Test Results\n✅ Passed: ${{ steps.test-results.outputs.passed || 0 }}\n❌ Failed: ${{ steps.test-results.outputs.failed || 0 }}\n📝 Total: ${{ steps.test-results.outputs.total || 0 }}\n\n*Console Errors*\n• Total: ${{ steps.console-errors.outputs.total }}\n\n*AI Model Response Times*\n• ${{ steps.response-time.outputs.model1_name }}: ${{ steps.response-time.outputs.model1_time }} \n• ${{ steps.response-time.outputs.model2_name }}: ${{ steps.response-time.outputs.model2_time }} \n• ${{ steps.response-time.outputs.model3_name }}: ${{ steps.response-time.outputs.model3_time }} \n\n<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|View Full Report> 📋"
-            }
+            "text": "${{ steps.test-results.outputs.failing > 0 && '🔴 CYPRESS TESTS FAILED' || '✅ CYPRESS TESTS PASSED' }}\nEnvironment: ${{ env.CYPRESS_APP_URL || 'Staging' }}\nBranch: `${{ github.ref_name }}`\n\n📊 Test Results\n✅ Passed: ${{ steps.test-results.outputs.passing }}\n❌ Failed: ${{ steps.test-results.outputs.failing }}\n⏭️ Skipped: ${{ steps.test-results.outputs.skipped }}\n📝 Total: ${{ steps.test-results.outputs.total }}\n\n${{ steps.credits.outputs.credits }}\n\n${{ steps.console-errors.outputs.total > 0 && format('⚠️ Console Errors: {0} found', steps.console-errors.outputs.total) || '✨ No console errors detected' }}\n\n${{ steps.selector-quality.outputs.total > 0 && format('🔍 Test Quality Issues: {0} found\n  📍 Selector Issues: {1}\n  📊 Data Validation: {2}\n  👁️ Visibility Issues: {3}\n  ⚡ Performance: {4}\n  ❗ Assertion Errors: {5}\n\nTop Issues:\n{6}', steps.selector-quality.outputs.total, steps.selector-quality.outputs.selectorIssues, steps.selector-quality.outputs.dataValidation, steps.selector-quality.outputs.visibilityIssues, steps.selector-quality.outputs.performance, steps.selector-quality.outputs.assertionErrors, steps.selector-quality.outputs.examples) || '✨ No test quality issues' }}\n\n🎯 Selector Analysis\n📊 Total Selectors: ${{ steps.selector-analysis.outputs.totalSelectors }}\n🔴 Fragile: ${{ steps.selector-analysis.outputs.fragileSelectors }}\n🟢 Robust: ${{ steps.selector-analysis.outputs.robustSelectors }}\n⭐ Score: ${{ steps.selector-analysis.outputs.score }}\n${{ steps.selector-analysis.outputs.fragileSelectors > 0 && format('\n🚨 Top Fragile Selectors:\n{0}', steps.selector-analysis.outputs.topFragile) || '' }}\n\n<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|View Full Report> 📋"
+          }
       env:
         SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
 
+    - name: Check for slow responses in credits.json
+      id: slow
+      if: always()
+      run: |
+        SLOW=false
+        if [ -f "cypress/fixtures/credits.json" ]; then
+          # Extract and check if any ResponseTime > 15, handling null values
+          SLOW_COUNT=$(jq '[.[] | select(.ResponseTime != null) | .ResponseTime | sub(" secs.";"") | tonumber | select(. > 15)] | length' cypress/fixtures/credits.json)
+          
+          echo "Found $SLOW_COUNT slow responses (>15 sec)"
+          
+          if [ "$SLOW_COUNT" -gt 0 ]; then
+            SLOW=true
+            echo "There are $SLOW_COUNT slow responses (>15 sec) in credits.json"
+          else
+            echo "No slow responses found"
+          fi
+        else
+          echo "No credits.json file found"
+        fi
+        echo "slow=$SLOW" >> $GITHUB_OUTPUT
+
+    - name: Send Slack notification for slow responses
+      if: steps.slow.outputs.slow == 'true'
+      uses: slackapi/slack-github-action@v1.24.0
+      with:
+        payload: |
+          {
+            "text": "⚠️ One or more text model responses took more than 15 seconds! Please investigate.<#C08QZ42L9KM|b4m-automation-results>."
+          }
+      env:
+        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL_SLOW_RESPONSES}}
+
+    - name: Check for high credit usage
+      id: highcredits
+      if: always()
+      run: |
+        if [ -f "cypress/fixtures/credits.json" ]; then
+          HIGH=$(jq '[.[] | select(.Credits|tonumber == 0 or .Credits|tonumber >= 20)] | length' cypress/fixtures/credits.json)
+          if [ "$HIGH" -gt 0 ]; then
+            echo "high=true" >> $GITHUB_OUTPUT
+            echo "$HIGH entries used 0 credits or 20+ credits."
+          else
+            echo "high=false" >> $GITHUB_OUTPUT
+          fi
+        else
+          echo "high=false" >> $GITHUB_OUTPUT
+        fi
+
+    - name: Send Slack notification for high credit usage
+      if: steps.highcredits.outputs.high == 'true'
+      uses: slackapi/slack-github-action@v1.24.0
+      with:
+        payload: |
+          {
+            "text": "⚠️ One or more requests used 0 credits or 20+ credits! Please investigate in <#C08QZ42L9KM|b4m-automation-results>."
+          }
+      env:
+        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL_SLOW_RESPONSES }}
+
+    - name: Check for fragile selectors
+      id: fragile-selectors
+      if: always()
+      run: |
+        if [ -f "cypress/reports/selectorAnalysis.json" ]; then
+          FRAGILE_COUNT=$(jq -r '.summary.fragileSelectors // 0' cypress/reports/selectorAnalysis.json)
+          SCORE=$(jq -r '.summary.overallScore // 0' cypress/reports/selectorAnalysis.json)
+          
+          # Convert score to number for comparison (remove % if present)
+          SCORE_NUM=$(echo "$SCORE" | sed 's/%//')
+          
+          if [ "$FRAGILE_COUNT" -gt 5 ] || [ "${SCORE_NUM%.*}" -lt 70 ]; then
+            echo "fragile=true" >> $GITHUB_OUTPUT
+            echo "Found $FRAGILE_COUNT fragile selectors with score $SCORE"
+          else
+            echo "fragile=false" >> $GITHUB_OUTPUT
+          fi
+        else
+          echo "fragile=false" >> $GITHUB_OUTPUT
+        fi
+
+    - name: Send Slack notification for fragile selectors
+      if: steps.fragile-selectors.outputs.fragile == 'true'
+      uses: slackapi/slack-github-action@v1.24.0
+      with:
+        payload: |
+          {
+            "text": "🚨 High number of fragile selectors detected or low selector quality score! Review needed in <#C08QZ42L9KM|b4m-automation-results>.\n\n📊 Summary:\n• Fragile Selectors: ${{ steps.selector-analysis.outputs.fragileSelectors }}\n• Overall Score: ${{ steps.selector-analysis.outputs.score }}\n\nTop Fragile Selectors:\n${{ steps.selector-analysis.outputs.topFragile }}"
+          }
+      env:
+        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL_SLOW_RESPONSES }}
