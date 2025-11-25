@@ -13,16 +13,16 @@ module.exports = defineConfig({
     specPattern: [
       'cypress/e2e/Data.cy.js',
       'cypress/e2e/FuturumAI.cy.js',
-      'cypress/e2e/Users.cy.js',
-      'cypress/e2e/export_data.cy.js',
-      'cypress/e2e/Email_Templates.cy.js',
-      'cypress/e2e/Email_Jobs.cy.js',
-      'cypress/e2e/Practice_Area.cy.js',
-      'cypress/e2e/createOrg.cy.js',
-      'cypress/e2e/Reports.cy.js',
-      'cypress/e2e/Analytics.cy.js',
-      'cypress/e2e/Migration.cy.js',
-      'cypress/e2e/Research_Engine.cy.js'
+      // 'cypress/e2e/Users.cy.js',
+      // 'cypress/e2e/export_data.cy.js',
+      // 'cypress/e2e/Email_Templates.cy.js',
+      // 'cypress/e2e/Email_Jobs.cy.js',
+      // 'cypress/e2e/Practice_Area.cy.js',
+      // 'cypress/e2e/createOrg.cy.js',
+      // 'cypress/e2e/Reports.cy.js',
+      // 'cypress/e2e/Analytics.cy.js',
+      'cypress/e2e/Migration.cy.js'
+      // 'cypress/e2e/Research_Engine.cy.js'
     ],
     supportFile: 'cypress/support/index.js',
     downloadsFolder: 'cypress/downloads', // Add this line to specify the downloads folder

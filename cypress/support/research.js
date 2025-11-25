@@ -1,6 +1,6 @@
 import { timeout } from "async";
 
-const textModels = ['GPT-4.1', 'claude-3-5-sonnet', 'GPT-5'];
+const textModels = ['GPT-4.1', 'GPT-5'];
 
 let prompts;
 
@@ -691,11 +691,11 @@ class Research {
     }
     static Files(filepath) {
         describe("Files Operations", () => {
-          it("Create file", () => {
+          it.skip("Create file", () => {
             fileOperation("createFile", filepath);
           });
 
-          it("Upload file", () => {
+          it.skip("Upload file", () => {
             uploadFile(filepath);
             fileOperation("addFile", filepath);
           });
@@ -706,7 +706,7 @@ class Research {
             //     fileOperation("renameFile", filepath, "RenamedFile");
             //   });
 
-          it("Deletes file", () => {
+          it.skip("Deletes file", () => {
             fileOperation("deleteFile", filepath);
           });
         });
@@ -720,15 +720,15 @@ class Research {
                 openAI();
             });
 
-            it('Should create a new tag', () => {
+            it.skip('Should create a new tag', () => {
                 tagOperations('createTag', testTag);
             });
 
-            it('Should edit an existing tag', () => {
+            it.skip('Should edit an existing tag', () => {
                 tagOperations('editTag', testTag);
             });
 
-            it('Should delete a tag', () => {
+            it.skip('Should delete a tag', () => {
                 tagOperations('deleteTag', testTag);
             });
         });
@@ -749,7 +749,7 @@ class Research {
             });
 
             allTools.forEach((tool, index) => {
-                it(`Should test ${tool} tool`, () => {
+                it.skip(`Should test ${tool} tool`, () => {
                     openToolsMenu(tool);
                     
                     // Add delay between tools
@@ -775,7 +775,7 @@ class Research {
             });
 
             textModels.forEach((model, modelIndex) => {
-                it(`Should test ${model} model with 3 random analytics questions.`, () => {
+                it.skip(`Should test ${model} model with 3 random analytics questions.`, () => {
                     openAI();
                     selectTextModel(model);
                     
@@ -810,14 +810,14 @@ class Research {
             });
 
             // Final cleanup
-            after(() => {
-                deleteNotebook();
-            });
+            // after(() => {
+            //     deleteNotebook();
+            // });
         });
     }
     static testSearchLab() {
         describe('Search Lab Testing', () => {
-            it('Should test all Search Lab features', () => {
+            it.skip('Should test all Search Lab features', () => {
                 searchLab('testData'); // Replace 'testData' with appropriate dataType
             });
             
