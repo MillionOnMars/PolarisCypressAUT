@@ -810,9 +810,9 @@ class Research {
             });
 
             // Final cleanup
-            after(() => {
-                deleteNotebook();
-            });
+            // after(() => {
+            //     deleteNotebook();
+            // });
         });
     }
     static testSearchLab() {
