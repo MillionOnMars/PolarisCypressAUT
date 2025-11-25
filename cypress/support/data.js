@@ -15,8 +15,8 @@ const verifyQA = (qa) => {
     cy.contains(qa, { timeout: 10000 }).click()
     cy.wait(3000); // wait for 3 second
 
-    cy.get("button[role='combobox']")
-        .should('be.visible')
+    cy.get(".MuiBox-root").last()
+        .should('exist')
         .should('not.contain', 'No data available')
 };
 

@@ -5,7 +5,7 @@ describe('Verify QA datas', () => {
     const randomQAs = getRandomQA(5); 
 
     beforeEach(() => {
-        // Load existing user credentials from accounts.json
+        // Load existing user credentials from accounts.json 
         cy.fixture('accounts.json').then((accounts) => {
             const { username, password } = accounts.existingUsers.admin;
             login(username, password);
