@@ -1,7 +1,10 @@
+import { logoutUser } from './auth.js';
+
 const TIMEOUT = 10000;
 
 const navigateToUserProfile = () => {
     cy.get('[data-testid="PersonIcon"]', { timeout: TIMEOUT })
+        .eq(1)
         .should('exist')
         .click({ force: true });
     cy.contains('Profile', { timeout: TIMEOUT })
@@ -159,7 +162,7 @@ const resetPassword = (newPassword, originalPassword) => {
 const changePassword = (newPassword, originalPassword) => {
     // Change to new password
     resetPassword(newPassword, originalPassword);
-    
+    logoutUser();
     // Revert back to original password
     resetPassword(originalPassword, newPassword);
 };
