@@ -2,6 +2,7 @@ const TIMEOUT = 10000;
 
 const navigateToUserProfile = () => {
     cy.get('[data-testid="PersonIcon"]', { timeout: TIMEOUT })
+        .eq(1) // Select the second occurrence
         .should('exist')
         .click({ force: true });
     cy.contains('Profile', { timeout: TIMEOUT })
