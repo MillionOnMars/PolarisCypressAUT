@@ -12,13 +12,13 @@ describe('User Management Tests', () => {
         });
     });
     
-    // describe('Subscription Management', () => {
-    //     Users.updateSubscription('AI Platforms');
-    // });
+    describe('Subscription Management', () => {
+        Users.updateSubscription('AI Platforms');
+    });
     
-    // describe('Organization Management', () => {
-    //     Users.changeOrganization('AMD_QA','Microsoft','chadtest0808');
-    // });
+    describe('Organization Management', () => {
+        Users.changeOrganization('AMD_QA','Microsoft','chadtest0808');
+    });
     
     describe('Reset Password', () => {
         Users.resetPassword('NewPassword123!', 'Testing12345!');

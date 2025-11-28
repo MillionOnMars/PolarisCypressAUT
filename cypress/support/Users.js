@@ -1,23 +1,29 @@
-import { logoutUser } from './auth.js';
-
 const TIMEOUT = 10000;
 
 const navigateToUserProfile = () => {
     cy.get('[data-testid="PersonIcon"]', { timeout: TIMEOUT })
-        .eq(1)
-        .should('exist')
-        .click({ force: true });
+        .its('length')
+        .then((count) => {
+            const index = count === 1 ? 0 : 1; // Use index 0 if only 1, otherwise use index 1
+            cy.log(`Clicking PersonIcon at index ${index} (total: ${count})`);
+            
+            cy.get('[data-testid="PersonIcon"]')
+                .eq(index)
+                .should('exist')
+                .click({ force: true });
+        });
     cy.contains('Profile', { timeout: TIMEOUT })
         .should('exist')
         .click({ force: true });
 };
 
 const navigateToSubscriptionPage = () => {
-    cy.contains('Subscription', { timeout: TIMEOUT })
-        .should('exist')
+    cy.wait(2000); // wait for 2 seconds to ensure the profile page is fully loaded
+    cy.get('[data-testid="SubscriptionsIcon"]', { timeout: TIMEOUT })
+        .should('be.visible')
         .click({ force: true });
     cy.contains('Manage My Subscriptions', { timeout: TIMEOUT })
-        .should('exist')
+        .should('be.visible')
         .click({ force: true });
 };
 const navigateToAdminDashboard = () => {
@@ -116,6 +122,8 @@ const changeOrganization = (newOrgName, username) => {
 };
 
 const resetPassword = (newPassword, originalPassword) => {
+    //navigate to user profile
+    navigateToUserProfile();
     cy.contains('Change Password', { timeout: TIMEOUT })
         .scrollIntoView()
         .should('exist')
@@ -157,16 +165,17 @@ const resetPassword = (newPassword, originalPassword) => {
     // Wait for success message to disappear
     cy.contains('Password changed successfully', { timeout: TIMEOUT })
         .should('not.exist');
+    
+    //close dialog
+    cy.get('[data-testid="CloseIcon"]')
+        .eq(2)
+        .click({ force: true });
 };
 
 const changePassword = (newPassword, originalPassword) => {
     // Change to new password
     resetPassword(newPassword, originalPassword);
-    logoutUser();
-    // Revert back to original password
-    resetPassword(originalPassword, newPassword);
 };
-
 
 // Update the class method
 class Users {
@@ -191,12 +200,14 @@ class Users {
             changeOrganization(oldOrgName, username);
         });
     }
-    
+
     static resetPassword(newPassword, originalPassword) {
         it('Change user password and revert', () => {
-            navigateToUserProfile();
             changePassword(newPassword, originalPassword);
-        }); 
+        });
+        it('Revert password after change', () => {
+            changePassword(originalPassword, newPassword);
+        });
     }
 }
 
