@@ -17,7 +17,7 @@ describe('User Management Tests', () => {
     });
     
     describe('Organization Management', () => {
-        Users.changeOrganization('AMD_QA','Microsoft_QA','chadtest0808');
+        Users.changeOrganization('AMD_QA','Microsoft','chadtest0808');
     });
     
     describe('Reset Password', () => {
