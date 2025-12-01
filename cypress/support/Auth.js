@@ -73,5 +73,6 @@ class Auth {
         });
     }
 }
+export { logoutUser };
 
 export default Auth;
