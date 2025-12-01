@@ -1,5 +1,5 @@
 import { login } from './login.js';
-import { logoutUser } from './auth.js';
+import { logoutUser } from './Auth.js';
 
 const TIMEOUT = 10000;
 
