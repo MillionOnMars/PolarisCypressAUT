@@ -52,8 +52,8 @@
             "Enterprise Software": "Overall Market"
         },
         "expectedTiles": {
-            "AI Platforms": "AI Revenue",
-            "Software Engineering": "2023 Revenue",
+            "AI Platforms": "Market Scenario Assumptions",
+            "Software Engineering": "2025 Revenue",
             "Cybersecurity": "Market Segment",
             "Enterprise Software": "2024 Revenue"
         }
