@@ -1,10 +1,13 @@
+import { login } from './login.js';
+import { logoutUser } from './auth.js';
+
 const TIMEOUT = 10000;
 
 const navigateToUserProfile = () => {
     cy.get('[data-testid="PersonIcon"]', { timeout: TIMEOUT })
         .its('length')
         .then((count) => {
-            const index = count === 1 ? 0 : 1; // Use index 0 if only 1, otherwise use index 1
+            const index = count === 1 ? 0 : 1;
             cy.log(`Clicking PersonIcon at index ${index} (total: ${count})`);
             
             cy.get('[data-testid="PersonIcon"]')
@@ -18,7 +21,7 @@ const navigateToUserProfile = () => {
 };
 
 const navigateToSubscriptionPage = () => {
-    cy.wait(2000); // wait for 2 seconds to ensure the profile page is fully loaded
+    cy.wait(2000);
     cy.get('[data-testid="SubscriptionsIcon"]', { timeout: TIMEOUT })
         .should('be.visible')
         .click({ force: true });
@@ -26,6 +29,7 @@ const navigateToSubscriptionPage = () => {
         .should('be.visible')
         .click({ force: true });
 };
+
 const navigateToAdminDashboard = () => {
     cy.contains('Admin Settings', { timeout: TIMEOUT })
         .should('exist')
@@ -50,7 +54,6 @@ const saveChanges = () => {
 const removeSubscriptionPlan = (subscriptionName) => {
     navigateToSubscriptionPage();
     
-    //verify current subscription and cancel it
     cy.contains('button[class*="MuiMenuButton-colorSuccess"]', subscriptionName, { timeout: TIMEOUT })
         .scrollIntoView()
         .should('exist')
@@ -63,7 +66,6 @@ const removeSubscriptionPlan = (subscriptionName) => {
                 .click({ force: true });
         });
     
-    //Verify subscription is deleted
     cy.contains('button[class*="MuiMenuButton-colorSuccess"]', subscriptionName, { timeout: TIMEOUT })
         .should('not.exist');
     
@@ -73,14 +75,12 @@ const removeSubscriptionPlan = (subscriptionName) => {
 const addSubscriptionPlan = (subscriptionName) => {
     navigateToSubscriptionPage();
     
-    //Add new subscription
     cy.contains('Add Subscription', { timeout: TIMEOUT })
         .scrollIntoView()
         .should('exist')
         .should('be.visible')
         .click({ force: true });
 
-    //Verify subscription is added
     cy.contains(subscriptionName, { timeout: TIMEOUT })
         .scrollIntoView()
         .should('exist')
@@ -88,41 +88,36 @@ const addSubscriptionPlan = (subscriptionName) => {
 
     saveChanges();
 };
+
 const changeOrganization = (newOrgName, username) => {
     navigateToAdminDashboard();
     
-    // Search for the specific user
     cy.get('input[placeholder="Search users..."]', { timeout: TIMEOUT })
         .should('exist')
         .should('be.visible')
         .clear()
         .type(username);
 
-    // Click the Profile button for the user
     cy.get('button[aria-label="Profile"][class*="MuiButton-colorWarning"]', { timeout: TIMEOUT })
-        .eq(0) // Assuming the first matched button is the correct one
+        .eq(0)
         .should('exist')
         .should('be.visible')
         .click({ force: true });
     
-    // Clear current organization and type new organization name
     cy.get('input[role="combobox"][class*="MuiAutocomplete-input"]', { timeout: TIMEOUT })
         .should('exist')
         .should('be.visible')
         .clear()
         .type(newOrgName);
     
-    // Select the organization from dropdown
     cy.get('[role="option"]', { timeout: TIMEOUT })
         .contains(newOrgName)
         .click({ force: true });
     
-    // Use existing saveChanges helper and add double-save logic there if needed
     saveChanges();
 };
 
 const resetPassword = (newPassword, originalPassword) => {
-    //navigate to user profile
     navigateToUserProfile();
     cy.contains('Change Password', { timeout: TIMEOUT })
         .scrollIntoView()
@@ -130,54 +125,70 @@ const resetPassword = (newPassword, originalPassword) => {
         .should('be.visible')
         .click({ force: true });
 
-    //Enter current password
     cy.get('[data-testid="change-password-current-input"]', { timeout: TIMEOUT })
         .should('exist')
         .should('be.visible')
         .clear()
         .type(originalPassword);
 
-    // Enter new password
     cy.get('input[name="newPassword"][type="password"]', { timeout: TIMEOUT })
         .should('exist')
         .should('be.visible')
         .clear()
         .type(newPassword);
     
-    // Confirm new password
     cy.get('input[name="confirmPassword"][type="password"]', { timeout: TIMEOUT })
         .should('exist')
         .should('be.visible')
         .clear()
         .type(newPassword);
     
-    // Update password
     cy.get('[data-testid="change-password-submit-button"]', { timeout: TIMEOUT })
         .should('exist')
         .should('be.visible')
         .click({ force: true });
     
-    // Verify success message appears
     cy.contains('Password changed successfully', { timeout: TIMEOUT })
         .should('exist')
         .should('be.visible');
     
-    // Wait for success message to disappear
     cy.contains('Password changed successfully', { timeout: TIMEOUT })
         .should('not.exist');
     
-    //close dialog
     cy.get('[data-testid="CloseIcon"]')
         .eq(2)
         .click({ force: true });
+
+    cy.wait(2000);
 };
 
-const changePassword = (newPassword, originalPassword) => {
+const logoutAndClearSession = () => {
+    cy.log('🚪 Logging out and clearing session...');
+
+    // Use the logoutUser function from auth.js
+    logoutUser();
+    cy.wait(8000);
+    
+    // Clear all browser state
+    cy.clearCookies();
+    cy.clearLocalStorage();
+    
+    cy.log('✅ Session cleared');
+};
+
+const changePassword = (username, newPassword, originalPassword) => {
     // Change to new password
     resetPassword(newPassword, originalPassword);
+    
+    // Logout and clear session after password change
+    logoutAndClearSession();
+    
+    // Re-login with new password to verify it works
+    cy.log(`🔐 Logging back in with new password for user: ${username}`);
+    login(username, newPassword);
+    cy.wait(3000);
 };
 
-// Update the class method
 class Users {
     static updateSubscription(subscriptionName) {
         it('Remove user subscription', () => {
@@ -201,12 +212,13 @@ class Users {
         });
     }
 
-    static resetPassword(newPassword, originalPassword) {
-        it('Change user password and revert', () => {
-            changePassword(newPassword, originalPassword);
+    static resetPassword(username, newPassword, originalPassword) {
+        it('Change user password', () => {
+            changePassword(username, newPassword, originalPassword);
         });
-        it('Revert password after change', () => {
-            changePassword(originalPassword, newPassword);
+        it('Revert password back to original', () => {
+            // Need to re-authenticate after previous test changed password
+            changePassword(username, originalPassword, newPassword);
         });
     }
 }
