@@ -7,11 +7,7 @@ describe('Practice Area Access Tests', () => {
     beforeEach(() => {
         cy.fixture('accounts.json').then((accounts) => {
             const { username, password } = accounts.existingUsers.subscribedUser; // User with 6 subscriptions
-            login(username, password);
-            
-            // Wait for the nav-order API call to complete once per test
-            cy.intercept('GET', '/api/settings/nav-order/fetch').as('navOrderFetch');
-            cy.wait('@navOrderFetch', { timeout: 10000 });
+            login(username, password, true); // Pass true to force logout if Chad Test0808! is logged in
         });
     });
 

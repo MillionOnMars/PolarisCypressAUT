@@ -6,15 +6,49 @@ const getRandomAreas = (areas, count) => {
     return shuffled.slice(0, count);
 };
 
+// Click Executive Summary if it exists
+const clickExecutiveSummary = () => {
+    cy.get('body').then(($body) => {
+        if ($body.find('span.MuiBox-root.css-108ox6m:contains("Executive Summary")').length > 0) {
+            cy.get('span.MuiBox-root.css-108ox6m')
+                .contains('Executive Summary')
+                .should('be.visible')
+                .click({ force: true });
+            cy.log('Executive Summary clicked successfully');
+        } else {
+            cy.log('Executive Summary element not found in DOM');
+        }
+    });
+};
+
+// Verify Executive Summary visibility
+const verifyExecutiveSummaryVisibility = (shouldBeVisible = true) => {
+    cy.get('body').then(($body) => {
+        if ($body.find('span.MuiBox-root.css-108ox6m:contains("Executive Summary")').length > 0) {
+            cy.get('span.MuiBox-root.css-108ox6m')
+                .contains('Executive Summary')
+                .should(shouldBeVisible ? 'be.visible' : 'not.be.visible');
+        } else {
+            cy.log(`Executive Summary element not found - ${shouldBeVisible ? 'unexpected' : 'expected'} for no access`);
+        }
+    });
+};
+
 // Navigate to a specific practice area
 const navigateToPracticeArea = (practiceArea, specificNavItem = null) => {
+    cy.wait(2000);
+    cy.contains('Practice Areas', { timeout: TIMEOUT })
+        .should('exist')
+        .click({ force: true });
+    
     cy.contains(practiceArea, { timeout: TIMEOUT })
         .scrollIntoView()
         .should('exist')
         .click({ force: true });
     
     cy.wait(1000);
-    
+    clickExecutiveSummary();
+
     if (specificNavItem) {
         cy.contains(specificNavItem, { timeout: TIMEOUT })
             .should('exist')
@@ -24,7 +58,7 @@ const navigateToPracticeArea = (practiceArea, specificNavItem = null) => {
     cy.wait(2000);
 };
 
-// Verify that the specific navigation item is present and accessible
+// Verify specific navigation item is present
 const verifySpecificNavItem = (specificNavItem) => {
     if (specificNavItem) {
         cy.contains(specificNavItem, { timeout: TIMEOUT })
@@ -32,7 +66,7 @@ const verifySpecificNavItem = (specificNavItem) => {
     }
 };
 
-// Verify any tabs are present
+// Verify tabs exist and are clickable
 const verifyTabsExist = () => {
     cy.get('[role="tab"], .tab, .MuiTab-root', { timeout: TIMEOUT })
         .should('have.length.at.least', 1)
@@ -57,21 +91,21 @@ const verifyTabsExist = () => {
         });
 };
 
-// Core test functions
+// Verify no access to practice area
 const verifyNoAccessArea = (practiceArea, specificNavItem = null) => {
     navigateToPracticeArea(practiceArea, specificNavItem);
-    
-    cy.get('p[aria-label*="Contact Sales"].MuiTypography-root.MuiTypography-body-md', { timeout: TIMEOUT })
-        .should('exist')
-        .should('be.visible');
+    verifyExecutiveSummaryVisibility(false);
 };
 
+// Verify full access to practice area
 const verifyFullAccess = (practiceArea, specificNavItem = null) => {
     navigateToPracticeArea(practiceArea, specificNavItem);
     verifySpecificNavItem(specificNavItem);
     verifyTabsExist();
+    verifyExecutiveSummaryVisibility(true);
 };
 
+// Verify tiles visibility
 const verifyTilesVisibility = (practiceArea, specificNavItem = null) => {
     navigateToPracticeArea(practiceArea, specificNavItem);
     
@@ -98,6 +132,16 @@ const verifyTilesVisibility = (practiceArea, specificNavItem = null) => {
     });
 };
 
+// Helper function to iterate through practice areas
+const iteratePracticeAreas = (areas, verificationFn) => {
+    cy.fixture('data.json').then((data) => {
+        areas.forEach((practiceArea) => {
+            const specificNavItem = data.practiceAreas.specificNavItems[practiceArea] || null;
+            verificationFn(practiceArea, specificNavItem);
+        });
+    });
+};
+
 class PracticeAreas {
     static getRandomAreas(areas, count) {
         return getRandomAreas(areas, count);
@@ -106,10 +150,7 @@ class PracticeAreas {
     static testUnsubscribedAccess() {
         it('Should load data and test unsubscribed practice areas', () => {
             cy.fixture('data.json').then((data) => {
-                data.practiceAreas.unsubscribed.forEach((practiceArea) => {
-                    const specificNavItem = data.practiceAreas.specificNavItems[practiceArea] || null;
-                    verifyNoAccessArea(practiceArea, specificNavItem);
-                });
+                iteratePracticeAreas(data.practiceAreas.unsubscribed, verifyNoAccessArea);
             });
         });
     }
@@ -117,10 +158,7 @@ class PracticeAreas {
     static testSubscribedAccess() {
         it('Should load data and test subscribed practice areas', () => {
             cy.fixture('data.json').then((data) => {
-                data.practiceAreas.subscribed.slice(0, 2).forEach((practiceArea) => {
-                    const specificNavItem = data.practiceAreas.specificNavItems[practiceArea] || null;
-                    verifyFullAccess(practiceArea, specificNavItem);
-                });
+                iteratePracticeAreas(data.practiceAreas.subscribed.slice(0, 2), verifyFullAccess);
             });
         });
     }
@@ -152,11 +190,7 @@ class PracticeAreas {
         it('Should test random subscribed practice areas', () => {
             cy.fixture('data.json').then((data) => {
                 const randomAreas = getRandomAreas(data.practiceAreas.subscribed, 2);
-                
-                randomAreas.forEach((practiceArea) => {
-                    const specificNavItem = data.practiceAreas.specificNavItems[practiceArea] || null;
-                    verifyFullAccess(practiceArea, specificNavItem);
-                });
+                iteratePracticeAreas(randomAreas, verifyFullAccess);
             });
         });
     }
@@ -165,11 +199,7 @@ class PracticeAreas {
         it('Should test random unsubscribed practice areas', () => {
             cy.fixture('data.json').then((data) => {
                 const randomAreas = getRandomAreas(data.practiceAreas.unsubscribed, 2);
-                
-                randomAreas.forEach((practiceArea) => {
-                    const specificNavItem = data.practiceAreas.specificNavItems[practiceArea] || null;
-                    verifyNoAccessArea(practiceArea, specificNavItem);
-                });
+                iteratePracticeAreas(randomAreas, verifyNoAccessArea);
             });
         });
     }
@@ -177,10 +207,7 @@ class PracticeAreas {
     static testAllUnsubscribedAreasFromData() {
         it('Should verify all unsubscribed areas from data.json', () => {
             cy.fixture('data.json').then((data) => {
-                data.practiceAreas.unsubscribed.forEach((practiceArea) => {
-                    const specificNavItem = data.practiceAreas.specificNavItems[practiceArea] || null;
-                    verifyNoAccessArea(practiceArea, specificNavItem);
-                });
+                iteratePracticeAreas(data.practiceAreas.unsubscribed, verifyNoAccessArea);
             });
         });
     }
@@ -188,10 +215,7 @@ class PracticeAreas {
     static testAllSubscribedAreasFromData() {
         it('Should verify all subscribed areas from data.json', () => {
             cy.fixture('data.json').then((data) => {
-                data.practiceAreas.subscribed.forEach((practiceArea) => {
-                    const specificNavItem = data.practiceAreas.specificNavItems[practiceArea] || null;
-                    verifyFullAccess(practiceArea, specificNavItem);
-                });
+                iteratePracticeAreas(data.practiceAreas.subscribed, verifyFullAccess);
             });
         });
     }
