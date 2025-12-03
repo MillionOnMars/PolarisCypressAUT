@@ -184,9 +184,9 @@ const logoutAndClearSession = () => {
     logoutUser();
     cy.wait(8000);
     
-    // Clear all browser state
-    cy.clearCookies();
-    cy.clearLocalStorage();
+    // // Clear all browser state
+    // cy.clearCookies();
+    // cy.clearLocalStorage();
     
     cy.log('✅ Session cleared');
 };
