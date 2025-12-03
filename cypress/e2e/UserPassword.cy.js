@@ -1,4 +1,4 @@
-import { login } from '../support/login.js';
+import { login2 } from '../support/login.js';
 import Users from '../support/Users.js';
 
 describe('User Password Change Tests', () => {
@@ -6,13 +6,9 @@ describe('User Password Change Tests', () => {
     beforeEach(() => {
         cy.fixture('accounts.json').then((accounts) => {
             const { username, password } = accounts.existingUsers.resetPasswordUser
-            login(username, password);
+            login2(username, password);
         });
-    });
-
-    afterEach(() => {
-        cy.clearCookies();
-        cy.clearLocalStorage();
+        
     });
 
     describe('Reset Password', () => {
