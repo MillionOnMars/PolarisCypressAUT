@@ -23,6 +23,7 @@ const navigateToUserProfile = () => {
 const navigateToSubscriptionPage = () => {
     cy.wait(2000);
     cy.get('[data-testid="SubscriptionsIcon"]', { timeout: TIMEOUT })
+        .last()
         .should('be.visible')
         .click({ force: true });
     cy.contains('Manage My Subscriptions', { timeout: TIMEOUT })
@@ -164,6 +165,20 @@ const resetPassword = (newPassword, originalPassword) => {
 
 const logoutAndClearSession = () => {
     cy.log('🚪 Logging out and clearing session...');
+
+    cy.request({
+        method: 'POST',
+        url: '/api/logout',
+        failOnStatusCode: false,
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    }).then((response) => {
+        cy.log(`Logout API response: ${response.status}`);
+        if (response.status === 200 || response.status === 401) {
+            cy.log('✅ Logout API call completed');
+        }
+    });
 
     // Use the logoutUser function from auth.js
     logoutUser();

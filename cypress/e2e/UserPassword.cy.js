@@ -1,7 +1,7 @@
 import { login } from '../support/login.js';
 import Users from '../support/Users.js';
 
-describe('User Subscription Tests', () => {
+describe('User Password Change Tests', () => {
     
     beforeEach(() => {
         cy.fixture('accounts.json').then((accounts) => {
@@ -9,16 +9,14 @@ describe('User Subscription Tests', () => {
             login(username, password);
         });
     });
+
     afterEach(() => {
         cy.clearCookies();
         cy.clearLocalStorage();
     });
-    
-    describe('Subscription Management', () => {
-        Users.updateSubscription('AI Platforms');
-    });
-    
-    describe('Organization Management', () => {
-        Users.changeOrganization('AMD_QA','Microsoft','chadtest0808');
+
+    describe('Reset Password', () => {
+        Users.resetPassword('chadtest09231', 'NewPassword123!', 'Testing12345!');
     });
 });
+
