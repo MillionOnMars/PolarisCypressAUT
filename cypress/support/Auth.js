@@ -27,8 +27,9 @@ const verifyLogout = () => {
 // Log out the user by interacting with the menu
 const logoutUser = () => {
     // Wait for user menu button and force click
-    cy.get('.MuiBox-root.css-1fq16i4 > div:nth-child(2) > button')
+    cy.get('[data-testid="SettingsSuggestIcon"]', { timeout: TIMEOUT })
         .should('exist')
+        .trigger('mouseover')
         .click({ force: true });
 
     // Wait for logout icon and force click
@@ -72,5 +73,6 @@ class Auth {
         });
     }
 }
+export { logoutUser };
 
 export default Auth;
