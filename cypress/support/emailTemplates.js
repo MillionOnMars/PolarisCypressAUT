@@ -381,19 +381,108 @@ const verifyDatasetDeletion = (practiceArea) => {
         .should('not.exist');
 };
 
+// Helper to click and verify dropdown loads
+const clickAndVerifyDropdown = (selector) => {
+    cy.get(selector, { timeout: TIMEOUT })
+        .should('exist')
+        .should('be.visible')
+        .click({ force: true });
+    
+    cy.wait(800);
+    
+    cy.get('ul[role="listbox"]', { timeout: TIMEOUT })
+        .should('exist')
+        .should('be.visible');
+    
+    cy.get('li[role="option"]', { timeout: TIMEOUT })
+        .should('have.length.at.least', 1)
+        .should('be.visible');
+};
+
+// Helper to select from dropdown
+const selectFromDropdown = (value) => {
+    cy.get('li[role="option"]', { timeout: TIMEOUT })
+        .contains(value)
+        .should('exist')
+        .should('be.visible')
+        .click({ force: true });
+};
+
+// Dataset deletion
 const deleteDatasetTemplate = (practiceArea) => {
-    // Find the dataset by practice area
     findDatasetByPracticeArea(practiceArea)
-        .within(() => {
-            // Click the delete button within the specific dataset row
-            clickDeleteButton();
-        });
-
-    // Handle any confirmation dialog that appears
+        .within(() => clickDeleteButton());
+    
     handleDeleteConfirmation();
+    
+    cy.contains('Dataset deleted', { timeout: TIMEOUT }).should('exist').should('be.visible');
+    cy.get('p.MuiTypography-root')
+        .contains(practiceArea, { timeout: TIMEOUT })
+        .should('not.exist');
+};
 
-    // Verify the deletion was successful
-    verifyDatasetDeletion(practiceArea);
+// Email template dropdown functions
+const verifyOrganizationDropdownLoads = (emailTemplateName) => {
+    cy.contains(emailTemplateName, { timeout: TIMEOUT })
+        .should('exist')
+        .should('be.visible')
+        .click({ force: true });
+    
+    clickAndVerifyDropdown('input[aria-label="Select an organization"]');
+};
+
+const selectOrganizationFromDropdown = (emailTemplateName, orgName) => {
+    cy.contains(emailTemplateName, { timeout: TIMEOUT })
+        .should('exist')
+        .should('be.visible')
+        .click({ force: true });
+    
+    cy.get('input[aria-label="Select an organization"]', { timeout: TIMEOUT })
+        .should('exist')
+        .should('be.visible')
+        .click({ force: true });
+    
+    selectFromDropdown(orgName);
+};
+
+const verifyUserDropdownLoads = (userName) => {
+    cy.contains(userName, { timeout: TIMEOUT })
+        .should('exist')
+        .should('be.visible')
+        .click({ force: true });
+    
+    cy.wait(1000);
+    
+    cy.get('ul[role="listbox"]', { timeout: TIMEOUT })
+        .should('exist')
+        .should('be.visible');
+    
+    cy.get('li[role="option"]', { timeout: TIMEOUT })
+        .should('have.length.at.least', 1)
+        .should('be.visible');
+};
+
+const selectUserFromDropdown = (selectUser) => {
+    cy.contains(selectUser, { timeout: TIMEOUT })
+        .should('exist')
+        .should('be.visible')
+        .click({ force: true });
+};
+
+const verifyPreviewTemplateLoads = (previewTitle) => {
+    cy.get('iframe[title="Email Preview"]', { timeout: TIMEOUT })
+        .scrollIntoView()
+        .should('exist');
+    
+    cy.wait(2000);
+    
+    cy.get('iframe[title="Email Preview"]', { timeout: TIMEOUT })
+        .then($iframe => {
+            cy.wrap($iframe.contents().find('body'))
+                .find('h2')
+                .should('exist')
+                .should('contain', previewTitle);
+        });
 };
 
 class EmailTemplates {
@@ -461,6 +550,42 @@ class EmailTemplates {
                 navigateToAdminDashboard();
                 navigateToEmailDatasetPage();
                 deleteDatasetTemplate(practiceArea);
+            });
+        });
+    }
+
+    static previewEmailTemplate() {
+        it('All orgs should load', () => {
+            cy.fixture('data.json').then((data) => {
+                const { emailTemplateName } = data.previewEmailTemplate;
+                navigateToUserProfile();
+                navigateToAdminDashboard();
+                navigateToEmailTemplatesPage();
+                verifyOrganizationDropdownLoads(emailTemplateName);
+            });
+        });
+
+        it('All users should load', () => {
+            cy.fixture('data.json').then((data) => {
+                const { emailTemplateName, orgName, userName } = data.previewEmailTemplate;
+                navigateToUserProfile();
+                navigateToAdminDashboard();
+                navigateToEmailTemplatesPage();
+                selectOrganizationFromDropdown(emailTemplateName, orgName);
+                verifyUserDropdownLoads(userName);
+            });
+        });
+
+        it('Preview should show up', () => {
+            cy.fixture('data.json').then((data) => {
+                const { emailTemplateName, orgName, userName, selectUser, previewTitle } = data.previewEmailTemplate;
+                navigateToUserProfile();
+                navigateToAdminDashboard();
+                navigateToEmailTemplatesPage();
+                selectOrganizationFromDropdown(emailTemplateName, orgName);
+                verifyUserDropdownLoads(userName);
+                selectUserFromDropdown(selectUser);
+                verifyPreviewTemplateLoads(previewTitle);
             });
         });
     }

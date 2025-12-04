@@ -18,5 +18,8 @@ describe('Email Management Tests', () => {
     describe('Dataset Email Template Operations', () => {
         EmailTemplates.manageDatasetEmailTemplate();
     });
-    
+    // Test preview email template functionality
+    describe('Template Preview Operations', () => {
+        EmailTemplates.previewEmailTemplate();
+    });
 });

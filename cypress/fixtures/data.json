@@ -21,6 +21,13 @@
         "additionalAnalysts": "Mitch Ashley",
         "additionalAnalystsUrl": "https://futurumgroup.com/mitch-ashley/"
     },
+    "previewEmailTemplate": {
+        "emailTemplateName": "Production Monthly Spotlight Email",
+        "orgName": "AMD_QA",
+        "userName": "Chad Test0527",
+        "selectUser": "chad+test102112",
+        "previewTitle": "Curated Futurum"
+    },
     "researchEngine": {
         "agentName": "Test Automation Agent",
         "agentDescription": "This is an automated test agent for research purposes",
