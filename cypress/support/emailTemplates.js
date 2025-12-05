@@ -382,13 +382,14 @@ const verifyDatasetDeletion = (practiceArea) => {
 };
 
 // Helper to click and verify dropdown loads
-const clickAndVerifyDropdown = (selector) => {
+const clickAndVerifyDropdown = (selector, index = 0) => {
     cy.get(selector, { timeout: TIMEOUT })
+        .eq(index)
         .should('exist')
         .should('be.visible')
         .click({ force: true });
     
-    cy.wait(800);
+    cy.wait(1000);
     
     cy.get('ul[role="listbox"]', { timeout: TIMEOUT })
         .should('exist')
@@ -428,7 +429,7 @@ const verifyOrganizationDropdownLoads = (emailTemplateName) => {
         .should('be.visible')
         .click({ force: true });
     
-    clickAndVerifyDropdown('input[aria-label="Select an organization"]');
+    clickAndVerifyDropdown('input[aria-label="Select an organization"]', 0);
 };
 
 const selectOrganizationFromDropdown = (emailTemplateName, orgName) => {
@@ -469,14 +470,16 @@ const selectUserFromDropdown = (selectUser) => {
         .click({ force: true });
 };
 
-const verifyPreviewTemplateLoads = (previewTitle) => {
+const verifyPreviewTemplateLoads = (previewTitle, iframeIndex = 0) => {
     cy.get('iframe[title="Email Preview"]', { timeout: TIMEOUT })
+        .eq(iframeIndex)
         .scrollIntoView()
         .should('exist');
     
     cy.wait(2000);
     
     cy.get('iframe[title="Email Preview"]', { timeout: TIMEOUT })
+        .eq(iframeIndex)
         .then($iframe => {
             cy.wrap($iframe.contents().find('body'))
                 .find('h2')
@@ -484,6 +487,57 @@ const verifyPreviewTemplateLoads = (previewTitle) => {
                 .should('contain', previewTitle);
         });
 };
+
+const sendTestEmail = (testRecipient) => {
+    
+    // Enter recipient email
+    cy.get('textarea[placeholder="Enter email addresses (comma-separated)"]', { timeout: TIMEOUT })
+        .should('exist')
+        .should('be.visible')
+        .clear()
+        .type(testRecipient);
+    
+    // Click Send button
+    cy.contains('Send Test Email', { timeout: TIMEOUT })
+        .should('exist')
+        .should('be.visible')
+        .click({ force: true });
+    
+    // Verify success message
+    cy.contains('Test email sent successfully', { timeout: TIMEOUT })
+        .should('exist')
+        .should('be.visible');
+};
+
+//Test Email Dropdown functions
+const verifyTestEmailOrgLoads = (emailTemplateName) => {
+    cy.contains(emailTemplateName, { timeout: TIMEOUT })
+        .should('exist')
+        .should('be.visible')
+        .click({ force: true });
+
+    cy.contains('Test Email', { timeout: TIMEOUT })
+        .should('exist')
+        .should('be.visible')
+        .click({ force: true });
+    
+    clickAndVerifyDropdown('input[aria-label="Select an organization"]', 1);
+};
+
+const selectOrganizationFromEmailTestDropdown = (emailTemplateName, orgName) => {
+    cy.contains(emailTemplateName, { timeout: TIMEOUT })
+        .should('exist')
+        .should('be.visible')
+        .click({ force: true });
+    
+    cy.contains('Test Email', { timeout: TIMEOUT })
+        .should('exist')
+        .should('be.visible')
+        .click({ force: true });
+    clickAndVerifyDropdown('input[aria-label="Select an organization"]', 1);
+    selectFromDropdown(orgName);
+};
+
 
 class EmailTemplates {
     static manageEmailTemplate() {
@@ -585,7 +639,52 @@ class EmailTemplates {
                 selectOrganizationFromDropdown(emailTemplateName, orgName);
                 verifyUserDropdownLoads(userName);
                 selectUserFromDropdown(selectUser);
-                verifyPreviewTemplateLoads(previewTitle);
+                verifyPreviewTemplateLoads(previewTitle, 0); // First iframe
+            });
+        });
+    }
+    static testEmail() {
+        it('All orgs should load', () => {
+            cy.fixture('data.json').then((data) => {
+                const { emailTemplateName } = data.testEmail;
+                navigateToUserProfile();
+                navigateToAdminDashboard();
+                navigateToEmailTemplatesPage();
+                verifyTestEmailOrgLoads(emailTemplateName);
+            });
+        });
+        it('All users should load', () => {
+            cy.fixture('data.json').then((data) => {
+                const { emailTemplateName, orgName, userName } = data.testEmail;
+                navigateToUserProfile();
+                navigateToAdminDashboard();
+                navigateToEmailTemplatesPage();
+                selectOrganizationFromEmailTestDropdown(emailTemplateName, orgName);
+                verifyUserDropdownLoads(userName);
+            });
+        });
+        it('Preview should show up', () => {
+            cy.fixture('data.json').then((data) => {
+                const { emailTemplateName, orgName, userName, selectUser, previewTitle } = data.testEmail;
+                navigateToUserProfile();
+                navigateToAdminDashboard();
+                navigateToEmailTemplatesPage();
+                selectOrganizationFromEmailTestDropdown(emailTemplateName, orgName);
+                verifyUserDropdownLoads(userName);
+                selectUserFromDropdown(selectUser);
+                verifyPreviewTemplateLoads(previewTitle, 1);
+            });
+        });
+        it('Should send test email successfully', () => {
+            cy.fixture('data.json').then((data) => {
+                const { emailTemplateName, orgName, userName, selectUser, testRecipient } = data.testEmail;
+                navigateToUserProfile();
+                navigateToAdminDashboard();
+                navigateToEmailTemplatesPage();
+                selectOrganizationFromEmailTestDropdown(emailTemplateName, orgName);
+                verifyUserDropdownLoads(userName);
+                selectUserFromDropdown(selectUser);
+                sendTestEmail(testRecipient);
             });
         });
     }

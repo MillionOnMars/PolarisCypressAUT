@@ -22,4 +22,7 @@ describe('Email Management Tests', () => {
     describe('Template Preview Operations', () => {
         EmailTemplates.previewEmailTemplate();
     });
+    describe.only('Test Email Operations', () => {
+        EmailTemplates.testEmail();
+    });
 });
