@@ -82,7 +82,6 @@ jobs:
         SUMMARY=""
         
         if [ -f cypress/reports/results.json ]; then
-          # Read the specSummary array from results.json
           SPEC_COUNT=$(jq -r '.specSummary | length' cypress/reports/results.json)
           
           if [ "$SPEC_COUNT" -gt 0 ]; then
@@ -92,29 +91,24 @@ jobs:
               PASSING=$(jq -r ".specSummary[$i].passing" cypress/reports/results.json)
               FAILING=$(jq -r ".specSummary[$i].failing" cypress/reports/results.json)
               
-              # Add status icon
               if [ "$FAILING" -gt 0 ]; then
                 ICON="🔴"
               else
                 ICON="🟢"
               fi
               
-              SUMMARY="${SUMMARY}${ICON} *${SPEC}*\n"
-              SUMMARY="${SUMMARY}   ↳ Total: ${TOTAL}\n"
-              SUMMARY="${SUMMARY}   ↳ Passing: ${PASSING}\n"
-              SUMMARY="${SUMMARY}   ↳ Failing: ${FAILING}\n"
+              # Use single line format to avoid JSON issues
+              SUMMARY="${SUMMARY}${ICON} ${SPEC}: ${PASSING}/${TOTAL} passed\\n"
             done
           else
-            SUMMARY="• No test specs found\n"
+            SUMMARY="No test specs found"
           fi
         else
-          SUMMARY="• No test results available\n"
+          SUMMARY="No test results available"
         fi
         
-        # Export for Slack
-        echo "spec_summary<<EOF" >> "$GITHUB_OUTPUT"
-        printf "%b" "$SUMMARY" >> "$GITHUB_OUTPUT"
-        echo "EOF" >> "$GITHUB_OUTPUT"
+        # Export without complex formatting
+        echo "spec_summary=$SUMMARY" >> "$GITHUB_OUTPUT"
 
     - name: Get console errors
       id: console-errors
@@ -217,8 +211,52 @@ jobs:
           {
             "username": "GitHub Actions",
             "icon_emoji": ":github:",
-            "text": "${{ steps.test-results.outputs.failed > 0 && '🔴 CYPRESS TESTS FAILED' || '✅ CYPRESS TESTS PASSED' }}\nEnvironment: ${{ env.CYPRESS_APP_URL || 'Staging' }}\nBranch: `${{ github.ref_name }}`\n\n📊 *Overall Test Results*\n✅ Passed: ${{ steps.test-results.outputs.passed || 0 }}\n❌ Failed: ${{ steps.test-results.outputs.failed || 0 }}\n📝 Total: ${{ steps.test-results.outputs.total || 0 }}\n\n📋 *Test Run Summary*\n${{ steps.spec-summary.outputs.spec_summary }}\n*Console Errors*\n• Total: ${{ steps.console-errors.outputs.total }}\n\n*AI Model Response Times*\n• ${{ steps.response-time.outputs.model1_name }}: ${{ steps.response-time.outputs.model1_time }}\n• ${{ steps.response-time.outputs.model2_name }}: ${{ steps.response-time.outputs.model2_time }}\n• ${{ steps.response-time.outputs.model3_name }}: ${{ steps.response-time.outputs.model3_time }}\n\n<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|View Full Report> 📋"
-            }
+            "text": "${{ steps.test-results.outputs.failed > 0 && '🔴 CYPRESS TESTS FAILED' || '✅ CYPRESS TESTS PASSED' }}",
+            "attachments": [
+              {
+                "color": "${{ steps.test-results.outputs.failed > 0 && 'danger' || 'good' }}",
+                "fields": [
+                  {
+                    "title": "Environment",
+                    "value": "${{ env.CYPRESS_APP_URL || 'Staging' }}",
+                    "short": true
+                  },
+                  {
+                    "title": "Branch",
+                    "value": "`${{ github.ref_name }}`",
+                    "short": true
+                  },
+                  {
+                    "title": "📊 Overall Results",
+                    "value": "✅ Passed: ${{ steps.test-results.outputs.passed || 0 }}\n❌ Failed: ${{ steps.test-results.outputs.failed || 0 }}\n📝 Total: ${{ steps.test-results.outputs.total || 0 }}",
+                    "short": false
+                  },
+                  {
+                    "title": "📋 Test Run Summary",
+                    "value": "${{ steps.spec-summary.outputs.spec_summary }}",
+                    "short": false
+                  },
+                  {
+                    "title": "Console Errors",
+                    "value": "${{ steps.console-errors.outputs.total }}",
+                    "short": true
+                  },
+                  {
+                    "title": "AI Response Times",
+                    "value": "${{ steps.response-time.outputs.model1_name }}: ${{ steps.response-time.outputs.model1_time }}\n${{ steps.response-time.outputs.model2_name }}: ${{ steps.response-time.outputs.model2_time }}\n${{ steps.response-time.outputs.model3_name }}: ${{ steps.response-time.outputs.model3_time }}",
+                    "short": true
+                  }
+                ],
+                "actions": [
+                  {
+                    "type": "button",
+                    "text": "View Full Report 📋",
+                    "url": "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+                  }
+                ]
+              }
+            ]
+          }
       env:
         SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
 
