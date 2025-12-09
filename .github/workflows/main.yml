@@ -82,6 +82,7 @@ jobs:
         SUMMARY=""
         
         if [ -f cypress/reports/results.json ]; then
+          # Read the specSummary array from results.json
           SPEC_COUNT=$(jq -r '.specSummary | length' cypress/reports/results.json)
           
           if [ "$SPEC_COUNT" -gt 0 ]; then
@@ -91,26 +92,29 @@ jobs:
               PASSING=$(jq -r ".specSummary[$i].passing" cypress/reports/results.json)
               FAILING=$(jq -r ".specSummary[$i].failing" cypress/reports/results.json)
               
+              # Add status icon
               if [ "$FAILING" -gt 0 ]; then
                 ICON="🔴"
               else
                 ICON="🟢"
               fi
               
-              # Simple one-line format
-              SUMMARY="${SUMMARY}${ICON} ${SPEC}: ${PASSING}/${TOTAL} passed"
-              if [ "$i" -lt $((SPEC_COUNT - 1)) ]; then
-                SUMMARY="${SUMMARY}\\n"
-              fi
+              SUMMARY="${SUMMARY}${ICON} *${SPEC}*\n"
+              SUMMARY="${SUMMARY}   ↳ Total: ${TOTAL}\n"
+              SUMMARY="${SUMMARY}   ↳ Passing: ${PASSING}\n"
+              SUMMARY="${SUMMARY}   ↳ Failing: ${FAILING}\n"
             done
           else
-            SUMMARY="No test specs found"
+            SUMMARY="• No test specs found\n"
           fi
         else
-          SUMMARY="No test results available"
+          SUMMARY="• No test results available\n"
         fi
         
-        echo "spec_summary=${SUMMARY}" >> "$GITHUB_OUTPUT"
+        # Export for Slack
+        echo "spec_summary<<EOF" >> "$GITHUB_OUTPUT"
+        printf "%b" "$SUMMARY" >> "$GITHUB_OUTPUT"
+        echo "EOF" >> "$GITHUB_OUTPUT"
 
     - name: Get console errors
       id: console-errors
@@ -119,8 +123,10 @@ jobs:
         if [ -f "cypress/reports/consoleErrors.json" ]; then
           TOTAL_ERRORS=$(jq -r '.totalErrors' cypress/reports/consoleErrors.json)
           echo "total=$TOTAL_ERRORS" >> "$GITHUB_OUTPUT"
+          echo "Found $TOTAL_ERRORS console errors"
         else
           echo "total=0" >> "$GITHUB_OUTPUT"
+          echo "No consoleErrors.json found"
         fi
 
     - name: Get response time
@@ -128,20 +134,51 @@ jobs:
       if: always()
       run: |
         if [ -f "cypress/reports/responseTime.json" ]; then
+          # Check if it's an array format (new) or object format (old)
           if jq -e 'type == "array"' cypress/reports/responseTime.json > /dev/null; then
+            # New array format with multiple models - get all models dynamically
+            MODELS=$(jq -r '.[].textModel' cypress/reports/responseTime.json | tr '\n' ',' | sed 's/,$//')
+            MODEL_COUNT=$(jq '. | length' cypress/reports/responseTime.json)
+            
+            # Create dynamic variables for each model
             MODEL_1_NAME=$(jq -r '.[0].textModel // "N/A"' cypress/reports/responseTime.json)
             MODEL_1_TIME=$(jq -r '.[0].ResponseTime // "N/A"' cypress/reports/responseTime.json)
+            
             MODEL_2_NAME=$(jq -r '.[1].textModel // "N/A"' cypress/reports/responseTime.json)
             MODEL_2_TIME=$(jq -r '.[1].ResponseTime // "N/A"' cypress/reports/responseTime.json)
+            
             MODEL_3_NAME=$(jq -r '.[2].textModel // "N/A"' cypress/reports/responseTime.json)
             MODEL_3_TIME=$(jq -r '.[2].ResponseTime // "N/A"' cypress/reports/responseTime.json)
             
+            # Output all models data
+            echo "models=$MODELS" >> "$GITHUB_OUTPUT"
+            echo "model_count=$MODEL_COUNT" >> "$GITHUB_OUTPUT"
             echo "model1_name=$MODEL_1_NAME" >> "$GITHUB_OUTPUT"
             echo "model1_time=$MODEL_1_TIME" >> "$GITHUB_OUTPUT"
             echo "model2_name=$MODEL_2_NAME" >> "$GITHUB_OUTPUT"
             echo "model2_time=$MODEL_2_TIME" >> "$GITHUB_OUTPUT"
             echo "model3_name=$MODEL_3_NAME" >> "$GITHUB_OUTPUT"
             echo "model3_time=$MODEL_3_TIME" >> "$GITHUB_OUTPUT"
+            echo "format=array" >> "$GITHUB_OUTPUT"
+            
+            # Create formatted response times for Slack
+            FORMATTED_TIMES=""
+            for i in $(seq 0 $((MODEL_COUNT-1))); do
+              MODEL_NAME=$(jq -r ".[$i].textModel" cypress/reports/responseTime.json)
+              MODEL_TIME=$(jq -r ".[$i].ResponseTime" cypress/reports/responseTime.json)
+              FORMATTED_TIMES="${FORMATTED_TIMES}• ${MODEL_NAME}: ${MODEL_TIME}\n"
+            done
+            echo "formatted_times=$FORMATTED_TIMES" >> "$GITHUB_OUTPUT"
+            
+            echo "Found response times for models: $MODELS"
+          else
+            # Old single object format (fallback)
+            RESPONSE_TIME=$(jq -r '.responseTime' cypress/reports/responseTime.json)
+            RESPONSE_TIME_SEC=$(jq -r '.responseTimeSeconds' cypress/reports/responseTime.json)
+            echo "ms=$RESPONSE_TIME" >> "$GITHUB_OUTPUT"
+            echo "seconds=$RESPONSE_TIME_SEC" >> "$GITHUB_OUTPUT"
+            echo "format=object" >> "$GITHUB_OUTPUT"
+            echo "Found single response time: ${RESPONSE_TIME}ms (${RESPONSE_TIME_SEC}s)"
           fi
         else
           echo "model1_name=N/A" >> "$GITHUB_OUTPUT"
@@ -150,6 +187,9 @@ jobs:
           echo "model2_time=N/A" >> "$GITHUB_OUTPUT"
           echo "model3_name=N/A" >> "$GITHUB_OUTPUT"
           echo "model3_time=N/A" >> "$GITHUB_OUTPUT"
+          echo "formatted_times=• No models tested" >> "$GITHUB_OUTPUT"
+          echo "format=none" >> "$GITHUB_OUTPUT"
+          echo "No responseTime.json found"
         fi
 
     - name: Upload test results
@@ -177,62 +217,8 @@ jobs:
           {
             "username": "GitHub Actions",
             "icon_emoji": ":github:",
-            "text": "${{ steps.test-results.outputs.failed > 0 && '🔴 CYPRESS TESTS FAILED' || '✅ CYPRESS TESTS PASSED' }}",
-            "attachments": [
-              {
-                "color": "${{ steps.test-results.outputs.failed > 0 && 'danger' || 'good' }}",
-                "fields": [
-                  {
-                    "title": "Environment",
-                    "value": "${{ env.CYPRESS_APP_URL || 'Staging' }}",
-                    "short": true
-                  },
-                  {
-                    "title": "Branch",
-                    "value": "`${{ github.ref_name }}`",
-                    "short": true
-                  },
-                  {
-                    "title": "Passed",
-                    "value": "${{ steps.test-results.outputs.passed || 0 }}",
-                    "short": true
-                  },
-                  {
-                    "title": "Failed",
-                    "value": "${{ steps.test-results.outputs.failed || 0 }}",
-                    "short": true
-                  },
-                  {
-                    "title": "Total Tests",
-                    "value": "${{ steps.test-results.outputs.total || 0 }}",
-                    "short": true
-                  },
-                  {
-                    "title": "Console Errors",
-                    "value": "${{ steps.console-errors.outputs.total }}",
-                    "short": true
-                  },
-                  {
-                    "title": "Test Run Summary",
-                    "value": "${{ steps.spec-summary.outputs.spec_summary }}",
-                    "short": false
-                  },
-                  {
-                    "title": "AI Model Response Times",
-                    "value": "${{ steps.response-time.outputs.model1_name }}: ${{ steps.response-time.outputs.model1_time }}\\n${{ steps.response-time.outputs.model2_name }}: ${{ steps.response-time.outputs.model2_time }}\\n${{ steps.response-time.outputs.model3_name }}: ${{ steps.response-time.outputs.model3_time }}",
-                    "short": false
-                  }
-                ],
-                "actions": [
-                  {
-                    "type": "button",
-                    "text": "View Full Report 📋",
-                    "url": "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
-                  }
-                ]
-              }
-            ]
-          }
+            "text": "${{ steps.test-results.outputs.failed > 0 && '🔴 CYPRESS TESTS FAILED' || '✅ CYPRESS TESTS PASSED' }}\nEnvironment: ${{ env.CYPRESS_APP_URL || 'Staging' }}\nBranch: `${{ github.ref_name }}`\n\n📊 *Test Results*\n✅ Passed: ${{ steps.test-results.outputs.passed || 0 }}\n❌ Failed: ${{ steps.test-results.outputs.failed || 0 }}\n📝 Total: ${{ steps.test-results.outputs.total || 0 }}\n\n📋 *Test Run Summary*\n*TEST*\n*Console Errors*\n• Total: ${{ steps.console-errors.outputs.total }}\n\n*AI Model Response Times*\n• ${{ steps.response-time.outputs.model1_name }}: ${{ steps.response-time.outputs.model1_time }}\n• ${{ steps.response-time.outputs.model2_name }}: ${{ steps.response-time.outputs.model2_time }}\n• ${{ steps.response-time.outputs.model3_name }}: ${{ steps.response-time.outputs.model3_time }}\n\n<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|View Full Report> 📋"
+            }
       env:
         SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
 
