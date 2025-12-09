@@ -85,11 +85,14 @@ jobs:
             .specSummary[]?
             | select(type == "object")
             | if .failing > 0 then "🔴" else "🟢" end + " " + .spec + ": " + (.passing|tostring) + "/" + (.total|tostring) + " passed"
-          ' cypress/reports/results.json | tr '\n' '\n' | sed 's/, $//')
+          ' cypress/reports/results.json | tr '\n' '\n' | sed 's/$//')
           
           if [ -z "$SUMMARY" ]; then
             SUMMARY="No test specs found"
           fi
+          
+          # Escape newlines for GitHub Actions output
+          SUMMARY="${SUMMARY//$'\n'/'\n'}"
           
           echo "spec_summary=$SUMMARY" >> "$GITHUB_OUTPUT"
           echo "Found spec summary:"
