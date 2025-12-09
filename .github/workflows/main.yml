@@ -61,36 +61,45 @@ jobs:
       id: test-results
       if: always()
       run: |
-        # Parse results.json created by cypress.config.js
-        if [ -f "cypress/reports/results.json" ]; then
-          TOTAL=$(jq -r '.totalTests' cypress/reports/results.json)
-          PASSED=$(jq -r '.totalPassed' cypress/reports/results.json)
-          FAILED=$(jq -r '.totalFailed' cypress/reports/results.json)
-          PENDING=$(jq -r '.totalPending' cypress/reports/results.json)
-          SKIPPED=$(jq -r '.totalSkipped' cypress/reports/results.json)
+        if [ -f cypress/reports/results.json ]; then
+          TOTAL=$(jq -r '.totalTests // 0' cypress/reports/results.json)
+          PASSED=$(jq -r '.totalPassed // 0' cypress/reports/results.json)
+          FAILED=$(jq -r '.totalFailed // 0' cypress/reports/results.json)
           
           echo "total=$TOTAL" >> "$GITHUB_OUTPUT"
           echo "passed=$PASSED" >> "$GITHUB_OUTPUT"
           echo "failed=$FAILED" >> "$GITHUB_OUTPUT"
-          echo "pending=$PENDING" >> "$GITHUB_OUTPUT"
-          echo "skipped=$SKIPPED" >> "$GITHUB_OUTPUT"
-          
-          # Determine overall status
-          if [ "$FAILED" -gt 0 ]; then
-            echo "status=failed" >> "$GITHUB_OUTPUT"
-          else
-            echo "status=passed" >> "$GITHUB_OUTPUT"
-          fi
-          
-          echo "Test Results: $PASSED passed, $FAILED failed, $PENDING pending, $SKIPPED skipped, $TOTAL total"
         else
           echo "total=0" >> "$GITHUB_OUTPUT"
           echo "passed=0" >> "$GITHUB_OUTPUT"
           echo "failed=0" >> "$GITHUB_OUTPUT"
-          echo "pending=0" >> "$GITHUB_OUTPUT"
-          echo "skipped=0" >> "$GITHUB_OUTPUT"
-          echo "status=unknown" >> "$GITHUB_OUTPUT"
-          echo "No results.json found"
+        fi
+
+    - name: Build spec summary
+      id: spec-summary
+      if: always()
+      run: |
+        if [ -f "cypress/reports/results.json" ]; then
+          # Format spec summary using jq
+          SUMMARY=$(jq -r '
+            .specSummary[]?
+            | select(type == "object")
+            | if .failing > 0 then "🔴" else "🟢" end + " " + .spec + ": " + (.passing|tostring) + "/" + (.total|tostring) + " passed"
+          ' cypress/reports/results.json | tr '\n' '\n' | sed 's/$//')
+          
+          if [ -z "$SUMMARY" ]; then
+            SUMMARY="No test specs found"
+          fi
+          
+          # Escape newlines for GitHub Actions output
+          SUMMARY="${SUMMARY//$'\n'/'\n'}"
+          
+          echo "spec_summary=$SUMMARY" >> "$GITHUB_OUTPUT"
+          echo "Found spec summary:"
+          echo "$SUMMARY"
+        else
+          echo "No results.json file found"
+          echo "spec_summary=No test results available" >> "$GITHUB_OUTPUT"
         fi
 
     - name: Get console errors
@@ -194,7 +203,7 @@ jobs:
           {
             "username": "GitHub Actions",
             "icon_emoji": ":github:",
-            "text": "${{ steps.test-results.outputs.failed > 0 && '🔴 CYPRESS TESTS FAILED' || '✅ CYPRESS TESTS PASSED' }}\nEnvironment: ${{ env.CYPRESS_APP_URL || 'Staging' }}\nBranch: `${{ github.ref_name }}`\n\n📊 Test Results\n✅ Passed: ${{ steps.test-results.outputs.passed || 0 }}\n❌ Failed: ${{ steps.test-results.outputs.failed || 0 }}\n📝 Total: ${{ steps.test-results.outputs.total || 0 }}\n\n*Console Errors*\n• Total: ${{ steps.console-errors.outputs.total }}\n\n*AI Model Response Times*\n• ${{ steps.response-time.outputs.model1_name }}: ${{ steps.response-time.outputs.model1_time }} \n• ${{ steps.response-time.outputs.model2_name }}: ${{ steps.response-time.outputs.model2_time }} \n• ${{ steps.response-time.outputs.model3_name }}: ${{ steps.response-time.outputs.model3_time }} \n\n<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|View Full Report> 📋"
+            "text": "${{ steps.test-results.outputs.failed > 0 && '🔴 CYPRESS TESTS FAILED' || '✅ CYPRESS TESTS PASSED' }}\n\n*Environment:* ${{ secrets.CYPRESS_APP_URL || 'Staging' }}\n*Branch:* ${{ github.ref_name }}\n\n*📊 Test Results*\n✅ Passed: ${{ steps.test-results.outputs.passed || 0 }}\n❌ Failed: ${{ steps.test-results.outputs.failed || 0 }}\n📝 Total: ${{ steps.test-results.outputs.total || 0 }}\n\n\n*📋 Test Run Summary*\n${{ steps.spec-summary.outputs.spec_summary }}\n\n*Console Errors:* ${{ steps.console-errors.outputs.total || 0 }}\n\n*AI Model Response Times*\n${{ steps.response-time.outputs.formatted_times }}\n\n<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|View Full Report> 📋"
             }
       env:
         SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}

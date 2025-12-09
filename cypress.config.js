@@ -25,16 +25,16 @@ module.exports = defineConfig({
       // 'cypress/e2e/Research_Engine.cy.js'
     ],
     supportFile: 'cypress/support/index.js',
-    downloadsFolder: 'cypress/downloads', // Add this line to specify the downloads folder
+    downloadsFolder: 'cypress/downloads',
     env: {
-      //set appURL to production or staging
       appUrl: process.env.CYPRESS_APP_URL || environments.staging
     },
     viewportWidth: 1920,
     viewportHeight: 1080,
     setupNodeEvents(on, config) {
-      // Add this hook to generate results.json
+      // Add this hook to generate results.json with per-spec breakdown
       on('after:run', (results) => {
+        // Overall summary
         const testResults = {
           totalTests: results.totalTests,
           totalPassed: results.totalPassed,
@@ -47,13 +47,43 @@ module.exports = defineConfig({
           duration: results.totalDuration
         };
 
+        // Per-spec breakdown
+        const specSummary = results.runs.map(run => {
+          const specName = path.basename(run.spec.relative);
+          return {
+            spec: specName,
+            total: run.stats.tests,
+            passing: run.stats.passes,
+            failing: run.stats.failures,
+            pending: run.stats.pending,
+            skipped: run.stats.skipped,
+            duration: run.stats.duration
+          };
+        });
+
+        // Combine overall and per-spec data
+        const fullResults = {
+          ...testResults,
+          specSummary: specSummary
+        };
+
         const dir = path.dirname('cypress/reports/results.json');
         if (!fs.existsSync(dir)) {
           fs.mkdirSync(dir, { recursive: true });
         }
 
-        fs.writeFileSync('cypress/reports/results.json', JSON.stringify(testResults, null, 2));
+        fs.writeFileSync('cypress/reports/results.json', JSON.stringify(fullResults, null, 2));
         console.log(`Test results saved: ${results.totalPassed} passed, ${results.totalFailed} failed`);
+        
+        // Log per-spec summary to console
+        console.log('\n📊 Test Run Summary:');
+        specSummary.forEach(spec => {
+          const status = spec.failing > 0 ? '❌' : '✅';
+          console.log(`${status} ${spec.spec}`);
+          console.log(`   ↳ Total: ${spec.total}`);
+          console.log(`   ↳ Passing: ${spec.passing}`);
+          console.log(`   ↳ Failing: ${spec.failing}`);
+        });
       });
 
       on('task', {
@@ -72,7 +102,6 @@ module.exports = defineConfig({
               fs.mkdirSync(dir, { recursive: true });
           }
 
-          // Read existing data or create new array
           let responseTimeArray = [];
           if (fs.existsSync(filePath)) {
               try {
@@ -84,7 +113,6 @@ module.exports = defineConfig({
               }
           }
 
-          // Check if model already exists, update or add
           const existingIndex = responseTimeArray.findIndex(item => item.textModel === modelData.textModel);
           if (existingIndex !== -1) {
               responseTimeArray[existingIndex] = modelData;
@@ -92,7 +120,6 @@ module.exports = defineConfig({
               responseTimeArray.push(modelData);
           }
 
-          // Write updated array back to file
           fs.writeFileSync(filePath, JSON.stringify(responseTimeArray, null, 2));
           console.log(`Updated response time for ${modelData.textModel}: ${modelData.ResponseTime}`);
           
@@ -116,12 +143,10 @@ module.exports = defineConfig({
             }
           }
 
-          // Ensure existingData has the correct structure
           if (!existingData.errors) {
             existingData.errors = [];
           }
 
-          // Deduplicate existing errors
           const existingSet = new Set(
             existingData.errors.map(err => JSON.stringify({
               message: err.message,
@@ -130,7 +155,6 @@ module.exports = defineConfig({
             }))
           );
 
-          // Add new unique errors
           const allErrors = [...existingData.errors];
           for (const error of newErrors) {
             const errorKey = JSON.stringify({
@@ -145,7 +169,6 @@ module.exports = defineConfig({
             }
           }
 
-          // Write deduplicated errors
           const updatedData = {
             lastUpdate: new Date().toISOString(),
             totalErrors: allErrors.length,
@@ -158,7 +181,6 @@ module.exports = defineConfig({
           return null;
         },
 
-        // Add the deleteFiles task
         deleteFiles(filePaths) {
           filePaths.forEach((filePath) => {
             if (fs.existsSync(filePath)) {
