@@ -79,42 +79,25 @@ jobs:
       id: spec-summary
       if: always()
       run: |
-        SUMMARY=""
-        
-        if [ -f cypress/reports/results.json ]; then
-          # Read the specSummary array from results.json
-          SPEC_COUNT=$(jq -r '.specSummary | length' cypress/reports/results.json)
+        if [ -f "cypress/reports/results.json" ]; then
+          # Format spec summary using jq
+          SUMMARY=$(jq -r '
+            .specSummary[]?
+            | select(type == "object")
+            | if .failing > 0 then "🔴" else "🟢" end + " " + .spec + ": " + (.passing|tostring) + "/" + (.total|tostring) + " passed"
+          ' cypress/reports/results.json | tr '\n' ', ' | sed 's/, $//')
           
-          if [ "$SPEC_COUNT" -gt 0 ]; then
-            for i in $(seq 0 $(($SPEC_COUNT - 1))); do
-              SPEC=$(jq -r ".specSummary[$i].spec" cypress/reports/results.json)
-              TOTAL=$(jq -r ".specSummary[$i].total" cypress/reports/results.json)
-              PASSING=$(jq -r ".specSummary[$i].passing" cypress/reports/results.json)
-              FAILING=$(jq -r ".specSummary[$i].failing" cypress/reports/results.json)
-              
-              # Add status icon
-              if [ "$FAILING" -gt 0 ]; then
-                ICON="🔴"
-              else
-                ICON="🟢"
-              fi
-              
-              SUMMARY="${SUMMARY}${ICON} *${SPEC}*\n"
-              SUMMARY="${SUMMARY}   ↳ Total: ${TOTAL}\n"
-              SUMMARY="${SUMMARY}   ↳ Passing: ${PASSING}\n"
-              SUMMARY="${SUMMARY}   ↳ Failing: ${FAILING}\n"
-            done
-          else
-            SUMMARY="• No test specs found\n"
+          if [ -z "$SUMMARY" ]; then
+            SUMMARY="No test specs found"
           fi
+          
+          echo "spec_summary=$SUMMARY" >> "$GITHUB_OUTPUT"
+          echo "Found spec summary:"
+          echo "$SUMMARY"
         else
-          SUMMARY="• No test results available\n"
+          echo "No results.json file found"
+          echo "spec_summary=No test results available" >> "$GITHUB_OUTPUT"
         fi
-        
-        # Export for Slack
-        echo "spec_summary<<EOF" >> "$GITHUB_OUTPUT"
-        printf "%b" "$SUMMARY" >> "$GITHUB_OUTPUT"
-        echo "EOF" >> "$GITHUB_OUTPUT"
 
     - name: Get console errors
       id: console-errors
@@ -217,7 +200,7 @@ jobs:
           {
             "username": "GitHub Actions",
             "icon_emoji": ":github:",
-            "text": "${{ steps.test-results.outputs.failed > 0 && '🔴 CYPRESS TESTS FAILED' || '✅ CYPRESS TESTS PASSED' }}\nEnvironment: ${{ env.CYPRESS_APP_URL || 'Staging' }}\nBranch: `${{ github.ref_name }}`\n\n📊 *Test Results*\n✅ Passed: ${{ steps.test-results.outputs.passed || 0 }}\n❌ Failed: ${{ steps.test-results.outputs.failed || 0 }}\n📝 Total: ${{ steps.test-results.outputs.total || 0 }}\n\n📋 *Test Run Summary*\n*TEST*\n*Console Errors*\n• Total: ${{ steps.console-errors.outputs.total }}\n\n*AI Model Response Times*\n• ${{ steps.response-time.outputs.model1_name }}: ${{ steps.response-time.outputs.model1_time }}\n• ${{ steps.response-time.outputs.model2_name }}: ${{ steps.response-time.outputs.model2_time }}\n• ${{ steps.response-time.outputs.model3_name }}: ${{ steps.response-time.outputs.model3_time }}\n\n<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|View Full Report> 📋"
+            "text": "${{ steps.test-results.outputs.failed > 0 && '🔴 CYPRESS TESTS FAILED' || '✅ CYPRESS TESTS PASSED' }}\n\n*Environment:* ${{ secrets.CYPRESS_APP_URL || 'Staging' }}\n*Branch:* ${{ github.ref_name }}\n\n*📊 Test Results*\n✅ Passed: ${{ steps.test-results.outputs.passed || 0 }}\n❌ Failed: ${{ steps.test-results.outputs.failed || 0 }}\n📝 Total: ${{ steps.test-results.outputs.total || 0 }}\n\n*📋 Test Run Summary*\n${{ steps.spec-summary.outputs.spec_summary }}\n\n*Console Errors:* ${{ steps.console-errors.outputs.total || 0 }}\n\n*AI Model Response Times*\n${{ steps.response-time.outputs.formatted_times }}\n\n<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|View Full Report> 📋"
             }
       env:
         SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
