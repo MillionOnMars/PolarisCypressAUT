@@ -13,19 +13,22 @@ describe('Organization Creation', () => {
         });
     });
 
-   describe('Create New Organization', () => {
+    describe('Create New Organization', () => {
         AccountsOrg.createNewOrg(OrgName);
     });
 
-   describe('Update Existing Organization', () => {
-       AccountsOrg.updateOrg(OrgName, NewOrgName);
+    describe('Update Existing Organization', () => {
+        AccountsOrg.updateOrg(OrgName, NewOrgName);
     });
+
     describe('Add Subscription to Organization', () => {
         AccountsOrg.addSubscription(NewOrgName);
     });
+
     describe('Remove Subscription from Organization', () => {
         AccountsOrg.removeSubscription(NewOrgName);
     });
+
     describe('Delete Organization', () => {
         AccountsOrg.deleteOrg(NewOrgName);
     });
