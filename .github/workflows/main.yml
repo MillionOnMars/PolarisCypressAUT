@@ -84,7 +84,7 @@ jobs:
           SUMMARY=$(jq -r '
             .specSummary[]?
             | select(type == "object")
-            | if .failing > 0 then "🔴" else "🟢" end + " " + .spec + ": " + (.passing|tostring) + "/" + (.total|tostring) + " passed"
+            | if .failing > 0 then "🔴" else "🟢" end + " " + .spec + ": " + (.passing|tostring) + "/" + (.total|tostring)
           ' cypress/reports/results.json | tr '\n' '\n' | sed 's/$//')
           
           if [ -z "$SUMMARY" ]; then
