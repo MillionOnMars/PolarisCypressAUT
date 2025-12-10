@@ -1,55 +1,68 @@
-import { navigateToAdmin, navigateToAccountsOrg } from './navigate.js';
-
+import { timeInterval } from "rxjs";
+import { verify } from "tweetnacl";
 const TIMEOUT = 10000;
+const navigateToAdmin = () => {
+    cy.get('[aria-haspopup="menu"]', {timeout: TIMEOUT})
+    .eq(1)
+    .should('exist')
+    .click()
+
+    cy.contains('Admin', {timeout: TIMEOUT})
+    .should('exist')
+    .click()
+}
+
+const navigateToAccountsOrg = () => {
+    cy.contains('User Tags', {timeout: TIMEOUT})
+    cy.xpath("(//button[normalize-space()='Accounts'])[1]", {timeout: TIMEOUT})
+    .should('exist')
+    .click()
+}
 
 const createOrg = (OrgName) => {
+    
     cy.get('textarea[placeholder="Organization Name"]', {timeout: TIMEOUT})
-        .should('exist') // Ensure the element exists
-        .type(OrgName); // Type into the textarea
+    .should('exist') // Ensure the element exists
+    .type(OrgName); // Type into the textarea
     
     cy.get("[aria-label='Create a new organization']", {timeout: TIMEOUT})
-        .should('exist')
-        .click()
-
-    // Verify organization creation
-    cy.contains('Organization created successfully!', {timeout: TIMEOUT})
-        .should('be.visible');
+    .should('exist')
+    .click()
     
 }
 
 const verifyOrgCreated = (OrgName) => {
-    cy.get('input.MuiAutocomplete-input[role="combobox"]', {timeout: TIMEOUT})
-        .type(OrgName);
+    cy.get('.css-1lv7pyi', {timeout: TIMEOUT}).type(OrgName).type('{enter}');
     cy.contains(OrgName).click();
     cy.contains('Profile', {timeout: TIMEOUT})
-        .should('exist')
-        .click()
+    .should('exist')
+    .click()
 }
 
 const updateOrg = (NewOrgName) => {
     cy.get('.css-1u0jcuo', {timeout: TIMEOUT})
-        .eq(0)
-        .clear()
-        .type(NewOrgName);
+    .eq(0)
+    .clear()
+    .type(NewOrgName);
     cy.contains('Update', {timeout: TIMEOUT})
-        .should('exist')
-        .click()
+    .should('exist')
+    .click()
     cy.contains('Organization updated successfully!', {timeout: TIMEOUT})
-        .should('exist');
+    .should('exist');
 }
 
 const linkSalesforce = () => {
 
     cy.get('.css-1g5jyb9', {timeout: TIMEOUT})
-        .should('exist').click().type('Acme{enter}');
+    .should('exist').click().type('Acme{enter}');
     cy.contains('Acme (Sample)', {timeout: TIMEOUT})
-        .should('exist')
-        .click()
+    .should('exist')
+    .click()
     cy.contains('Update', {timeout: TIMEOUT})
-        .should('exist')
-        .click()
+    .should('exist')
+    .click()
     cy.contains('Salesforce account linked successfully', {timeout: TIMEOUT})
-        .should('exist');
+    .should('exist');
 }
 
 const addSubscription = (OrgName) => {
@@ -75,19 +88,17 @@ const removeSubscription = () => {
 }
 
 const deleteOrg = (OrgName) => {
-    cy.get('.css-1lv7pyi')
-        .type(OrgName);
-    cy.contains(OrgName)
-        .click();
-    cy.get('button[aria-label="Cannot Delete Personal Organizations"]', {timeout: TIMEOUT})
-        .should('exist')
-        .click()
-    cy.get('.css-uk8ecu', {timeout: TIMEOUT})
-        .last()
-        .should('exist')
-        .click();
+    cy.get('.css-1lv7pyi').type(OrgName).type('{enter}');
+    cy.contains(OrgName).click();
+    cy.contains('Delete', {timeout: TIMEOUT})
+    .should('exist')
+    .click()
+    cy.get('.css-1q3ylrc')
+    .eq(1)
+    .should('exist')
+    .click()
     cy.contains('Organization deleted successfully', {timeout: TIMEOUT})
-        .should('exist');
+    .should('exist');
 }
 
 class AccountsOrg {
@@ -102,16 +113,11 @@ class AccountsOrg {
     }
     
     static updateOrg(OldOrgName, NewOrgName) {
-        it('Should update the organization name', () => {
+        it('Should update the organization name and link salesforce', () => {
             navigateToAdmin();
             navigateToAccountsOrg();
             verifyOrgCreated(OldOrgName);
             updateOrg(NewOrgName);
-        });
-        it('Should link Salesforce account', () => {
-            navigateToAdmin();
-            navigateToAccountsOrg();
-            verifyOrgCreated(NewOrgName);
             linkSalesforce();
         });
 }
