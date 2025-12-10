@@ -1,15 +1,17 @@
 import { login } from '../support/login.js';
 import Users from '../support/Users.js';
 
-describe('User Management Tests', () => {
+describe('User Subscription Tests', () => {
     
-    // Log in to the application before running the tests
     beforeEach(() => {
-        // Load existing user credentials from accounts.json
         cy.fixture('accounts.json').then((accounts) => {
-            const { username, password } = accounts.existingUsers.resetPasswordUser;   
+            const { username, password } = accounts.existingUsers.resetPasswordUser
             login(username, password);
         });
+    });
+    afterEach(() => {
+        cy.clearCookies();
+        cy.clearLocalStorage();
     });
     
     describe('Subscription Management', () => {
@@ -17,10 +19,6 @@ describe('User Management Tests', () => {
     });
     
     describe('Organization Management', () => {
-        Users.changeOrganization('AMD_QA','Microsoft_QA','chadtest0808');
-    });
-    
-    describe('Reset Password', () => {
-        Users.resetPassword('NewPassword123!', 'Testing12345!');
+        Users.changeOrganization('AMD_QA','Microsoft','chadtest0808');
     });
 });
