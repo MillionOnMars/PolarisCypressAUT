@@ -53,7 +53,8 @@ const linkSalesforce = () => {
 }
 
 const addSubscription = (OrgName) => {
-    cy.contains('Subscriptions', {timeout: TIMEOUT}).click()
+    cy.contains('Subscriptions', {timeout: TIMEOUT})
+        .click()
     cy.contains('Add All', {timeout: TIMEOUT})
         .should('be.visible')
         .click()
@@ -62,10 +63,14 @@ const addSubscription = (OrgName) => {
         .click()
     cy.contains('Subscriptions updated successfully', {timeout: TIMEOUT})
         .should('be.visible');
+
+    //Wait for 3 seconds to ensure subscriptions are added
+    cy.wait(3000);
 }
 
 const removeSubscription = () => {
-    cy.contains('Subscriptions', {timeout: TIMEOUT}).click()
+    cy.contains('Subscriptions', {timeout: TIMEOUT})
+        .click()
     cy.contains('Remove All', {timeout: TIMEOUT})
         .should('be.visible')
         .click()
