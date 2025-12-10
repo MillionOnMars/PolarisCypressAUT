@@ -1,4 +1,4 @@
-import { login } from './login.js';
+import { login2 } from '../support/login.js';
 import { logoutUser } from './Auth.js';
 
 const TIMEOUT = 10000;
@@ -16,8 +16,11 @@ const navigateToUserProfile = () => {
                 .click({ force: true });
         });
     cy.contains('Profile', { timeout: TIMEOUT })
-        .should('exist')
+        .should('be.visible')
         .click({ force: true });
+
+    // wait for profile to load
+    cy.wait(2000);
 };
 
 const navigateToSubscriptionPage = () => {
@@ -32,13 +35,17 @@ const navigateToSubscriptionPage = () => {
 };
 
 const navigateToAdminDashboard = () => {
-    cy.contains('Admin Settings', { timeout: TIMEOUT })
-        .should('exist')
+    cy.get('[data-testid="ManageAccountsIcon"]', { timeout: TIMEOUT })
+        .last()
+        .should('be.visible')
         .click({ force: true });
     
     cy.contains('Admin Dashboard', { timeout: TIMEOUT })
-        .should('exist')
+        .should('be.visible')
         .click({ force: true });
+
+    // Verify admin dashboard loaded
+    cy.url({ timeout: 30000 }).should('include', '/admin');
 };
 
 const saveChanges = () => {
@@ -92,7 +99,7 @@ const addSubscriptionPlan = (subscriptionName) => {
 
 const changeOrganization = (newOrgName, username) => {
     navigateToAdminDashboard();
-    
+
     cy.get('input[placeholder="Search users..."]', { timeout: TIMEOUT })
         .should('exist')
         .should('be.visible')
@@ -182,11 +189,11 @@ const logoutAndClearSession = () => {
 
     // Use the logoutUser function from auth.js
     logoutUser();
-    cy.wait(8000);
+    cy.wait(15000);
     
-    // // Clear all browser state
-    // cy.clearCookies();
-    // cy.clearLocalStorage();
+    // Clear all browser state
+    cy.clearCookies();
+    cy.clearLocalStorage();
     
     cy.log('✅ Session cleared');
 };
@@ -200,7 +207,7 @@ const changePassword = (username, newPassword, originalPassword) => {
     
     // Re-login with new password to verify it works
     cy.log(`🔐 Logging back in with new password for user: ${username}`);
-    login(username, newPassword);
+    login2(username, newPassword);
     cy.wait(3000);
 };
 
