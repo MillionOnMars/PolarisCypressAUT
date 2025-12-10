@@ -1,4 +1,4 @@
-const QA = ['Acme_QA','AMD_QA', 'AWS_QA', 'Broadcom_QA', 'ChadOrg_QA, Inc_QA', 'Cloudera_QA', 'Commvault_QA', 'DELL_QA', 'ElasticSearch_QA', 'Google_QA', 'GoTo_QA', 'Groq', 'HPE_QA', 'HPE_QA', 'IBM_QA', 'Intel_QA', 'JulOrg_Test', 'Lattice_QA', 'Lenovo_QA', 'Logitech_QA', 'Marvell_QA', 'Microsoft', 'NetApp_QA', 'Oracle_QA', 'PureStorage_QA', 'Qualcomm_QA', 'Salesforce_QA', 'ServiceNow_QA', 'Shure_QA', 'Synopsis_QA', 'Veeam_QA', 'Zoho_QA', 'Zoom_QA']; // Add your qas here
+const QA = ['Acme_QA','AMD_QA', 'AWS_QA', 'Broadcom_QA', 'ChadOrg_QA, Inc_QA', 'Cloudera_QA', 'Commvault_QA', 'DELL_QA', 'ElasticSearch_QA', 'Google_QA', 'GoTo_QA', 'Groq', 'HPE_QA', 'HPE_QA', 'IBM_QA', 'Intel_QA', 'JulOrg_Test', 'Lattice_QA', 'Lenovo_QA', 'Logitech_QA', 'Marvell_QA', 'Microsoft', 'NetApp_QA', 'Oracle_QA', 'PureStorage_QA', 'Qualcomm_QA', 'Salesforce_QA', 'ServiceNow_QA', 'Shure_QA', 'SmartSheet_QA', 'Synopsis_QA', 'Veeam_QA', 'Zoho_QA', 'Zoom_QA']; // Add your qas here
 const exclude = ['Logitech_QA', 'ChadOrg_QA, Inc_QA'];
 const filteredQA = QA.filter(q => !exclude.includes(q));
 

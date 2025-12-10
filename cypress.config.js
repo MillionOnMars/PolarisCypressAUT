@@ -177,7 +177,7 @@ module.exports = defineConfig({
           };
 
           fs.writeFileSync(filePath, JSON.stringify(updatedData, null, 2));
-          console.log(`Updated console errors log with ${newErrors.length} new errors. Total: ${updatedData.totalErrors}`);
+          //  console.log(`Updated console errors log with ${newErrors.length} new errors. Total: ${updatedData.totalErrors}`);
           
           return null;
         },
