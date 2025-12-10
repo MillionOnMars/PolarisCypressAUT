@@ -53,25 +53,32 @@ const linkSalesforce = () => {
 }
 
 const addSubscription = (OrgName) => {
-    cy.contains('Subscriptions', {timeout: TIMEOUT}).click()
+    cy.contains('Subscriptions', {timeout: TIMEOUT})
+        .click()
     cy.contains('Add All', {timeout: TIMEOUT})
-    .should('exist')
-    .click()
-    cy.contains('Save Changes', {timeout: TIMEOUT}).should('exist')
-    .click()
+        .should('be.visible')
+        .click()
+    cy.contains('Save Changes', {timeout: TIMEOUT})
+        .should('be.visible')
+        .click()
     cy.contains('Subscriptions updated successfully', {timeout: TIMEOUT})
-    .should('exist');
+        .should('be.visible');
+
+    //Wait for 3 seconds to ensure subscriptions are added
+    cy.wait(3000);
 }
 
 const removeSubscription = () => {
-    cy.contains('Subscriptions', {timeout: TIMEOUT}).click()
+    cy.contains('Subscriptions', {timeout: TIMEOUT})
+        .click()
     cy.contains('Remove All', {timeout: TIMEOUT})
-    .should('exist')
-    .click()
-    cy.contains('Save Changes', {timeout: TIMEOUT}).should('exist')
-    .click()
+        .should('be.visible')
+        .click()
+    cy.contains('Save Changes', {timeout: TIMEOUT})
+        .should('be.visible')
+        .click()
     cy.contains('Subscriptions updated successfully', {timeout: TIMEOUT})
-    .should('exist');
+        .should('be.visible');
 }
 
 const deleteOrg = (OrgName) => {

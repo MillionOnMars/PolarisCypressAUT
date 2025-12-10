@@ -10,7 +10,7 @@ on:
     - cron: '0 7,13,22 * * *'
 
 jobs:
-  cypress-run:
+  TEST-RESULTS-HERE:
     runs-on: ubuntu-latest
     
     steps:
@@ -38,7 +38,7 @@ jobs:
     - name: Install dependencies
       run: npm install
 
-    - name: Run Cypress tests
+    - name: ✅ AUTOMATION TEST RESULTS - CLICK HERE ✅
       id: cypress
       uses: cypress-io/github-action@v5
       with:
@@ -178,7 +178,7 @@ jobs:
           echo "No responseTime.json found"
         fi
 
-    - name: Upload test results
+    - name: 🔍 Uploading Test Evidence (Screenshots/Videos) 🔍
       if: always()
       uses: actions/upload-artifact@v4
       with:
