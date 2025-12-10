@@ -10,7 +10,7 @@ on:
     - cron: '0 7,13,22 * * *'
 
 jobs:
-  CLICK-HERE-FOR-TEST-RESULTS:
+  TEST-RESULTS-HERE:
     runs-on: ubuntu-latest
     
     steps:
