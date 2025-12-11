@@ -27,4 +27,8 @@ describe('Email Jobs Management Tests', () => {
             ]
         );
     });
+    describe.only('Target Organizations section', () => {
+        EmailJobs.verifySelectedOrganizations('AMD_QA','Acme_QA');
+        EmailJobs.verifyOrganizationChecklist('AMD_QA');
+    });
 });
