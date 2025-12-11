@@ -6,7 +6,7 @@ const getRandomQA = (count) => {
     return filteredQA.sort(() => 0.5 - Math.random()).slice(0, count);
 };
 
-const verifyQA = (qa) => {
+export const verifyQA = (qa) => {
     // ORG Selection
     cy.get("button[title='Open']", { timeout: 15000 })
         .should('be.visible')

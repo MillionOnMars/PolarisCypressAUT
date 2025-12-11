@@ -1,6 +1,7 @@
 import { login } from '../support/login.js';
 import Reports from '../support/reports.js';
 
+
 // Test suite for reports section
 describe('Reports Section Tests', () => {
     // Login as admin before each test
@@ -13,7 +14,7 @@ describe('Reports Section Tests', () => {
 
     // Test filtering reports with multiple criteria
     describe('Report Filter Operations', () => {
-        Reports.filterReports();
+        Reports.filterReports(); 
     });
 
     // Test report preview functionality
