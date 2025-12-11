@@ -1,3 +1,6 @@
+import { navigateToResearchEngine } from './navigate.js';
+
+
 const TIMEOUT = 10000;
 const TASK_COMPLETION_TIMEOUT = 120000; // 120 seconds for task to complete
 
@@ -9,7 +12,7 @@ const SELECTORS = {
     },
     agent: {
         createButton: 'Create New Agent',
-        nameInput: 'input[placeholder*="Agent"], input[name*="name"], input[type="text"]',
+        nameInput: 'input[placeholder*="Give"]',
         descriptionTextarea: 'textarea[name="description"][placeholder*="Describe what this agent specializes in"].MuiTextarea-textarea',
         submitButton: 'button',
         deleteButton: 'button.MuiButton-root.MuiButton-variantSolid.MuiButton-colorDanger.MuiButton-sizeMd'
@@ -37,23 +40,6 @@ const MESSAGES = {
     agentDeleted: 'Research agent deleted successfully',
     taskCreated: 'Research task created successfully! 🚀 Starting research...',
     taskCompleted: 'Completed'
-};
-
-// Navigate to Research Engine page
-const navigateToResearchEngine = () => {
-    cy.contains(SELECTORS.navigation.analystTools, { timeout: TIMEOUT })
-        .should('exist')
-        .should('be.visible')
-        .click({ force: true });
-
-    cy.wait(2000);
-    
-    cy.get(SELECTORS.navigation.research, { timeout: TIMEOUT })
-        .eq(1)
-        .should('exist')
-        .click({ force: true });
-    
-    cy.url({ timeout: TIMEOUT }).should('include', '/#/analystTools/research');
 };
 
 // Create a new agent

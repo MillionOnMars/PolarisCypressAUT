@@ -37,3 +37,20 @@ export const navigateToAccountsOrg = () => {
 
     cy.wait(3000); // wait for 3 seconds to ensure the page loads
 };
+
+// Navigate to Research Engine page
+export const navigateToResearchEngine = () => {
+    cy.contains('Analyst Tools', { timeout: TIMEOUT })
+        .should('exist')
+        .should('be.visible')
+        .click({ force: true });
+
+    cy.wait(2000);
+    
+    cy.get('p[aria-label="Research"]', { timeout: TIMEOUT })
+        .first()
+        .should('exist')
+        .click({ force: true });
+    
+    cy.url({ timeout: TIMEOUT }).should('include', '/#/analystTools/research');
+};
