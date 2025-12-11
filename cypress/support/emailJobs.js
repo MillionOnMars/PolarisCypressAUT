@@ -2,6 +2,7 @@ const TIMEOUT = 10000;
 
 const navigateToUserProfile = () => {
     cy.get('[data-testid="PersonIcon"]', { timeout: TIMEOUT })
+        .eq(1) // Select the second occurrence
         .should('exist')
         .click({ force: true });
     cy.contains('Profile', { timeout: TIMEOUT })
@@ -171,6 +172,88 @@ const sendToUsers = (emailJobName, organization, userEmails) => {
     verifyEmailJobUpdateSuccess();
 };
 
+const selectCreateJob = () => {
+    // Click on Create Job button
+    cy.contains('Create Job', { timeout: TIMEOUT })
+        .should('exist')
+        .should('be.visible')
+        .click({ force: true });
+};
+
+const selectOrganizationFromChecklist = (organization) => {
+    // Find the organization item and click it to toggle checkbox
+    cy.get('div.MuiBox-root.css-15ml4b9', { timeout: TIMEOUT })
+        .contains(organization)
+        .should('exist')
+        .click({ force: true }); // Click the entire box to toggle checkbox
+    
+    // Verify checkbox is checked
+    cy.get('span.MuiTypography-root.MuiTypography-body-xs', { timeout: TIMEOUT })
+        .contains(organization)
+        .parent()
+        .find('input[type="checkbox"]', { timeout: TIMEOUT })
+        .should('be.checked');
+};
+
+const verifyTargetOrganizationsSection = (org1, org2) => {
+    // Verify the Target Organizations section exists with both orgs
+    cy.get('div.MuiBox-root.css-1vrkypf', { timeout: TIMEOUT })
+        .should('exist')
+        .should('be.visible')
+        .within(() => {
+            // Verify org1 exists
+            cy.get('span.MuiChip-label', { timeout: TIMEOUT })
+                .contains(org1)
+                .should('exist')
+                .should('be.visible');
+            
+            // Verify org2 exists
+            cy.get('span.MuiChip-label', { timeout: TIMEOUT })
+                .contains(org2)
+                .should('exist')
+                .should('be.visible');
+            
+            // Verify total count
+            cy.get('span.MuiChip-label', { timeout: TIMEOUT })
+                .should('have.length.at.least', 2)
+                .then(($chips) => {
+                    const chipTexts = Array.from($chips).map(el => el.textContent);
+                    cy.log(`Target Organizations: ${chipTexts.join(', ')}`);
+                });
+        });
+};
+
+const verifyOrganizationChecklist = () => {
+    // Verify the checklist container exists
+    cy.get('div.MuiSheet-root.MuiSheet-variantOutlined', { timeout: TIMEOUT })
+        .should('exist')
+        .should('be.visible');
+    
+    // Verify all checkboxes and organization labels exist
+    cy.get('div.MuiBox-root.css-15ml4b9', { timeout: TIMEOUT })
+        .should('have.length.greaterThan', 0)
+        .each(($organizationItem) => {
+            // Verify checkbox exists (don't check visibility - it has opacity: 0)
+            cy.wrap($organizationItem)
+                .find('input[type="checkbox"]', { timeout: TIMEOUT })
+                .should('exist');
+            
+            // Verify organization label exists and is visible
+            cy.wrap($organizationItem)
+                .find('span.MuiTypography-root.MuiTypography-body-xs', { timeout: TIMEOUT })
+                .should('exist')
+                .should('exist');
+        });
+    
+    // Log total number of organizations
+    cy.get('div.MuiBox-root.css-15ml4b9', { timeout: TIMEOUT })
+        .then(($items) => {
+            const organizationCount = $items.length;
+            cy.log(`Total organizations in checklist: ${organizationCount}`);
+            expect(organizationCount).to.be.greaterThan(0);
+        });
+};
+
 class EmailJobs {
     static runBatchJobs(emailJobName, organization) {
         it('Should run batch jobs', () => {
@@ -187,6 +270,27 @@ class EmailJobs {
             navigateToAdminDashboard();
             navigateToEmailJobsPage();
             sendToUsers(emailJobName, organization, userEmails);
+        });
+    }
+    static verifySelectedOrganizations(org1, org2) {
+        it('Should verify Target Organizations section', () => {
+            navigateToUserProfile();
+            navigateToAdminDashboard();
+            navigateToEmailJobsPage();
+            selectCreateJob();
+            selectOrganizationFromChecklist(org1);
+            selectOrganizationFromChecklist(org2);
+            verifyTargetOrganizationsSection(org1, org2);
+        });
+    }
+    static verifyOrganizationChecklist(org1) {
+        it('Should verify organization checklist functionality', () => {
+            navigateToUserProfile();
+            navigateToAdminDashboard();
+            navigateToEmailJobsPage();
+            selectCreateJob();
+            selectOrganizationFromChecklist(org1);
+            verifyOrganizationChecklist();
         });
     }
 }
