@@ -1,18 +1,7 @@
+import { navigateToReportsSection } from './navigate.js';
+import { verifyQA, getRandomQA } from './data.js';
+
 const TIMEOUT = 10000;
-
-const navigateToReportsSection = () => {
-    cy.contains('Reports', { timeout: TIMEOUT })
-        .should('be.visible')
-        .click({ force: true });
-};
-
-const waitForHomepageToLoad = () => {
-    // Wait for the organization autocomplete input to be visible
-    cy.get('input[role="combobox"][class*="MuiAutocomplete-input"]', { timeout: TIMEOUT })
-        .should('exist')
-        .should('be.visible')
-        .should('have.value', 'Microsoft_QA');
-};
 
 const waitForLoadingToComplete = () => {
     // Wait for loading animation to disappear
@@ -349,7 +338,8 @@ class Reports {
         it('Should search reports', () => {
             cy.fixture('data.json').then((data) => {
                 const { name } = data.report;
-                waitForHomepageToLoad();
+                const qa = getRandomQA(1)[0]
+                verifyQA(qa);
                 navigateToReportsSection();
                 searchReport(name);
                 verifyReportIsDisplayed(name);
@@ -359,7 +349,7 @@ class Reports {
         it('Should filter Practice Area, Report Type, Year and Quarter', () => {
             cy.fixture('data.json').then((data) => {
                 const { practiceArea, reportType, year, quarter } = data.report;
-                waitForHomepageToLoad();
+                // waitForHomepageToLoad();
                 navigateToReportsSection();
                 applyReportFilters(practiceArea, reportType, year, quarter);
             });
@@ -370,7 +360,6 @@ class Reports {
         it('Should view report preview and open full report', () => {
             cy.fixture('data.json').then((data) => {
                 const { name, title } = data.report;
-                waitForHomepageToLoad();
                 navigateToReportsSection();
                 previewReport(name, title);
             });
@@ -381,7 +370,6 @@ class Reports {
         it('Should export report as PDF', () => {
             cy.fixture('data.json').then((data) => {
                 const { name, title } = data.report;
-                waitForHomepageToLoad();
                 navigateToReportsSection();
                 exportReport(name, title);
             });
