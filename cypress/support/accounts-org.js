@@ -22,6 +22,7 @@ const verifyOrgCreated = (OrgName) => {
         .type(OrgName);
     cy.contains(OrgName).click();
     cy.contains('Profile', {timeout: TIMEOUT})
+        .first()
         .should('exist')
         .click()
 }
@@ -41,8 +42,8 @@ const updateOrg = (NewOrgName) => {
 const linkSalesforce = () => {
 
     cy.get('.css-1g5jyb9', {timeout: TIMEOUT})
-        .should('exist').click().type('Acme{enter}');
-    cy.contains('Acme (Sample)', {timeout: TIMEOUT})
+        .should('exist').click().type('Acme');
+    cy.contains('Acme (Sample)', {matchCase: false, timeout: TIMEOUT})
         .should('exist')
         .click()
     cy.contains('Update', {timeout: TIMEOUT})
@@ -87,6 +88,7 @@ const deleteOrg = (OrgName) => {
     cy.contains(OrgName)
         .click();
     cy.get('button[aria-label="Cannot Delete Personal Organizations"]', {timeout: TIMEOUT})
+        .first()
         .should('exist')
         .click()
     cy.get('.css-uk8ecu', {timeout: TIMEOUT})
