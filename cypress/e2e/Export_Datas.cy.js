@@ -11,7 +11,6 @@ describe('Verify Export Data functionality', () => {
             login(username, password);
         });
     });
-
     // Choose 3 random Practice Areas and verify export data functionality
     randomPracticeAreas.forEach((area) => {
         ExportData.verifyExportData(area);
