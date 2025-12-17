@@ -15,7 +15,7 @@ const verifyFileContent = (filePath, expectedContent) => {
 const exportData = (pracArea) => {
     cy.wait(2000); // wait for 2 seconds
     cy.get('[aria-label="Export Data"]', {timeout: 10000})
-        .eq(1)
+        .first()
         .should('exist')
         .click({force:true}); // Click Export Data button on left navigation
         // Practice Area Selection
@@ -26,6 +26,7 @@ const exportData = (pracArea) => {
         .click();
         cy.wait(2000); // wait for dropdown to load
     cy.get('.css-pfk9p').contains(pracArea, { timeout: 10000 })
+    .first()
     .click()
     cy.wait(2000); // wait for section to load
     

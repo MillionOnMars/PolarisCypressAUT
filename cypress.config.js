@@ -15,7 +15,7 @@ module.exports = defineConfig({
       'cypress/e2e/FuturumAI.cy.js',
       'cypress/e2e/Users.cy.js',
       'cypress/e2e/UserPassword.cy.js',
-      // 'cypress/e2e/export_data.cy.js',
+      'cypress/e2e/Export_Data.cy.js',
        'cypress/e2e/Email_Templates.cy.js',
        'cypress/e2e/Email_Jobs.cy.js',  
        'cypress/e2e/Practice_Area.cy.js',
