@@ -14,10 +14,10 @@
         "practiceArea": "AI Platforms",
         "title": "Dataset Template",
         "description": "This is a template for dataset.",
-        "imageUrl":"https://futurumgroup.com/wp-content/uploads/2025/09/SOC-Challenges-by-Regulatory-Burden-Skills-Sophistication-and-Compliance.jpg.webp",
+        "imageUrl": "https://futurumgroup.com/wp-content/uploads/2025/09/SOC-Challenges-by-Regulatory-Burden-Skills-Sophistication-and-Compliance.jpg.webp",
         "url": "https://futurumgroup.com/research-reports/a-multi-layered-approach-to-data-infrastructure-protection-and-security/",
         "leadAnalyst": "Krista Case",
-        "leadAnalystUrl":"https://futurumgroup.com/author/krista-case/",
+        "leadAnalystUrl": "https://futurumgroup.com/author/krista-case/",
         "additionalAnalysts": "Mitch Ashley",
         "additionalAnalystsUrl": "https://futurumgroup.com/mitch-ashley/"
     },
@@ -28,13 +28,13 @@
         "selectUser": "chad+test102112",
         "previewTitle": "Curated Futurum"
     },
-     "testEmail": {
+    "testEmail": {
         "emailTemplateName": "Production Monthly Spotlight Email",
         "orgName": "AMD_QA",
         "userName": "Chad Test0527",
         "selectUser": "chad+test102112",
         "previewTitle": "Curated Futurum",
-        "testRecipient":"chad+test0808@milliononmars.com"
+        "testRecipient": "chad+test0808@milliononmars.com"
     },
     "researchEngine": {
         "agentName": "Test Automation Agent",
@@ -50,7 +50,7 @@
     "practiceAreas": {
         "subscribed": [
             "AI Platforms",
-            "Software Engineering", 
+            "Software Engineering",
             "Cybersecurity",
             "Enterprise Software"
         ],
@@ -75,7 +75,30 @@
     },
     "emailJob": {
         "name": "monthly IBM emails",
-        "organization": "AMD_QA (3 users)"
+        "organization": "AMD_QA (3 users)",
+        "org1": "AMD_QA",
+        "org2": "Acme_QA",
+        "emailJobName": "July 2025 Kevin",
+        "emailJobName2": "Test",
+        "user1": "kevin+110b",
+        "userEmails": [
+            "chad+test03180@milliononmars.com",
+            "kevin+110b@milliononmars.com"
+        ],
+        "alluseremails": [
+            "chad+test03180@milliononmars.com",
+            "kevin+110b@milliononmars.com",
+            "rgordon@futurumgroup.com",
+            "fmontenegro@futurumgroup.com",
+            "allan@milliononmars.com",
+            "kevin+74a@milliononmars.com"
+        ],
+        "allorgnames": [
+            "AMD_QA",
+            "Acme_QA",
+            "Broadcom_QA",
+            "Arm_QA"
+        ]   
     },
     "report": {
         "name": "Ungated Report on Quantum Computing",

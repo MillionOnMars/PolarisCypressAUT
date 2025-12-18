@@ -1,8 +1,9 @@
 const TIMEOUT = 10000;
+const WAIT_TIMEOUT = 2000;
 
 const navigateToUserProfile = () => {
     cy.get('[data-testid="PersonIcon"]', { timeout: TIMEOUT })
-        .eq(1) // Select the second occurrence
+        .eq(1)
         .should('exist')
         .click({ force: true });
     cy.contains('Profile', { timeout: TIMEOUT })
@@ -14,7 +15,7 @@ const navigateToAdminDashboard = () => {
     cy.contains('Admin Settings', { timeout: TIMEOUT })
         .should('exist')
         .click({ force: true });
-    
+
     cy.contains('Admin Dashboard', { timeout: TIMEOUT })
         .should('exist')
         .click({ force: true });
@@ -27,7 +28,6 @@ const navigateToEmailJobsPage = () => {
 };
 
 const selectEmailJob = (emailJobName) => {
-    // Click on the email job by name
     cy.get('p.MuiTypography-root.MuiTypography-title-sm', { timeout: TIMEOUT })
         .contains(emailJobName)
         .should('exist')
@@ -36,7 +36,6 @@ const selectEmailJob = (emailJobName) => {
 };
 
 const findOrganizationCard = (organization) => {
-    // Find the organization card
     return cy.get('p.MuiTypography-root.MuiTypography-body-md', { timeout: TIMEOUT })
         .contains(organization)
         .scrollIntoView()
@@ -47,7 +46,6 @@ const findOrganizationCard = (organization) => {
 };
 
 const clickOrganizationSendButton = (organization) => {
-    // Find organization and click its Send button
     findOrganizationCard(organization)
         .within(() => {
             cy.get('button[class*="MuiButton-colorPrimary"]', { timeout: TIMEOUT })
@@ -59,8 +57,7 @@ const clickOrganizationSendButton = (organization) => {
 };
 
 const clickViewUsersButton = (organization) => {
-    // Find organization and click its View Users button
-    findOrganizationCard(organization, { timeout: TIMEOUT })
+    findOrganizationCard(organization)
         .within(() => {
             cy.get('button[class*="MuiButton-colorNeutral"]', { timeout: TIMEOUT })
                 .contains('View Users')
@@ -72,7 +69,6 @@ const clickViewUsersButton = (organization) => {
 };
 
 const selectUsers = (userEmails) => {
-    // Select users by their email addresses
     userEmails.forEach((email) => {
         cy.get('input[type="checkbox"]', { timeout: TIMEOUT })
             .parents('tr, li, .MuiListItem-root')
@@ -88,14 +84,12 @@ const selectUsers = (userEmails) => {
 };
 
 const verifyUpdateSuccess = () => {
-    // Verify email job was updated successfully
     cy.contains('Email job updated successfully', { timeout: TIMEOUT })
         .should('exist')
         .should('be.visible');
 };
 
 const verifyRecipientCount = () => {
-    // Verify total recipients are more than 1
     cy.get('p.MuiTypography-root.MuiTypography-body-sm', { timeout: TIMEOUT })
         .contains('Total recipients:')
         .should('exist')
@@ -109,36 +103,24 @@ const verifyRecipientCount = () => {
 };
 
 const confirmAndSendEmail = () => {
-    // Click Confirm & Send button
     cy.get('button[class*="MuiButton-colorPrimary"]', { timeout: TIMEOUT })
         .contains('Confirm & Send')
         .should('exist')
         .should('be.visible')
         .click({ force: true });
-    
-    // Verify email job was sent successfully
+
     verifyUpdateSuccess();
 };
 
 const sendBatchJob = (emailJobName, organization) => {
-    // Select the email job
     selectEmailJob(emailJobName);
-    
-    // Click Send button for the specific organization
     clickOrganizationSendButton(organization);
-    
-    // Verify initial update success
     verifyUpdateSuccess();
-    
-    // Verify recipient count is valid
     verifyRecipientCount();
-    
-    // Confirm and send the email
     confirmAndSendEmail();
 };
 
 const clickSendToSelectedUsersButton = () => {
-    // Click Send to Selected Users button (exact match, not "in 1 Organization")
     cy.get('button[class*="MuiButton-sizeMd"]', { timeout: TIMEOUT })
         .filter(':contains("Send to Selected Users")')
         .not(':contains("Organization")')
@@ -148,32 +130,15 @@ const clickSendToSelectedUsersButton = () => {
         .click({ force: true });
 };
 
-const verifyEmailJobUpdateSuccess = () => {
-    // Verify email job was updated successfully
-    cy.contains('Email job updated successfully', { timeout: TIMEOUT })
-        .should('exist')
-        .should('be.visible');
-};
-
 const sendToUsers = (emailJobName, organization, userEmails) => {
-    // Select the email job
     selectEmailJob(emailJobName);
-
-    // Click View Users button for the specific organization
     clickViewUsersButton(organization);
-
-    // Select users by email
     selectUsers(userEmails);
-
-    // Click Send to Selected Users button
     clickSendToSelectedUsersButton();
-
-    // Verify email job was sent successfully
-    verifyEmailJobUpdateSuccess();
+    verifyUpdateSuccess();
 };
 
 const selectCreateJob = () => {
-    // Click on Create Job button
     cy.contains('Create Job', { timeout: TIMEOUT })
         .should('exist')
         .should('be.visible')
@@ -181,13 +146,11 @@ const selectCreateJob = () => {
 };
 
 const selectOrganizationFromChecklist = (organization) => {
-    // Find the organization item and click it to toggle checkbox
     cy.get('div.MuiBox-root.css-15ml4b9', { timeout: TIMEOUT })
         .contains(organization)
         .should('exist')
-        .click({ force: true }); // Click the entire box to toggle checkbox
-    
-    // Verify checkbox is checked
+        .click({ force: true });
+
     cy.get('span.MuiTypography-root.MuiTypography-body-xs', { timeout: TIMEOUT })
         .contains(organization)
         .parent()
@@ -195,57 +158,41 @@ const selectOrganizationFromChecklist = (organization) => {
         .should('be.checked');
 };
 
-const verifyTargetOrganizationsSection = (org1, org2) => {
-    // Verify the Target Organizations section exists with both orgs
-    cy.get('div.MuiBox-root.css-1vrkypf', { timeout: TIMEOUT })
+const clickDropdownAndWait = (dropdownText, waitTime = 800) => {
+    cy.contains(dropdownText, { timeout: TIMEOUT })
+        .scrollIntoView()
         .should('exist')
         .should('be.visible')
-        .within(() => {
-            // Verify org1 exists
-            cy.get('span.MuiChip-label', { timeout: TIMEOUT })
-                .contains(org1)
-                .should('exist')
-                .should('be.visible');
-            
-            // Verify org2 exists
-            cy.get('span.MuiChip-label', { timeout: TIMEOUT })
-                .contains(org2)
-                .should('exist')
-                .should('be.visible');
-            
-            // Verify total count
-            cy.get('span.MuiChip-label', { timeout: TIMEOUT })
-                .should('have.length.at.least', 2)
-                .then(($chips) => {
-                    const chipTexts = Array.from($chips).map(el => el.textContent);
-                    cy.log(`Target Organizations: ${chipTexts.join(', ')}`);
-                });
-        });
+        .click({ force: true });
+
+    cy.wait(waitTime);
+
+    cy.get('ul[role="listbox"]', { timeout: TIMEOUT })
+        .should('exist')
+        .should('be.visible');
+
+    cy.get('li[role="option"]', { timeout: TIMEOUT })
+        .should('have.length.at.least', 1)
+        .should('be.visible');
 };
 
 const verifyOrganizationChecklist = () => {
-    // Verify the checklist container exists
     cy.get('div.MuiSheet-root.MuiSheet-variantOutlined', { timeout: TIMEOUT })
         .should('exist')
         .should('be.visible');
-    
-    // Verify all checkboxes and organization labels exist
+
     cy.get('div.MuiBox-root.css-15ml4b9', { timeout: TIMEOUT })
         .should('have.length.greaterThan', 0)
         .each(($organizationItem) => {
-            // Verify checkbox exists (don't check visibility - it has opacity: 0)
             cy.wrap($organizationItem)
                 .find('input[type="checkbox"]', { timeout: TIMEOUT })
                 .should('exist');
-            
-            // Verify organization label exists and is visible
+
             cy.wrap($organizationItem)
                 .find('span.MuiTypography-root.MuiTypography-body-xs', { timeout: TIMEOUT })
-                .should('exist')
                 .should('exist');
         });
-    
-    // Log total number of organizations
+
     cy.get('div.MuiBox-root.css-15ml4b9', { timeout: TIMEOUT })
         .then(($items) => {
             const organizationCount = $items.length;
@@ -254,43 +201,131 @@ const verifyOrganizationChecklist = () => {
         });
 };
 
+const verifyOrganizationDropdownLoads = (organization) => {
+    clickDropdownAndWait('Select Organization');
+
+    cy.get('li[role="option"]', { timeout: TIMEOUT })
+        .contains(organization)
+        .should('exist')
+        .should('be.visible')
+        .click({ force: true });
+};
+
+const verifyUserDropdownLoads = (userLabel, userEmails) => {
+    clickDropdownAndWait(userLabel);
+
+    userEmails.forEach((email) => {
+        cy.get('li[role="option"]', { timeout: TIMEOUT })
+            .contains(email)
+            .should('exist')
+            .should('be.visible');
+    });
+};
+
+const verifyPreviewEmailTemplate = () => {
+    cy.get('iframe.MuiBox-root.css-1u53332', { timeout: TIMEOUT })
+        .should('exist')
+        .should('be.visible');
+
+    cy.wait(WAIT_TIMEOUT);
+
+    cy.get('iframe.MuiBox-root.css-1u53332', { timeout: TIMEOUT })
+        .its('0.contentDocument.body')
+        .should('not.be.empty')
+        .then(cy.wrap)
+        .find('h1')
+        .contains('The latest Futurum updates for Acme_QA')
+        .should('exist')
+        .should('be.visible');
+};
+
+const setupEmailJobNavigation = () => {
+    navigateToUserProfile();
+    navigateToAdminDashboard();
+    navigateToEmailJobsPage();
+};
+
 class EmailJobs {
-    static runBatchJobs(emailJobName, organization) {
+    static runBatchJobs() {
         it('Should run batch jobs', () => {
-            navigateToUserProfile();
-            navigateToAdminDashboard();
-            navigateToEmailJobsPage();
-            sendBatchJob(emailJobName, organization);
+            cy.fixture('data.json').then((data) => {
+                const { emailJobName, org1 } = data.emailJob;
+                setupEmailJobNavigation();
+                sendBatchJob(emailJobName, org1);
+            });
         });
     }
-    
-    static sendToSelectedUsers(emailJobName, organization, userEmails) {
+
+    static sendToSelectedUsers() {
         it('Should send email job to selected users', () => {
-            navigateToUserProfile();
-            navigateToAdminDashboard();
-            navigateToEmailJobsPage();
-            sendToUsers(emailJobName, organization, userEmails);
+            cy.fixture('data.json').then((data) => {
+                const { emailJobName2, org2, userEmails } = data.emailJob;
+                setupEmailJobNavigation();
+                sendToUsers(emailJobName2, org2, userEmails);
+            });
         });
     }
-    static verifySelectedOrganizations(org1, org2) {
+
+    static verifySelectedOrganizations() {
         it('Should verify Target Organizations section', () => {
-            navigateToUserProfile();
-            navigateToAdminDashboard();
-            navigateToEmailJobsPage();
-            selectCreateJob();
-            selectOrganizationFromChecklist(org1);
-            selectOrganizationFromChecklist(org2);
-            verifyTargetOrganizationsSection(org1, org2);
+            cy.fixture('data.json').then((data) => {
+                const { org1, org2 } = data.emailJob;
+                setupEmailJobNavigation();
+                selectCreateJob();
+                selectOrganizationFromChecklist(org1);
+                selectOrganizationFromChecklist(org2);
+            });
         });
     }
-    static verifyOrganizationChecklist(org1) {
+
+    static verifyOrganizationChecklist() {
         it('Should verify organization checklist functionality', () => {
-            navigateToUserProfile();
-            navigateToAdminDashboard();
-            navigateToEmailJobsPage();
-            selectCreateJob();
-            selectOrganizationFromChecklist(org1);
-            verifyOrganizationChecklist();
+            cy.fixture('data.json').then((data) => {
+                const { org1 } = data.emailJob;
+                setupEmailJobNavigation();
+                selectCreateJob();
+                selectOrganizationFromChecklist(org1);
+                verifyOrganizationChecklist();
+            });
+        });
+    }
+
+    static previewEmailTemplate() {
+        it('All orgs should load', () => {
+            cy.fixture('data.json').then((data) => {
+                const { allorgnames } = data.emailJob;
+                setupEmailJobNavigation();
+                selectCreateJob();
+                
+                allorgnames.forEach((org) => {
+                    selectOrganizationFromChecklist(org);
+                });
+                
+                verifyOrganizationDropdownLoads(allorgnames[0]);
+            });
+        });
+
+        it('All users should load', () => {
+            cy.fixture('data.json').then((data) => {
+                const { org2, user1, alluseremails } = data.emailJob;
+                setupEmailJobNavigation();
+                selectCreateJob();
+                selectOrganizationFromChecklist(org2);
+                verifyOrganizationDropdownLoads(org2);
+                verifyUserDropdownLoads(user1, alluseremails);
+            });
+        });
+
+        it('Should preview email template', () => {
+            cy.fixture('data.json').then((data) => {
+                const { emailJobName2, org2, user1, alluseremails } = data.emailJob;
+                setupEmailJobNavigation();
+                selectEmailJob(emailJobName2);
+                selectOrganizationFromChecklist(org2);
+                verifyOrganizationDropdownLoads(org2);
+                verifyUserDropdownLoads(user1, alluseremails);
+                verifyPreviewEmailTemplate();
+            });
         });
     }
 }

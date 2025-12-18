@@ -13,22 +13,18 @@ describe('Email Jobs Management Tests', () => {
 
     // Test running batch jobs for all users in an organization
     describe('Batch Job Operations', () => {
-        EmailJobs.runBatchJobs('July 2025 Kevin', 'AMD_QA');
+        EmailJobs.runBatchJobs();
     });
     
     // Test sending emails to selected users in an organization
     describe('Send to Selected Users Operations', () => {
-        EmailJobs.sendToSelectedUsers(
-            'Test', 
-            'Acme_QA',
-            [
-                'chad+test03180@milliononmars.com', 
-                'kevin+110b@milliononmars.com'
-            ]
-        );
+        EmailJobs.sendToSelectedUsers();
     });
     describe('Target Organizations section', () => {
-        EmailJobs.verifySelectedOrganizations('AMD_QA','Acme_QA');
-        EmailJobs.verifyOrganizationChecklist('AMD_QA');
+        EmailJobs.verifySelectedOrganizations();
+        EmailJobs.verifyOrganizationChecklist();
+    });
+    describe('Preview Section', () => {
+        EmailJobs.previewEmailTemplate();
     });
 });
