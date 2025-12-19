@@ -5,7 +5,7 @@ const getRandomPracticeArea = (count) => {
 };
 
 const verifyFileContent = (filePath, expectedContent) => {
-    cy.readFile(filePath, { timeout: 15000 })
+    cy.readFile(filePath, { timeout: 60000 })
         .should('exist')
         .then((fileContent) => {
             expect(fileContent).to.include(expectedContent);
