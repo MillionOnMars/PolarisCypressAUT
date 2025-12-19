@@ -47,7 +47,7 @@ const practiceAreaConfig = {
         ],
         files: [
             { path: 'cypress/downloads/Scenario Forecast.csv', content: 'Scenario' },
-            { path: 'cypress/downloads/Submarket Forecast.csv', content: 'Deployment' },
+            { path: 'cypress/downloads/Submarket Forecast.csv', content: 'GPU' },
             { path: 'cypress/downloads/Market Share.csv', content: 'North America' },
             { path: 'cypress/downloads/Strategic Investments.csv', content: 'Europe - Western Europe/EU' }
         ]
