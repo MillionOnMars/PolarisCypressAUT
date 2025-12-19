@@ -1,4 +1,4 @@
-const PracticeArea = ['AI Platforms', 'Cybersecurity', 'Semiconductors', 'Sofware Engineering', 'Enterprise Software', 'CIO Insights', 'CEO Insights', 'AI Devices', 'Channel Ecosystems']; // Add Practice Areas here - no data yet (Customer Experience, Quantum Computing, Communications Network, Data Intelligence,) - Customer Portal has its own Export Data.
+const PracticeArea = ['AI Platforms', 'Cybersecurity', 'Semiconductors', 'Software Engineering', 'Enterprise Software', 'CIO Insights', 'CEO Insights', 'AI Devices', 'Channel Ecosystems']; // Add Practice Areas here - no data yet (Customer Experience, Quantum Computing, Communications Network, Data Intelligence,) - Customer Portal has its own Export Data.
 
 const getRandomPracticeArea = (count) => {
     return PracticeArea.sort(() => 0.5 - Math.random()).slice(0, count);
@@ -12,194 +12,186 @@ const verifyFileContent = (filePath, expectedContent) => {
         });
 };
 
+// Configuration object for each practice area
+const practiceAreaConfig = {
+    'AI Platforms': {
+        exports: [
+            { xpath: "(//span[contains(text(),'Export')])[1]", wait: 5000 },
+            { xpath: "(//span[contains(text(),'Export')])[2]", wait: 5000 },
+            { xpath: "(//span[contains(text(),'Export')])[3]", wait: 10000 },
+            { xpath: "(//span[contains(text(),'Export')])[4]", wait: 10000 }
+        ],
+        files: [
+            { path: 'cypress/downloads/Scenario Forecast.csv', content: 'Scenario' },
+            { path: 'cypress/downloads/Market Forecast.csv', content: 'Deployment' },
+            { path: 'cypress/downloads/AI Practices.csv', content: 'North America' },
+            { path: 'cypress/downloads/AI Models.csv', content: 'North America' }
+        ]
+    },
+    'Cybersecurity': {
+        exports: [
+            { xpath: "(//span[contains(text(),'Export')])[1]", wait: 10000 },
+            { xpath: "(//span[contains(text(),'Export')])[2]", wait: 10000 }
+        ],
+        files: [
+            { path: 'cypress/downloads/Cyber Security Usage.csv', content: 'North America' },
+            { path: 'cypress/downloads/Data Protection.csv', content: 'North America' }
+        ]
+    },
+    'Semiconductors': {
+        exports: [
+            { xpath: "(//span[contains(text(),'Export')])[1]", wait: 5000 },
+            { xpath: "(//span[contains(text(),'Export')])[2]", wait: 5000 },
+            { xpath: "(//span[contains(text(),'Export')])[5]", wait: 10000 },
+            { xpath: "(//span[contains(text(),'Export')])[6]", wait: 10000 }
+        ],
+        files: [
+            { path: 'cypress/downloads/Scenario Forecast.csv', content: 'Scenario' },
+            { path: 'cypress/downloads/Submarket Forecast.csv', content: 'Deployment' },
+            { path: 'cypress/downloads/Market Share.csv', content: 'North America' },
+            { path: 'cypress/downloads/Strategic Investments.csv', content: 'Europe - Western Europe/EU' }
+        ]
+    },
+    'Software Engineering': {
+        exports: [
+            { xpath: "(//span[contains(text(),'Export')])[1]", wait: 5000 },
+            { xpath: "(//span[contains(text(),'Export')])[2]", wait: 10000 },
+            { xpath: "(//span[contains(text(),'Export')])[3]", wait: 10000 }
+        ],
+        files: [
+            { path: 'cypress/downloads/DevOps Market.csv', content: 'Cloud' },
+            { path: 'cypress/downloads/ADM Practices.csv', content: 'North America' },
+            { path: 'cypress/downloads/AIOps.csv', content: 'North America' }
+        ]
+    },
+    'Enterprise Software': {
+        exports: [
+            { xpath: "(//span[contains(text(),'Export')])[1]", wait: 5000 },
+            { xpath: "(//span[contains(text(),'Export')])[2]", wait: 5000 },
+            { xpath: "(//span[contains(text(),'Export')])[14]", wait: 10000 },
+            { xpath: "(//span[contains(text(),'Export')])[15]", wait: 10000 }
+        ],
+        files: [
+            { path: 'cypress/downloads/Application Practices.csv', content: 'North America' },
+            { path: 'cypress/downloads/Business Intelligence.csv', content: 'North America' },
+            { path: 'cypress/downloads/Actual Revenue.csv', content: 'Business Services' },
+            { path: 'cypress/downloads/Forecast Revenue.csv', content: 'Business Services' }
+        ]
+    },
+    'CIO Insights': {
+        exports: [
+            { xpath: "(//span[contains(text(),'Export')])[1]", wait: 10000 },
+            { xpath: "(//span[contains(text(),'Export')])[2]", wait: 10000 }
+        ],
+        files: [
+            { path: 'cypress/downloads/Priorities.csv', content: 'North America' },
+            { path: 'cypress/downloads/IT Spend.csv', content: 'North America' }
+        ]
+    },
+    'CEO Insights': {
+        exports: [
+            { xpath: "(//span[contains(text(),'Export')])[1]", wait: 10000 },
+            { xpath: "(//span[contains(text(),'Export')])[2]", wait: 10000 }
+        ],
+        files: [
+            { path: 'cypress/downloads/Planning.csv', content: 'North America' },
+            { path: 'cypress/downloads/Execution.csv', content: 'North America' }
+        ]
+    },
+    'AI Devices': {
+        exports: [
+            { xpath: "(//span[contains(text(),'Export')])[1]", wait: 5000 }
+        ],
+        files: [
+            { path: 'cypress/downloads/Actual Revenue.csv', content: 'Laptop' }
+        ]
+    },
+    'Channel Ecosystems': {
+        exports: [
+            { xpath: "(//span[contains(text(),'Export')])[1]", wait: 10000 },
+            { xpath: "(//span[contains(text(),'Export')])[2]", wait: 10000 }
+        ],
+        files: [
+            { path: 'cypress/downloads/Market Expectations.csv', content: 'North America' },
+            { path: 'cypress/downloads/Vendors.csv', content: 'North America' }
+        ]
+    }
+};
+
 const exportData = (pracArea) => {
-    cy.wait(2000); // wait for 2 seconds
+    cy.wait(2000);
     cy.get('[aria-label="Export Data"]', {timeout: 10000})
         .first()
         .should('exist')
-        .click({force:true}); // Click Export Data button on left navigation
-        // Practice Area Selection
+        .click({force:true});
+    
+    // Practice Area Selection
     cy.get("button[role='combobox']", { timeout: 10000 })
-        .contains('AI Platforms') // Ensure the dropdown has loaded
+        .contains('AI Platforms')
         .should('be.visible')
         .should('not.be.disabled', { timeout: 10000 })
         .click();
-        cy.wait(2000); // wait for dropdown to load
-    cy.get('.css-pfk9p').contains(pracArea, { timeout: 10000 })
-    .first()
-    .click()
-    cy.wait(2000); // wait for section to load
     
-    switch(pracArea) {
-        case 'AI Platforms':
-            //Market Data
-            cy.xpath("(//span[contains(text(),'Export')])[1]").click(); // Export Data button - Actual Revenue
-            cy.xpath("(//span[contains(text(),'Export')])[2]").click(); // Export Data button - Forecast Revenue
-            cy.wait(5000); // wait for 5 seconds for the files to download
-            //Decision Maker
-            cy.xpath("(//span[contains(text(),'Export')])[3]").click(); // Export Data button - AI Practices
-            cy.xpath("(//span[contains(text(),'Export')])[4]").click(); // Export Data button - Consultants & Integrators
-            cy.wait(10000); // wait for 10 seconds for the files to download
-            
-            // Verify Files
-            verifyFileContent('cypress/downloads/Actual Revenue.csv', 'Development Tools');
-            verifyFileContent('cypress/downloads/Forecast Revenue.csv', 'Development Tools');
-            verifyFileContent('cypress/downloads/AI Practices.csv', 'Qualified');
-            verifyFileContent('cypress/downloads/Consultants & Integrators.csv', 'North America');
-            //Delete Downloaded Files
-            cy.task('deleteFiles', [
-            'cypress/downloads/Actual Revenue.csv',
-            'cypress/downloads/Forecast Revenue.csv',
-            'cypress/downloads/AI Practices.csv',
-            'cypress/downloads/Consultants & Integrators.csv',
-            ]); 
-            break;
-        case 'Cybersecurity':
-            //Decision Maker
-            cy.xpath("(//span[contains(text(),'Export')])[1]").click(); // Export Data button - Cyber Security Usage
-            cy.xpath("(//span[contains(text(),'Export')])[2]").click(); // Export Data button - Data Protection
-            cy.wait(10000); // wait for 10 seconds for the files to download
-            
-            // Verify Files
-            verifyFileContent('cypress/downloads/Cyber Security Usage.csv', 'North America');
-            verifyFileContent('cypress/downloads/Data Protection.csv', 'North America');
-            //Delete Downloaded Files
-            cy.task('deleteFiles', [
-            'cypress/downloads/Cyber Security Usage.csv',
-            'cypress/downloads/Data Protection.csv',
-            ]);
-            break;
-        case 'Semiconductors':
-            //Decision Maker
-            cy.xpath("(//span[contains(text(),'Export')])[1]").click(); // Export Data button - AI Chipsets Practices
-            cy.xpath("(//span[contains(text(),'Export')])[2]").click(); // Export Data button - AI Chipsets On Premise
-            cy.wait(5000); // wait for 5 seconds for the files to download
-            //Market Data
-            cy.xpath("(//span[contains(text(),'Export')])[5]").click(); // Export Data button - Actual Revenue
-            cy.xpath("(//span[contains(text(),'Export')])[6]").click(); // Export Data button - Forecast Revenue
-            cy.wait(10000); // wait for 10 seconds for the files to download
-            
-            // Verify Files
-            verifyFileContent('cypress/downloads/AI Chipsets Practices.csv', 'North America');
-            verifyFileContent('cypress/downloads/AI Chipsets On Premise.csv', 'North America');
-            verifyFileContent('cypress/downloads/Actual Revenue.csv', 'Development Tools');
-            verifyFileContent('cypress/downloads/Forecast Revenue.csv', 'Development Tools');
-            
-            //Delete Downloaded Files
-            cy.task('deleteFiles', [
-            'cypress/downloads/AI Chipsets Practices.csv',
-            'cypress/downloads/AI Chipsets On Premise.csv',
-            'cypress/downloads/Actual Revenue.csv',
-            'cypress/downloads/Forecast Revenue.csv',
-            ]);
-            break;
-        case 'Software Engineering':
-            //Market Data
-            cy.xpath("(//span[contains(text(),'Export')])[1]").click(); // Export Data button - DevOps Market
-            cy.wait(5000); // wait for 5 seconds for the files to download
-            //Decision Maker
-            cy.xpath("(//span[contains(text(),'Export')])[2]").click(); // Export Data button - ADM Practices
-            cy.xpath("(//span[contains(text(),'Export')])[3]").click(); // Export Data button - AIOps
-            cy.wait(10000); // wait for 10 seconds for the files to download
-            
-            // Verify Files
-            verifyFileContent('cypress/downloads/DevOps Market.csv', 'Cloud');
-            verifyFileContent('cypress/downloads/ADM Practices.csv', 'North America');
-            verifyFileContent('cypress/downloads/AIOps.csv', 'North America');
-            //Delete Downloaded Files
-            cy.task('deleteFiles', [
-            'cypress/downloads/DevOps Market.csv',
-            'cypress/downloads/ADM Practices.csv',
-            'cypress/downloads/AIOps.csv',
-            ]);
-            break;
-        case 'Enterprise Software':
-            //Decision Maker
-            cy.xpath("(//span[contains(text(),'Export')])[1]").click(); // Export Data button - Application Practices
-            cy.xpath("(//span[contains(text(),'Export')])[2]").click(); // Export Data button - Business Intelligence
-            cy.wait(5000); // wait for 5 seconds for the files to download
-            //Market Data
-            cy.xpath("(//span[contains(text(),'Export')])[14]").click(); // Export Data button - Actual Revenue
-            cy.xpath("(//span[contains(text(),'Export')])[15]").click(); // Export Data button - Forecast Revenue
-            cy.wait(10000); // wait for 10 seconds for the files to download
-            
-            // Verify Files
-            verifyFileContent('cypress/downloads/Actual Revenue.csv', 'Business Services');
-            verifyFileContent('cypress/downloads/Forecast Revenue.csv', 'Business Services');
-            verifyFileContent('cypress/downloads/Application Practices.csv', 'North America');
-            verifyFileContent('cypress/downloads/Business Intelligence.csv', 'North America');
-            //Delete Downloaded Files
-            cy.task('deleteFiles', [
-            'cypress/downloads/Actual Revenue.csv',
-            'cypress/downloads/Forecast Revenue.csv',
-            'cypress/downloads/Application Practices.csv',
-            'cypress/downloads/Business Intelligence.csv',
-            ]);
-            break;
-        case 'CIO Insights':
-            //CIO Insights
-            cy.xpath("(//span[contains(text(),'Export')])[1]").click(); // Export Data button - Priorities
-            cy.xpath("(//span[contains(text(),'Export')])[2]").click(); // Export Data button - IT Spend
-            cy.wait(10000); // wait for 10 seconds for the files to download  
-            // Verify Files
-            verifyFileContent('cypress/downloads/Priorities.csv', 'North America');
-            verifyFileContent('cypress/downloads/IT Spend.csv', 'North America');
-            //Delete Downloaded Files
-            cy.task('deleteFiles', [
-            'cypress/downloads/Priorities.csv',
-            'cypress/downloads/IT Spend.csv',
-            ]);
-            break;
-        case 'CEO Insights':
-            //Decision Maker
-            cy.xpath("(//span[contains(text(),'Export')])[1]").click(); // Export Data button - Planning
-            cy.xpath("(//span[contains(text(),'Export')])[2]").click(); // Export Data button - Execution
-            cy.wait(10000); // wait for 10 seconds for the files to download  
-            // Verify Files
-            verifyFileContent('cypress/downloads/Planning.csv', 'North America');
-            verifyFileContent('cypress/downloads/Execution.csv', 'North America');
-            //Delete Downloaded Files
-            cy.task('deleteFiles', [
-            'cypress/downloads/Planning.csv',
-            'cypress/downloads/Execution.csv',
-            ]);
-            break;
-        case 'AI Devices':
-            //Market Data
-            cy.xpath("(//span[contains(text(),'Export')])[1]").click(); // Export Data button - Actual Revenue
-            cy.wait(5000); // wait for 5 seconds for the files to download  
-            // Verify Files
-            verifyFileContent('cypress/downloads/Actual Revenue.csv', 'Laptop');
-            //Delete Downloaded Files
-            cy.task('deleteFiles', [
-            'cypress/downloads/Actual Revenue.csv',
-            ]);
-            break;
-        case 'Channel Ecosystems':
-            //Decision Maker
-            cy.xpath("(//span[contains(text(),'Export')])[1]").click(); // Export Data button - Market Expectations
-            cy.xpath("(//span[contains(text(),'Export')])[2]").click(); // Export Data button - Vendors
-            cy.wait(10000); // wait for 10 seconds for the files to download
-            // Verify Files
-            verifyFileContent('cypress/downloads/Market Expectations.csv', 'North America');
-            verifyFileContent('cypress/downloads/Vendors.csv', 'North America');
-            //Delete Downloaded Files
-            cy.task('deleteFiles', [
-            'cypress/downloads/Market Expectations.csv',
-            'cypress/downloads/Vendors.csv',
-            ]);
-            break;
-        default:
-                cy.log(`Practice area "${pracArea}" is not recognized.`);
-                break;
-            }
+    cy.wait(2000);
+    
+    cy.get('[role="listbox"]').contains(pracArea, { timeout: 10000 })
+        .should('be.visible')
+        .click();
+    
+    cy.wait(2000);
+    
+    // Get configuration for the selected practice area
+    const config = practiceAreaConfig[pracArea];
+    
+    if (!config) {
+        cy.log(`Practice area "${pracArea}" is not recognized.`);
+        return;
     }
+    
+    // Click all export buttons with their respective waits
+    config.exports.forEach((exportItem, index) => {
+        cy.log(`Clicking export button ${index + 1} for ${pracArea}`);
+        cy.xpath(exportItem.xpath).click();
+        
+        // Wait after clicking (use the wait from the export item)
+        if (exportItem.wait) {
+            cy.wait(exportItem.wait);
+        }
+    });
+    
+    // Verify all downloaded files
+    cy.log(`Verifying ${config.files.length} files for ${pracArea}`);
+    config.files.forEach((file) => {
+        verifyFileContent(file.path, file.content);
+    });
+    
+    // Delete all downloaded files
+    const filePaths = config.files.map(file => file.path);
+    cy.log(`Deleting ${filePaths.length} files`);
+    cy.task('deleteFiles', filePaths);
+};
+
 class ExportData {
     static verifyExportData(pracArea) {
         it(`Should select ${pracArea} and verify export data.`, () => {
-            exportData(pracArea)
+            exportData(pracArea);
+        });
+    }
+    
+    // Bonus: Method to test all practice areas
+    static verifyAllPracticeAreas() {
+        Object.keys(practiceAreaConfig).forEach((pracArea) => {
+            this.verifyExportData(pracArea);
+        });
+    }
+    
+    // Bonus: Method to test random practice areas
+    static verifyRandomPracticeAreas(count) {
+        const randomAreas = getRandomPracticeArea(count);
+        randomAreas.forEach((pracArea) => {
+            this.verifyExportData(pracArea);
         });
     }
 }   
 
-export { ExportData, getRandomPracticeArea };
+export { ExportData, getRandomPracticeArea, practiceAreaConfig };
