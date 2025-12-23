@@ -78,6 +78,7 @@
         "organization": "AMD_QA (3 users)",
         "org1": "AMD_QA",
         "org2": "Acme_QA",
+        "org3": "AWS_QA",
         "emailJobName": "July 2025 Kevin",
         "emailJobName2": "Test",
         "user1": "kevin+110b",
@@ -98,7 +99,25 @@
             "Acme_QA",
             "Broadcom_QA",
             "Arm_QA"
-        ]   
+        ],
+        "org2Users": [
+            "kevin+110b (kevin+110b@milliononmars.com)",
+            "chad+test03180 (chad+test03180@milliononmars.com)",
+            "rgordon (rgordon@futurumgroup.com)",
+            "fmontenegro (fmontenegro@futurumgroup.com)",
+            "allan (allan@milliononmars.com)",
+            "kevin+74a (kevin+74a@milliononmars.com)",
+            "Poy (poy@milliononmars.com)",
+            "Kevin Cypress (kevin+cypress@milliononmars.com)",
+            "chad+test102111 (chad+test102111@milliononmars.com)",
+            "chad+test102115 (chad+test102115@milliononmars.com)",
+            "chad+test102116 (chad+test102116@milliononmars.com)",
+            "cleo 1 (cleo+1@milliononmars.com)"
+        ],
+        "org3Users": [
+            "julie+110b (julie+110b@milliononmars.com)",
+            "Terry Farmer (tfarmer+2@futurumgroup.com)"
+        ]
     },
     "report": {
         "name": "Ungated Report on Quantum Computing",

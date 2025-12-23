@@ -27,4 +27,7 @@ describe('Email Jobs Management Tests', () => {
     describe('Preview Section', () => {
         EmailJobs.previewEmailTemplate();
     });
+    describe('Sending summary section', () => {
+        EmailJobs.verifySendingSummary();
+    }); 
 });

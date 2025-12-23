@@ -245,6 +245,90 @@ const setupEmailJobNavigation = () => {
     navigateToEmailJobsPage();
 };
 
+const selectOrganizationFromSendingSummary = (organization) => {
+    cy.get('p.MuiTypography-root.MuiTypography-body-md', { timeout: TIMEOUT })
+        .contains(organization)
+        .scrollIntoView()
+        .should('be.visible')
+        .parents('.MuiSheet-root')
+        .first()
+        .should('exist')
+        .should('be.visible')
+        .scrollIntoView()
+        .within(() => {
+            cy.get('input[type="checkbox"].MuiCheckbox-input', { timeout: TIMEOUT })
+                .should('exist')
+                .should('not.be.disabled')
+                .click({ force: true });
+        });
+};
+    
+const verifyOrganizationShowUp = (organization) => {
+    cy.contains('Send to All Users in 2 Organizations', { timeout: TIMEOUT })
+        .scrollIntoView()
+        .should('exist')
+        .should('be.visible')
+        .click({ force: true });
+    
+    // Wait for modal to appear
+    cy.get('.MuiSheet-root.MuiSheet-variantOutlined.MuiSheet-colorNeutral', { timeout: TIMEOUT })
+        .should('exist')
+        .should('be.visible');
+    
+    // Verify modal title
+    cy.contains('Confirm Email Send', { timeout: TIMEOUT })
+        .should('be.visible');
+    
+    // Find and verify the organization in the list
+    cy.get('ul.MuiList-root', { timeout: TIMEOUT })
+        .should('exist')
+        .should('be.visible')
+        .within(() => {
+            cy.get('p.MuiTypography-body-sm.css-rw38d', { timeout: TIMEOUT })
+                .contains(organization)
+                .scrollIntoView()
+                .should('be.visible');
+        });
+};
+
+
+const verifyOrganizationUserCount = (organization, expectedUserCount) => {
+    cy.get('ul.MuiList-root', { timeout: TIMEOUT })
+        .should('exist')
+        .should('be.visible')
+        .within(() => {
+            cy.get('p.MuiTypography-body-sm.css-rw38d', { timeout: TIMEOUT })
+                .contains(organization)
+                .scrollIntoView()
+                .should('be.visible')
+                .invoke('text')
+                .then((text) => {
+                    // Extract the user count from text like "Acme_QA (12 of 12 users selected)"
+                    const match = text.match(/\((\d+)\s+of\s+(\d+)\s+users\s+selected\)/);
+                    expect(match, `User count pattern not found in: ${text}`).to.not.be.null;
+                    
+                    const selectedCount = parseInt(match[1]);
+                    const totalCount = parseInt(match[2]);
+                    
+                    cy.log(`${organization}: ${selectedCount} of ${totalCount} users selected`);
+                    expect(totalCount).to.equal(expectedUserCount);
+                    expect(selectedCount).to.equal(totalCount);
+                });
+        });
+};
+
+
+const verifyViewUsersModal = (expectedUsers) => {
+    
+    // Verify all expected users are in the list
+    expectedUsers.forEach((user) => {
+        cy.get('ul.MuiList-root, table, .MuiListItem-root', { timeout: TIMEOUT })
+            .contains(user)
+            .scrollIntoView()
+            .should('be.visible');
+    });
+};
+
 class EmailJobs {
     static runBatchJobs() {
         it('Should run batch jobs', () => {
@@ -325,6 +409,60 @@ class EmailJobs {
                 verifyOrganizationDropdownLoads(org2);
                 verifyUserDropdownLoads(user1, alluseremails);
                 verifyPreviewEmailTemplate();
+            });
+        });
+    }
+    static verifySendingSummary() {
+        it('Selected orgs should show up', () => {
+             cy.fixture('data.json').then((data) => {
+                const { org2, org3, emailJobName2 } = data.emailJob;
+                setupEmailJobNavigation();
+                selectEmailJob(emailJobName2);
+                selectOrganizationFromSendingSummary(org2);
+                selectOrganizationFromSendingSummary(org3);
+                verifyOrganizationShowUp(org2);
+                verifyOrganizationShowUp(org3);
+             });
+        });
+
+        it('Number of users per selected org should show up', () => {
+            cy.fixture('data.json').then((data) => {
+                const { org2, org3, emailJobName2 } = data.emailJob;
+                setupEmailJobNavigation();
+                selectEmailJob(emailJobName2);
+                selectOrganizationFromSendingSummary(org2);
+                selectOrganizationFromSendingSummary(org3);
+                
+                // Click to open modal
+                cy.contains('Send to All Users in 2 Organizations', { timeout: TIMEOUT })
+                    .scrollIntoView()
+                    .should('exist')
+                    .should('be.visible')
+                    .click({ force: true });
+                
+                // Wait for modal to appear
+                cy.get('.MuiSheet-root.MuiSheet-variantOutlined.MuiSheet-colorNeutral', { timeout: TIMEOUT })
+                    .should('exist')
+                    .should('be.visible');
+                
+                // Verify user counts
+                verifyOrganizationUserCount(org2, 12);
+                verifyOrganizationUserCount(org3, 2);
+            });
+        });
+
+        it('View users should show a modal with the user list', () => {
+            cy.fixture('data.json').then((data) => {
+                const { org2, org3, org2Users, org3Users, emailJobName2 } = data.emailJob;
+                
+                setupEmailJobNavigation();
+                selectEmailJob(emailJobName2);
+                selectOrganizationFromSendingSummary(org2);
+                selectOrganizationFromSendingSummary(org3);
+                verifyOrganizationShowUp(org2);
+                verifyOrganizationShowUp(org3);
+                verifyViewUsersModal(org2Users);
+                verifyViewUsersModal(org3Users);
             });
         });
     }
