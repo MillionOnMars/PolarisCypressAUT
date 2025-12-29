@@ -1,41 +1,14 @@
+import { startCase } from 'lodash';
+import { navigateToAnalyticsDashboard,navigateToUserActivity,navigateToEmails,navigateToReports } from './navigate.js';
+
 const DEFAULT_TIMEOUT = 15000;
 
 // Create reusable constants
 const ANALYTICS_CONFIG = {
     ORGANIZATION: 'ChadOrg_QAs',
     EMAIL: 'chad@milliononmars.com',
+    START_DATE: '2025-10-01',
     MIN_COUNT_VALUE: 1,
-};
-
-const navigateToAnalyticsDashboard = () => {
-    cy.get('[aria-label="Settings"]', { timeout: DEFAULT_TIMEOUT })
-        .should('be.visible')
-        .click();
-    cy.contains('Admin', { timeout: DEFAULT_TIMEOUT })
-        .should('be.visible')
-        .click();
-    cy.wait(5000); // wait for 5 seconds to ensure the page loads
-};
-
-const navigateToUserActivity = () => {
-    cy.get('.MuiButton-root.MuiButton-variantPlain.MuiButton-colorPrimary')
-        .contains('User Activity')
-        .should('be.visible')
-        .click();
-};
-
-const navigateToEmails = () => {
-    cy.get('.MuiButton-root.MuiButton-variantPlain.MuiButton-colorPrimary')
-        .contains('Emails')
-        .should('be.visible')
-        .click();
-};
-
-const navigateToReports = () => {
-    cy.get('.MuiButton-root.MuiButton-variantPlain.MuiButton-colorPrimary')
-        .contains('Reports')
-        .should('be.visible')
-        .click();
 };
 
 const validateUserActivityFilters = () => {
@@ -53,7 +26,13 @@ const validateUserActivityFilters = () => {
     cy.contains('[role="option"], li', 'ChadOrg_QAs', { timeout: DEFAULT_TIMEOUT })
         .should('be.visible')
         .click();
-    
+
+    // Click on Last Page button
+    cy.get('[data-testid="LastPageIcon"]', { timeout: DEFAULT_TIMEOUT })
+        .first()
+        .should('be.visible')
+        .click();
+
     // Verify the result shows the expected email
     cy.contains(ANALYTICS_CONFIG.EMAIL, { timeout: DEFAULT_TIMEOUT })
         .should('be.visible');
@@ -68,13 +47,21 @@ const validateEmails = () => {
     cy.get('input[placeholder="Search by email..."]', { timeout: DEFAULT_TIMEOUT })
         .should('be.visible')
         .type(ANALYTICS_CONFIG.EMAIL);
-    
+
+    //select start date
+    cy.get('input[type="date"]').first()
+        .should('exist')
+        .clear()
+        .type(ANALYTICS_CONFIG.START_DATE);
+
     //Click on search button
     cy.get('[data-testid="SearchIcon"]')
         // .parent('button')
         .should('be.visible')
         .click();
-    
+
+    cy.wait(2000);
+ 
     // Verify results
     validateEmailAllCountValues(ANALYTICS_CONFIG.MIN_COUNT_VALUE);
 

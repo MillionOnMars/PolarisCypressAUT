@@ -63,3 +63,34 @@ export const navigateToReportsSection = () => {
         .should('be.visible')
         .click({ force: true });
 };
+
+export const navigateToAnalyticsDashboard = () => {
+    cy.get('[aria-label="Settings"]', { timeout: TIMEOUT })
+        .should('be.visible')
+        .click();
+    cy.contains('Admin', { timeout: TIMEOUT })
+        .should('be.visible')
+        .click();
+    cy.wait(5000); // wait for 5 seconds to ensure the page loads
+};
+
+export const navigateToUserActivity = () => {
+    cy.get('.MuiButton-root.MuiButton-variantPlain.MuiButton-colorPrimary')
+        .contains('User Activity')
+        .should('be.visible')
+        .click();
+};
+
+export const navigateToEmails = () => {
+    cy.get('.MuiButton-root.MuiButton-variantPlain.MuiButton-colorPrimary')
+        .contains('Emails')
+        .should('be.visible')
+        .click();
+};
+
+export const navigateToReports = () => {
+    cy.get('.MuiButton-root.MuiButton-variantPlain.MuiButton-colorPrimary')
+        .contains('Reports')
+        .should('be.visible')
+        .click();
+};
