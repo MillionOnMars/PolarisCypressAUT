@@ -21,7 +21,7 @@ module.exports = defineConfig({
       'cypress/e2e/Practice_Area.cy.js',
       'cypress/e2e/Organization.cy.js',
       'cypress/e2e/Reports.cy.js',
-      // 'cypress/e2e/Analytics.cy.js',
+      'cypress/e2e/Analytics.cy.js',
       'cypress/e2e/Migration.cy.js',
       'cypress/e2e/Research_Engine.cy.js'
     ],
