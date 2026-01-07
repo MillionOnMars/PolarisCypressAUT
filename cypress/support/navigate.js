@@ -26,6 +26,16 @@ export const navigateToAdmin = () => {
 
 };
 
+export const navigateToAdminDashboard = () => {
+    cy.contains('Admin Settings', { timeout: TIMEOUT })
+        .should('exist')
+        .click({ force: true });
+
+    cy.contains('Admin Dashboard', { timeout: TIMEOUT })
+        .should('exist')
+        .click({ force: true });
+};
+
 export const navigateToAccountsOrg = () => {
     // cy.contains('User Tags', {timeout: TIMEOUT})
     cy.get('[data-testid="AccountBalanceIcon"]', {timeout: TIMEOUT})
@@ -81,6 +91,36 @@ export const navigateToUserActivity = () => {
         .click();
 };
 
+// export const navigateToUserProfile = () => {
+//     cy.get('[data-testid="PersonIcon"]', { timeout: TIMEOUT })
+//         .eq(1)
+//         .should('exist')
+//         .click({ force: true });
+//     cy.contains('Profile', { timeout: TIMEOUT })
+//         .should('exist')
+//         .click({ force: true });
+// };
+
+export const navigateToUserProfile = () => {
+    cy.get('[data-testid="PersonIcon"]', { timeout: TIMEOUT })
+        .its('length')
+        .then((count) => {
+            const index = count === 1 ? 0 : 1;
+            cy.log(`Clicking PersonIcon at index ${index} (total: ${count})`);
+            
+            cy.get('[data-testid="PersonIcon"]')
+                .eq(index)
+                .should('exist')
+                .click({ force: true });
+        });
+    cy.contains('Profile', { timeout: TIMEOUT })
+        .should('be.visible')
+        .click({ force: true });
+
+    // wait for profile to load
+    cy.wait(2000);
+};
+
 export const navigateToEmails = () => {
     cy.get('.MuiButton-root.MuiButton-variantPlain.MuiButton-colorPrimary')
         .contains('Emails')
@@ -93,4 +133,39 @@ export const navigateToReports = () => {
         .contains('Reports')
         .should('be.visible')
         .click();
+};
+
+export const navigateToEmailJobsPage = () => {
+    cy.contains('Email Jobs', { timeout: TIMEOUT })
+        .should('exist')
+        .click({ force: true });
+};
+
+export const navigateToEmailTemplatesPage = () => {
+    cy.get('button[class*="MuiButton-colorPrimary"]', { timeout: TIMEOUT })
+        .filter(`:contains("Templates")`, { timeout: TIMEOUT })
+        .not(`:contains("Email")`, { timeout: TIMEOUT })
+        .should('exist')
+        .should('be.visible')
+        .click({ force: true });
+};
+
+export const navigateToEmailDatasetPage = () => {
+    cy.get('button[class*="MuiButton-colorPrimary"]', { timeout: TIMEOUT })
+        .filter(`:contains("Datasets")`, { timeout: TIMEOUT })
+        .not(`:contains("Email")`, { timeout: TIMEOUT })
+        .should('exist')
+        .should('be.visible')
+        .click({ force: true });
+};
+
+export const navigateToSubscriptionPage = () => {
+    cy.wait(2000);
+    cy.get('[data-testid="SubscriptionsIcon"]', { timeout: TIMEOUT })
+        .last()
+        .should('be.visible')
+        .click({ force: true });
+    cy.contains('Manage My Subscriptions', { timeout: TIMEOUT })
+        .should('be.visible')
+        .click({ force: true });
 };

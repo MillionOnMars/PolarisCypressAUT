@@ -1,31 +1,7 @@
+import { navigateToUserProfile, navigateToAdminDashboard, navigateToEmailJobsPage } from './navigate.js';
+
 const TIMEOUT = 10000;
 const WAIT_TIMEOUT = 2000;
-
-const navigateToUserProfile = () => {
-    cy.get('[data-testid="PersonIcon"]', { timeout: TIMEOUT })
-        .eq(1)
-        .should('exist')
-        .click({ force: true });
-    cy.contains('Profile', { timeout: TIMEOUT })
-        .should('exist')
-        .click({ force: true });
-};
-
-const navigateToAdminDashboard = () => {
-    cy.contains('Admin Settings', { timeout: TIMEOUT })
-        .should('exist')
-        .click({ force: true });
-
-    cy.contains('Admin Dashboard', { timeout: TIMEOUT })
-        .should('exist')
-        .click({ force: true });
-};
-
-const navigateToEmailJobsPage = () => {
-    cy.contains('Email Jobs', { timeout: TIMEOUT })
-        .should('exist')
-        .click({ force: true });
-};
 
 const selectEmailJob = (emailJobName) => {
     cy.get('p.MuiTypography-root.MuiTypography-title-sm', { timeout: TIMEOUT })
