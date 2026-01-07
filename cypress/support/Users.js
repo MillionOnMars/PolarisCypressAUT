@@ -1,4 +1,4 @@
-import { navigateToSubscriptionPage, navigateToAdmin, navigateToEmailJobsPage } from './navigate.js';
+import { navigateToSubscriptionPage, navigateToAdmin, navigateToUserProfile } from './navigate.js';
 
 import { login2 } from '../support/login.js';
 import { logoutUser } from './Auth.js';
