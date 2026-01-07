@@ -1,52 +1,24 @@
+import { navigateToSubscriptionPage, navigateToAdmin, navigateToEmailJobsPage } from './navigate.js';
+
 import { login2 } from '../support/login.js';
 import { logoutUser } from './Auth.js';
 
 const TIMEOUT = 10000;
 
-const navigateToUserProfile = () => {
-    cy.get('[data-testid="PersonIcon"]', { timeout: TIMEOUT })
-        .its('length')
-        .then((count) => {
-            const index = count === 1 ? 0 : 1;
-            cy.log(`Clicking PersonIcon at index ${index} (total: ${count})`);
-            
-            cy.get('[data-testid="PersonIcon"]')
-                .eq(index)
-                .should('exist')
-                .click({ force: true });
-        });
-    cy.contains('Profile', { timeout: TIMEOUT })
-        .should('be.visible')
-        .click({ force: true });
 
-    // wait for profile to load
-    cy.wait(2000);
-};
-
-const navigateToSubscriptionPage = () => {
-    cy.wait(2000);
-    cy.get('[data-testid="SubscriptionsIcon"]', { timeout: TIMEOUT })
-        .last()
-        .should('be.visible')
-        .click({ force: true });
-    cy.contains('Manage My Subscriptions', { timeout: TIMEOUT })
-        .should('be.visible')
-        .click({ force: true });
-};
-
-const navigateToAdminDashboard = () => {
-    cy.get('[data-testid="ManageAccountsIcon"]', { timeout: TIMEOUT })
-        .last()
-        .should('be.visible')
-        .click({ force: true });
+// const navigateToAdminDashboard = () => {
+//     cy.get('[data-testid="ManageAccountsIcon"]', { timeout: TIMEOUT })
+//         .last()
+//         .should('be.visible')
+//         .click({ force: true });
     
-    cy.contains('Admin Dashboard', { timeout: TIMEOUT })
-        .should('be.visible')
-        .click({ force: true });
+//     cy.contains('Admin Dashboard', { timeout: TIMEOUT })
+//         .should('be.visible')
+//         .click({ force: true });
 
-    // Verify admin dashboard loaded
-    cy.url({ timeout: 30000 }).should('include', '/admin');
-};
+//     // Verify admin dashboard loaded
+//     cy.url({ timeout: 30000 }).should('include', '/admin');
+// };
 
 const saveChanges = () => {
     cy.contains('Save Changes', { timeout: TIMEOUT })
@@ -98,7 +70,7 @@ const addSubscriptionPlan = (subscriptionName) => {
 };
 
 const changeOrganization = (newOrgName, username) => {
-    navigateToAdminDashboard();
+    navigateToAdmin();
 
     cy.get('input[placeholder="Search users..."]', { timeout: TIMEOUT })
         .should('exist')

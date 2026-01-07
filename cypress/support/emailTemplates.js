@@ -1,42 +1,6 @@
+import { navigateToUserProfile, navigateToAdminDashboard, navigateToEmailTemplatesPage, navigateToEmailDatasetPage } from './navigate.js';
+
 const TIMEOUT = 10000;
-
-const navigateToUserProfile = () => {
-    cy.get('[data-testid="PersonIcon"]', { timeout: TIMEOUT })
-        .eq(1) // Select the second occurrence
-        .should('exist')
-        .click({ force: true });
-    cy.contains('Profile', { timeout: TIMEOUT })
-        .should('exist')
-        .click({ force: true });
-};
-
-const navigateToAdminDashboard = () => {
-    cy.contains('Admin Settings', { timeout: TIMEOUT })
-        .should('exist')
-        .click({ force: true });
-    
-    cy.contains('Admin Dashboard', { timeout: TIMEOUT })
-        .should('exist')
-        .click({ force: true });
-};
-
-const navigateToEmailTemplatesPage = () => {
-    cy.get('button[class*="MuiButton-colorPrimary"]', { timeout: TIMEOUT })
-        .filter(`:contains("Templates")`, { timeout: TIMEOUT })
-        .not(`:contains("Email")`, { timeout: TIMEOUT })
-        .should('exist')
-        .should('be.visible')
-        .click({ force: true });
-};
-
-const navigateToEmailDatasetPage = () => {
-    cy.get('button[class*="MuiButton-colorPrimary"]', { timeout: TIMEOUT })
-        .filter(`:contains("Datasets")`, { timeout: TIMEOUT })
-        .not(`:contains("Email")`, { timeout: TIMEOUT })
-        .should('exist')
-        .should('be.visible')
-        .click({ force: true });
-};
 
 const saveTemplate = () => {
     cy.contains('Save', { timeout: TIMEOUT })
