@@ -1,4 +1,4 @@
-import { navigateToSubscriptionPage, navigateToAdmin, navigateToUserProfile } from './navigate.js';
+import { navigateToSubscriptionPage,navigateToAdminDashboard, navigateToUserProfile } from './navigate.js';
 
 import { login2 } from '../support/login.js';
 import { logoutUser } from './Auth.js';
@@ -70,7 +70,7 @@ const addSubscriptionPlan = (subscriptionName) => {
 };
 
 const changeOrganization = (newOrgName, username) => {
-    navigateToAdmin();
+    navigateToAdminDashboard();
 
     cy.get('input[placeholder="Search users..."]', { timeout: TIMEOUT })
         .should('exist')
