@@ -47,7 +47,7 @@ export const navigateToResearchEngine = () => {
 
     cy.wait(2000);
     
-    cy.get('p[aria-label="Research"]', { timeout: TIMEOUT })
+    cy.get('p[aria-label="Research Tool"]', { timeout: TIMEOUT })
         .first()
         .should('exist')
         .click({ force: true });
