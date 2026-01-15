@@ -56,10 +56,8 @@ export const navigateToResearchEngine = () => {
 };
 
 export const navigateToReportsSection = () => {
+
     cy.get('[aria-label="View and search reports"]', { matchCase: false, timeout: TIMEOUT })
-        .should('exist')
-        .click({ force: true });
-    cy.get('[aria-label="Reports"]', { timeout: TIMEOUT })
         .should('be.visible')
         .click({ force: true });
 };

@@ -16,10 +16,10 @@ const verifyFileContent = (filePath, expectedContent) => {
 const practiceAreaConfig = {
     'AI Platforms': {
         exports: [
-            { xpath: "(//span[contains(text(),'Export')])[1]", wait: 5000 },
             { xpath: "(//span[contains(text(),'Export')])[2]", wait: 5000 },
-            { xpath: "(//span[contains(text(),'Export')])[3]", wait: 10000 },
-            { xpath: "(//span[contains(text(),'Export')])[4]", wait: 10000 }
+            { xpath: "(//span[contains(text(),'Export')])[3]", wait: 5000 },
+            { xpath: "(//span[contains(text(),'Export')])[4]", wait: 10000 },
+            { xpath: "(//span[contains(text(),'Export')])[5]", wait: 10000 }
         ],
         files: [
             { path: 'cypress/downloads/Scenario Forecast.csv', content: 'Scenario' },
@@ -30,8 +30,8 @@ const practiceAreaConfig = {
     },
     'Cybersecurity': {
         exports: [
-            { xpath: "(//span[contains(text(),'Export')])[1]", wait: 10000 },
-            { xpath: "(//span[contains(text(),'Export')])[2]", wait: 10000 }
+            { xpath: "(//span[contains(text(),'Export')])[2]", wait: 10000 },
+            { xpath: "(//span[contains(text(),'Export')])[3]", wait: 10000 }
         ],
         files: [
             { path: 'cypress/downloads/Actual Revenue.csv', content: 'Cloud Revenue' },
@@ -40,10 +40,10 @@ const practiceAreaConfig = {
     },
     'Semiconductors': {
         exports: [
-            { xpath: "(//span[contains(text(),'Export')])[1]", wait: 5000 },
             { xpath: "(//span[contains(text(),'Export')])[2]", wait: 5000 },
-            { xpath: "(//span[contains(text(),'Export')])[5]", wait: 10000 },
-            { xpath: "(//span[contains(text(),'Export')])[6]", wait: 10000 }
+            { xpath: "(//span[contains(text(),'Export')])[3]", wait: 5000 },
+            { xpath: "(//span[contains(text(),'Export')])[6]", wait: 10000 },
+            { xpath: "(//span[contains(text(),'Export')])[7]", wait: 10000 }
         ],
         files: [
             { path: 'cypress/downloads/Scenario Forecast.csv', content: 'Scenario' },
@@ -54,9 +54,9 @@ const practiceAreaConfig = {
     },
     'Software Engineering': {
         exports: [
-            { xpath: "(//span[contains(text(),'Export')])[1]", wait: 5000 },
-            { xpath: "(//span[contains(text(),'Export')])[2]", wait: 10000 },
-            { xpath: "(//span[contains(text(),'Export')])[3]", wait: 10000 }
+            { xpath: "(//span[contains(text(),'Export')])[2]", wait: 5000 },
+            { xpath: "(//span[contains(text(),'Export')])[3]", wait: 10000 },
+            { xpath: "(//span[contains(text(),'Export')])[4]", wait: 10000 }
         ],
         files: [
             { path: 'cypress/downloads/DevOps Market.csv', content: 'Cloud' },
@@ -66,10 +66,10 @@ const practiceAreaConfig = {
     },
     'Enterprise Software': {
         exports: [
-            { xpath: "(//span[contains(text(),'Export')])[1]", wait: 5000 },
             { xpath: "(//span[contains(text(),'Export')])[2]", wait: 5000 },
-            { xpath: "(//span[contains(text(),'Export')])[14]", wait: 10000 },
-            { xpath: "(//span[contains(text(),'Export')])[15]", wait: 10000 }
+            { xpath: "(//span[contains(text(),'Export')])[3]", wait: 5000 },
+            { xpath: "(//span[contains(text(),'Export')])[15]", wait: 10000 },
+            { xpath: "(//span[contains(text(),'Export')])[16]", wait: 10000 }
         ],
         files: [
             { path: 'cypress/downloads/Application Practices.csv', content: 'North America' },
@@ -80,8 +80,8 @@ const practiceAreaConfig = {
     },
     'CIO Insights': {
         exports: [
-            { xpath: "(//span[contains(text(),'Export')])[1]", wait: 10000 },
-            { xpath: "(//span[contains(text(),'Export')])[2]", wait: 10000 }
+            { xpath: "(//span[contains(text(),'Export')])[2]", wait: 10000 },
+            { xpath: "(//span[contains(text(),'Export')])[3]", wait: 10000 }
         ],
         files: [
             { path: 'cypress/downloads/Priorities.csv', content: 'North America' },
@@ -90,8 +90,8 @@ const practiceAreaConfig = {
     },
     'CEO Insights': {
         exports: [
-            { xpath: "(//span[contains(text(),'Export')])[1]", wait: 10000 },
-            { xpath: "(//span[contains(text(),'Export')])[2]", wait: 10000 }
+            { xpath: "(//span[contains(text(),'Export')])[2]", wait: 10000 },
+            { xpath: "(//span[contains(text(),'Export')])[3]", wait: 10000 }
         ],
         files: [
             { path: 'cypress/downloads/Planning.csv', content: 'North America' },
@@ -100,7 +100,7 @@ const practiceAreaConfig = {
     },
     'AI Devices': {
         exports: [
-            { xpath: "(//span[contains(text(),'Export')])[1]", wait: 5000 }
+            { xpath: "(//span[contains(text(),'Export')])[2]", wait: 5000 }
         ],
         files: [
             { path: 'cypress/downloads/Actual Revenue.csv', content: 'Laptop' }
@@ -108,8 +108,8 @@ const practiceAreaConfig = {
     },
     'Channel Ecosystems': {
         exports: [
-            { xpath: "(//span[contains(text(),'Export')])[1]", wait: 10000 },
-            { xpath: "(//span[contains(text(),'Export')])[2]", wait: 10000 }
+            { xpath: "(//span[contains(text(),'Export')])[2]", wait: 10000 },
+            { xpath: "(//span[contains(text(),'Export')])[3]", wait: 10000 }
         ],
         files: [
             { path: 'cypress/downloads/Market Expectations.csv', content: 'North America' },
@@ -120,7 +120,7 @@ const practiceAreaConfig = {
 
 const exportData = (pracArea) => {
     cy.wait(2000);
-    cy.get('[aria-label="Export Data"]', {timeout: 10000})
+    cy.get('[aria-label="Export data from all practice areas"]', {timeout: 10000})
         .first()
         .should('exist')
         .click({force:true});
