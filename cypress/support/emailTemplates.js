@@ -161,19 +161,26 @@ const fillDatasetForm = (title, description, imageUrl, url, leadAnalyst, leadAna
         .clear()
         .type(url);
 
-    // Fill Lead Analyst Name
-    cy.get('input[name="leadAnalyst.name"]', { timeout: TIMEOUT })
+    // Fill Lead Analyst Name - MUI Autocomplete
+    cy.wait(1000);
+    cy.get('input[placeholder="Select analyst"]', { timeout: TIMEOUT })
+        .scrollIntoView()
         .should('exist')
         .should('be.visible')
-        .clear()
-        .type(leadAnalyst);
+        .click({ force: true })
+        .type(leadAnalyst, { force: true });
+    
+   // Wait for autocomplete options to appear and select
+    cy.wait(500); // Add small wait after typing
+    cy.get('ul[role="listbox"]', { timeout: TIMEOUT })
+        .should('be.visible')
+        .find('li.MuiAutocompleteOption-root[role="option"]')
+        .first()
+        .should('be.visible')
+        .click({ force: true });
 
-    // Fill Lead Analyst URL
-    cy.get('input[name="leadAnalyst.url"]', { timeout: TIMEOUT })
-        .should('exist')
-        .should('be.visible')
-        .clear()
-        .type(leadAnalystUrl);
+    //wait for lead analyst url field to appear
+    cy.wait(2000);
 };
 
 const selectPracticeArea = (practiceArea = 'AI Platforms') => {
@@ -280,19 +287,27 @@ const fillDatasetEditForm = (title, description, url, leadAnalyst, leadAnalystUr
         .clear()
         .type(url);
 
-    // Fill Lead Analyst Name
-    cy.get('input[name="leadAnalyst.name"]', { timeout: TIMEOUT })
+    // Fill Lead Analyst Name - MUI Autocomplete
+    cy.wait(1000);
+    cy.get('input[placeholder="Select analyst"]', { timeout: TIMEOUT })
+        .scrollIntoView()
         .should('exist')
         .should('be.visible')
-        .clear()
-        .type(leadAnalyst);
+        .click({ force: true })
+        .clear({ force: true })
+        .type(leadAnalyst, { force: true });
+    
+    // Wait for autocomplete options to appear and select
+    cy.get('ul[role="listbox"]', { timeout: TIMEOUT })
+        .should('be.visible')
+        .find('li[role="option"]')
+        .first()
+        .should('be.visible')
+        .click({ force: true });
 
-    // Fill Lead Analyst URL
-    cy.get('input[name="leadAnalyst.url"]', { timeout: TIMEOUT })
-        .should('exist')
-        .should('be.visible')
-        .clear()
-        .type(leadAnalystUrl);
+    //wait for lead analyst url field to appear
+    cy.wait(2000);
+
 };
 
 const updateDatasetImage = (imageUrl) => {
@@ -392,12 +407,11 @@ const clickAndVerifyDropdown = (selector, index = 0) => {
     cy.wait(1000);
     
     cy.get('ul[role="listbox"]', { timeout: TIMEOUT })
-        .should('exist')
-        .should('be.visible');
-    
-    cy.get('li[role="option"]', { timeout: TIMEOUT })
-        .should('have.length.at.least', 1)
-        .should('be.visible');
+        .should('be.visible')
+        .find('li[role="option"]')
+        .first()
+        .should('be.visible')
+        .click({ force: true });
 };
 
 // Helper to select from dropdown
