@@ -34,7 +34,7 @@ const navigateToMigration = () => {
     cy.get('[aria-label="Settings"]', { timeout: DEFAULT_TIMEOUT })
         .should('be.visible')
         .click();
-    cy.contains('Admin', { timeout: DEFAULT_TIMEOUT })
+    cy.get('[role="menuitem"]').contains('Admin', { matchCase: false, timeout: TIMEOUT })
         .should('be.visible')
         .click();
     cy.wait(5000); // wait for 5 seconds to ensure the page loads
