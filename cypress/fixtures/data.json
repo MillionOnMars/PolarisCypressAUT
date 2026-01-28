@@ -32,9 +32,9 @@
         "emailTemplateName": "Production Monthly Spotlight Email",
         "orgName": "AMD_QA",
         "userName": "Chad Test0527",
-        "selectUser": "chad+test102112",
+        "selectUser": "akshay.deshpande",
         "previewTitle": "Curated Futurum",
-        "testRecipient": "chad+test0808@milliononmars.com"
+        "testRecipient": "akshay.deshpande@sganalytics.com"
     },
     "researchEngine": {
         "agentName": "Test Automation Agent",

@@ -66,7 +66,7 @@ export const navigateToAnalyticsDashboard = () => {
     cy.get('[aria-label="Settings"]', { timeout: TIMEOUT })
         .should('be.visible')
         .click();
-    cy.contains('Admin', { timeout: TIMEOUT })
+    cy.get('[role="menuitem"]').contains('Admin', { matchCase: false, timeout: TIMEOUT })
         .should('be.visible')
         .click();
     cy.wait(5000); // wait for 5 seconds to ensure the page loads
