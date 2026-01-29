@@ -81,18 +81,16 @@
         "org3": "AWS_QA",
         "emailJobName": "July 2025 Kevin",
         "emailJobName2": "Test",
-        "user1": "kevin+110b",
+        "user1": "chad+test03180",
         "userEmails": [
             "chad+test03180@milliononmars.com",
-            "kevin+110b@milliononmars.com"
+            "kevin+cypress@milliononmars.com"
         ],
         "alluseremails": [
             "chad+test03180@milliononmars.com",
-            "kevin+110b@milliononmars.com",
-            "rgordon@futurumgroup.com",
-            "fmontenegro@futurumgroup.com",
+            "kevin+cypress@milliononmars.com",
             "allan@milliononmars.com",
-            "kevin+74a@milliononmars.com"
+            "poy@milliononmars.com"
         ],
         "allorgnames": [
             "AMD_QA",
@@ -101,12 +99,8 @@
             "Arm_QA"
         ],
         "org2Users": [
-            "kevin+110b (kevin+110b@milliononmars.com)",
             "chad+test03180 (chad+test03180@milliononmars.com)",
-            "rgordon (rgordon@futurumgroup.com)",
-            "fmontenegro (fmontenegro@futurumgroup.com)",
             "allan (allan@milliononmars.com)",
-            "kevin+74a (kevin+74a@milliononmars.com)",
             "Poy (poy@milliononmars.com)",
             "Kevin Cypress (kevin+cypress@milliononmars.com)",
             "chad+test102111 (chad+test102111@milliononmars.com)",
