@@ -110,16 +110,16 @@ const selectTextModel = (modelName) => {
         .should('be.visible')
         .click();
     
-    // Select the specific model from the textModels array
-    cy.contains(modelName, { timeout: 10000 }, { matchCase: false })
+    cy.get('ul[role="listbox"]', { timeout: 10000 })
         .should('be.visible')
+        .contains('li[role="option"] p.MuiTypography-root', modelName, { matchCase: false })
+        .closest('li[role="option"]')
         .click();
-
-    //verify the selected model is displayed
-    cy.contains('button[role="combobox"]', modelName, { timeout: 10000 })
+    
+    cy.get('.MuiSelect-button')
         .first()
-        .should('be.visible');
-
+        .should('contain.text', modelName);
+    
     cy.log(`Selected text model: ${modelName}`);
 };
 
