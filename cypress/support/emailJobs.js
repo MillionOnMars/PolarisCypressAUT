@@ -446,8 +446,8 @@ class EmailJobs {
                     .should('be.visible');
                 
                 // Verify user counts
-                verifyOrganizationUserCount(org2, 12);
-                verifyOrganizationUserCount(org3, 2);
+                verifyOrganizationUserCount(org2, 8);
+                verifyOrganizationUserCount(org3, 4);
             });
         });
 
