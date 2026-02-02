@@ -1,4 +1,81 @@
 {
-  "errors": [],
-  "totalErrors": 0
+  "lastUpdate": "2026-02-02T05:43:22.068Z",
+  "totalErrors": 15,
+  "errors": [
+    {
+      "message": "Axios Error: Unauthorized",
+      "suite": "Practice Area Access Tests",
+      "test": "Should load data and test unsubscribed practice areas"
+    },
+    {
+      "message": "Failed to fetch nav order: {\"message\":\"Request failed with status code 401\",\"name\":\"AxiosError\",\"stack\":\"AxiosError: Request failed with status code 401\\n    at to (https://app.staging.futurumgroup.com/_next/static/chunks/pages/_app-42045e6edb6ad9e6.js:112:2242905)\\n    at XMLHttpRequest.g (https://app.staging.futurumgroup.com/_next/static/chunks/pages/_app-42045e6edb6ad9e6.js:112:2247373)\\n    at tG.request (https://app.staging.futurumgroup.com/_next/static/chunks/pages/_app-42045e6edb6ad9e6.js:112:2255864)\",\"config\":{\"transitional\":{\"silentJSONParsing\":true,\"forcedJSONParsing\":true,\"clarifyTimeoutError\":false},\"adapter\":[\"xhr\",\"http\",\"fetch\"],\"transformRequest\":[null],\"transformResponse\":[null],\"timeout\":0,\"xsrfCookieName\":\"XSRF-TOKEN\",\"xsrfHeaderName\":\"X-XSRF-TOKEN\",\"maxContentLength\":-1,\"maxBodyLength\":-1,\"env\":{},\"headers\":{\"Accept\":\"application/json, text/plain, */*\"},\"paramsSerializer\":{},\"withCredentials\":true,\"method\":\"get\",\"url\":\"/api/settings/nav-order/fetch\",\"allowAbsoluteUrls\":true},\"code\":\"ERR_BAD_REQUEST\",\"status\":401}",
+      "suite": "Practice Area Access Tests",
+      "test": "Should load data and test unsubscribed practice areas"
+    },
+    {
+      "message": "Error fetching Invites: {\"message\":\"Request failed with status code 401\",\"name\":\"AxiosError\",\"stack\":\"AxiosError: Request failed with status code 401\\n    at to (https://app.staging.futurumgroup.com/_next/static/chunks/pages/_app-42045e6edb6ad9e6.js:112:2242905)\\n    at XMLHttpRequest.g (https://app.staging.futurumgroup.com/_next/static/chunks/pages/_app-42045e6edb6ad9e6.js:112:2247373)\\n    at tG.request (https://app.staging.futurumgroup.com/_next/static/chunks/pages/_app-42045e6edb6ad9e6.js:112:2255864)\\n    at async u (https://app.staging.futurumgroup.com/_next/static/chunks/pages/_app-42045e6edb6ad9e6.js:112:1040192)\",\"config\":{\"transitional\":{\"silentJSONParsing\":true,\"forcedJSONParsing\":true,\"clarifyTimeoutError\":false},\"adapter\":[\"xhr\",\"http\",\"fetch\"],\"transformRequest\":[null],\"transformResponse\":[null],\"timeout\":0,\"xsrfCookieName\":\"XSRF-TOKEN\",\"xsrfHeaderName\":\"X-XSRF-TOKEN\",\"maxContentLength\":-1,\"maxBodyLength\":-1,\"env\":{},\"headers\":{\"Accept\":\"application/json, text/plain, */*\"},\"paramsSerializer\":{},\"withCredentials\":true,\"method\":\"get\",\"url\":\"/api/users/66f18d910a52c80abfbc3ba7/userInvites\",\"allowAbsoluteUrls\":true},\"code\":\"ERR_BAD_REQUEST\",\"status\":401}",
+      "suite": "Practice Area Access Tests",
+      "test": "Should load data and test unsubscribed practice areas"
+    },
+    {
+      "message": "Error fetching organization: {\"message\":\"Request failed with status code 401\",\"name\":\"AxiosError\",\"stack\":\"AxiosError: Request failed with status code 401\\n    at to (https://app.staging.futurumgroup.com/_next/static/chunks/pages/_app-42045e6edb6ad9e6.js:112:2242905)\\n    at XMLHttpRequest.g (https://app.staging.futurumgroup.com/_next/static/chunks/pages/_app-42045e6edb6ad9e6.js:112:2247373)\\n    at tG.request (https://app.staging.futurumgroup.com/_next/static/chunks/pages/_app-42045e6edb6ad9e6.js:112:2255864)\\n    at async queryFn (https://app.staging.futurumgroup.com/_next/static/chunks/pages/_app-42045e6edb6ad9e6.js:112:1078590)\",\"config\":{\"transitional\":{\"silentJSONParsing\":true,\"forcedJSONParsing\":true,\"clarifyTimeoutError\":false},\"adapter\":[\"xhr\",\"http\",\"fetch\"],\"transformRequest\":[null],\"transformResponse\":[null],\"timeout\":0,\"xsrfCookieName\":\"XSRF-TOKEN\",\"xsrfHeaderName\":\"X-XSRF-TOKEN\",\"maxContentLength\":-1,\"maxBodyLength\":-1,\"env\":{},\"headers\":{\"Accept\":\"application/json, text/plain, */*\"},\"paramsSerializer\":{},\"withCredentials\":true,\"method\":\"get\",\"url\":\"/api/organizations/67f8d93c09435019610933e9\",\"allowAbsoluteUrls\":true},\"code\":\"ERR_BAD_REQUEST\",\"status\":401}",
+      "suite": "Practice Area Access Tests",
+      "test": "Should load data and test unsubscribed practice areas"
+    },
+    {
+      "message": "Axios Error: <!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">\n<HTML><HEAD><META HTTP-EQUIV=\"Content-Type\" CONTENT=\"text/html; charset=iso-8859-1\">\n<TITLE>ERROR: The request could not be satisfied</TITLE>\n</HEAD><BODY>\n<H1>413 ERROR</H1>\n<H2>The request could not be satisfied.</H2>\n<HR noshade size=\"1px\">\nBad request.\nWe can't connect to the server for this app or website at this time. There might be too much traffic or a configuration error. Try again later, or contact the app or website owner.\n<BR clear=\"all\">\nIf you provide content to customers through CloudFront, you can find steps to troubleshoot and help prevent this error by reviewing the CloudFront documentation.\n<BR clear=\"all\">\n<HR noshade size=\"1px\">\n<PRE>\nGenerated by cloudfront (CloudFront)\nRequest ID: OYYrpfuDqwLqzjnnfVLNH4aL6AX3ZPJ798EZg1k6yhfpPwvIgff-CQ==\n</PRE>\n<ADDRESS>\n</ADDRESS>\n</BODY></HTML>",
+      "suite": "Practice Area Access Tests",
+      "test": "Should load data and test unsubscribed practice areas"
+    },
+    {
+      "message": "Axios Error: <!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">\n<HTML><HEAD><META HTTP-EQUIV=\"Content-Type\" CONTENT=\"text/html; charset=iso-8859-1\">\n<TITLE>ERROR: The request could not be satisfied</TITLE>\n</HEAD><BODY>\n<H1>413 ERROR</H1>\n<H2>The request could not be satisfied.</H2>\n<HR noshade size=\"1px\">\nBad request.\nWe can't connect to the server for this app or website at this time. There might be too much traffic or a configuration error. Try again later, or contact the app or website owner.\n<BR clear=\"all\">\nIf you provide content to customers through CloudFront, you can find steps to troubleshoot and help prevent this error by reviewing the CloudFront documentation.\n<BR clear=\"all\">\n<HR noshade size=\"1px\">\n<PRE>\nGenerated by cloudfront (CloudFront)\nRequest ID: HP7D1N27jP7xkqj5LLNpV9ourqegycQBOXs5SO4U1_ZATRDce_EQug==\n</PRE>\n<ADDRESS>\n</ADDRESS>\n</BODY></HTML>",
+      "suite": "Practice Area Access Tests",
+      "test": "Should load data and test unsubscribed practice areas"
+    },
+    {
+      "message": "Axios Error: <!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">\n<HTML><HEAD><META HTTP-EQUIV=\"Content-Type\" CONTENT=\"text/html; charset=iso-8859-1\">\n<TITLE>ERROR: The request could not be satisfied</TITLE>\n</HEAD><BODY>\n<H1>413 ERROR</H1>\n<H2>The request could not be satisfied.</H2>\n<HR noshade size=\"1px\">\nBad request.\nWe can't connect to the server for this app or website at this time. There might be too much traffic or a configuration error. Try again later, or contact the app or website owner.\n<BR clear=\"all\">\nIf you provide content to customers through CloudFront, you can find steps to troubleshoot and help prevent this error by reviewing the CloudFront documentation.\n<BR clear=\"all\">\n<HR noshade size=\"1px\">\n<PRE>\nGenerated by cloudfront (CloudFront)\nRequest ID: v3YF0dxgGbbJXpJZP2VE797emEtx8mN8nF9uyP78shYtAhpZqayEVg==\n</PRE>\n<ADDRESS>\n</ADDRESS>\n</BODY></HTML>",
+      "suite": "Practice Area Access Tests",
+      "test": "Should load data and test subscribed practice areas"
+    },
+    {
+      "message": "Axios Error: Unauthorized",
+      "suite": "Practice Area Access Tests",
+      "test": "Should load data and test subscribed practice areas"
+    },
+    {
+      "message": "Failed to fetch nav order: {\"message\":\"Request failed with status code 401\",\"name\":\"AxiosError\",\"stack\":\"AxiosError: Request failed with status code 401\\n    at to (https://app.staging.futurumgroup.com/_next/static/chunks/pages/_app-42045e6edb6ad9e6.js:112:2242905)\\n    at XMLHttpRequest.g (https://app.staging.futurumgroup.com/_next/static/chunks/pages/_app-42045e6edb6ad9e6.js:112:2247373)\\n    at tG.request (https://app.staging.futurumgroup.com/_next/static/chunks/pages/_app-42045e6edb6ad9e6.js:112:2255864)\",\"config\":{\"transitional\":{\"silentJSONParsing\":true,\"forcedJSONParsing\":true,\"clarifyTimeoutError\":false},\"adapter\":[\"xhr\",\"http\",\"fetch\"],\"transformRequest\":[null],\"transformResponse\":[null],\"timeout\":0,\"xsrfCookieName\":\"XSRF-TOKEN\",\"xsrfHeaderName\":\"X-XSRF-TOKEN\",\"maxContentLength\":-1,\"maxBodyLength\":-1,\"env\":{},\"headers\":{\"Accept\":\"application/json, text/plain, */*\"},\"paramsSerializer\":{},\"withCredentials\":true,\"method\":\"get\",\"url\":\"/api/settings/nav-order/fetch\",\"allowAbsoluteUrls\":true},\"code\":\"ERR_BAD_REQUEST\",\"status\":401}",
+      "suite": "Practice Area Access Tests",
+      "test": "Should load data and test subscribed practice areas"
+    },
+    {
+      "message": "Axios Error: <!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">\n<HTML><HEAD><META HTTP-EQUIV=\"Content-Type\" CONTENT=\"text/html; charset=iso-8859-1\">\n<TITLE>ERROR: The request could not be satisfied</TITLE>\n</HEAD><BODY>\n<H1>413 ERROR</H1>\n<H2>The request could not be satisfied.</H2>\n<HR noshade size=\"1px\">\nBad request.\nWe can't connect to the server for this app or website at this time. There might be too much traffic or a configuration error. Try again later, or contact the app or website owner.\n<BR clear=\"all\">\nIf you provide content to customers through CloudFront, you can find steps to troubleshoot and help prevent this error by reviewing the CloudFront documentation.\n<BR clear=\"all\">\n<HR noshade size=\"1px\">\n<PRE>\nGenerated by cloudfront (CloudFront)\nRequest ID: XK4sJdySX7wXFGwZ8XmuZoasMhdDEFp6Q2HKG0PDZnou1rhNazy-Gg==\n</PRE>\n<ADDRESS>\n</ADDRESS>\n</BODY></HTML>",
+      "suite": "Practice Area Access Tests",
+      "test": "Should navigate through different tabs and verify content for a random practice area"
+    },
+    {
+      "message": "Axios Error: Unauthorized",
+      "suite": "Practice Area Access Tests",
+      "test": "Should navigate through different tabs and verify content for a random practice area"
+    },
+    {
+      "message": "Failed to fetch nav order: {\"message\":\"Request failed with status code 401\",\"name\":\"AxiosError\",\"stack\":\"AxiosError: Request failed with status code 401\\n    at to (https://app.staging.futurumgroup.com/_next/static/chunks/pages/_app-42045e6edb6ad9e6.js:112:2242905)\\n    at XMLHttpRequest.g (https://app.staging.futurumgroup.com/_next/static/chunks/pages/_app-42045e6edb6ad9e6.js:112:2247373)\\n    at tG.request (https://app.staging.futurumgroup.com/_next/static/chunks/pages/_app-42045e6edb6ad9e6.js:112:2255864)\",\"config\":{\"transitional\":{\"silentJSONParsing\":true,\"forcedJSONParsing\":true,\"clarifyTimeoutError\":false},\"adapter\":[\"xhr\",\"http\",\"fetch\"],\"transformRequest\":[null],\"transformResponse\":[null],\"timeout\":0,\"xsrfCookieName\":\"XSRF-TOKEN\",\"xsrfHeaderName\":\"X-XSRF-TOKEN\",\"maxContentLength\":-1,\"maxBodyLength\":-1,\"env\":{},\"headers\":{\"Accept\":\"application/json, text/plain, */*\"},\"paramsSerializer\":{},\"withCredentials\":true,\"method\":\"get\",\"url\":\"/api/settings/nav-order/fetch\",\"allowAbsoluteUrls\":true},\"code\":\"ERR_BAD_REQUEST\",\"status\":401}",
+      "suite": "Practice Area Access Tests",
+      "test": "Should navigate through different tabs and verify content for a random practice area"
+    },
+    {
+      "message": "Axios Error: <!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">\n<HTML><HEAD><META HTTP-EQUIV=\"Content-Type\" CONTENT=\"text/html; charset=iso-8859-1\">\n<TITLE>ERROR: The request could not be satisfied</TITLE>\n</HEAD><BODY>\n<H1>413 ERROR</H1>\n<H2>The request could not be satisfied.</H2>\n<HR noshade size=\"1px\">\nBad request.\nWe can't connect to the server for this app or website at this time. There might be too much traffic or a configuration error. Try again later, or contact the app or website owner.\n<BR clear=\"all\">\nIf you provide content to customers through CloudFront, you can find steps to troubleshoot and help prevent this error by reviewing the CloudFront documentation.\n<BR clear=\"all\">\n<HR noshade size=\"1px\">\n<PRE>\nGenerated by cloudfront (CloudFront)\nRequest ID: IA0mbz1vXtG3WAae8CYKrAem7xMfMatnxFepwFGACS-WecPGEyXu8w==\n</PRE>\n<ADDRESS>\n</ADDRESS>\n</BODY></HTML>",
+      "suite": "Practice Area Access Tests",
+      "test": "Should verify tiles are visible for a random practice area"
+    },
+    {
+      "message": "Axios Error: Unauthorized",
+      "suite": "Practice Area Access Tests",
+      "test": "Should verify tiles are visible for a random practice area"
+    },
+    {
+      "message": "Failed to fetch nav order: {\"message\":\"Request failed with status code 401\",\"name\":\"AxiosError\",\"stack\":\"AxiosError: Request failed with status code 401\\n    at to (https://app.staging.futurumgroup.com/_next/static/chunks/pages/_app-42045e6edb6ad9e6.js:112:2242905)\\n    at XMLHttpRequest.g (https://app.staging.futurumgroup.com/_next/static/chunks/pages/_app-42045e6edb6ad9e6.js:112:2247373)\\n    at tG.request (https://app.staging.futurumgroup.com/_next/static/chunks/pages/_app-42045e6edb6ad9e6.js:112:2255864)\",\"config\":{\"transitional\":{\"silentJSONParsing\":true,\"forcedJSONParsing\":true,\"clarifyTimeoutError\":false},\"adapter\":[\"xhr\",\"http\",\"fetch\"],\"transformRequest\":[null],\"transformResponse\":[null],\"timeout\":0,\"xsrfCookieName\":\"XSRF-TOKEN\",\"xsrfHeaderName\":\"X-XSRF-TOKEN\",\"maxContentLength\":-1,\"maxBodyLength\":-1,\"env\":{},\"headers\":{\"Accept\":\"application/json, text/plain, */*\"},\"paramsSerializer\":{},\"withCredentials\":true,\"method\":\"get\",\"url\":\"/api/settings/nav-order/fetch\",\"allowAbsoluteUrls\":true},\"code\":\"ERR_BAD_REQUEST\",\"status\":401}",
+      "suite": "Practice Area Access Tests",
+      "test": "Should verify tiles are visible for a random practice area"
+    }
+  ]
 }

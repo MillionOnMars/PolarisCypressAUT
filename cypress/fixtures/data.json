@@ -51,8 +51,7 @@
         "subscribed": [
             "AI Platforms",
             "Software Engineering",
-            "Cybersecurity",
-            "Enterprise Software"
+            "Cybersecurity"
         ],
         "unsubscribed": [
             "AI Devices",
@@ -63,14 +62,12 @@
         "specificNavItems": {
             "AI Platforms": "Market Forecast",
             "Software Engineering": "DevOps Market",
-            "Cybersecurity": "Forecast Overview",
-            "Enterprise Software": "Overall Market"
+            "Cybersecurity": "Forecast Overview"
         },
         "expectedTiles": {
             "AI Platforms": "Market Scenario Assumptions",
             "Software Engineering": "2025 Revenue",
-            "Cybersecurity": "Market Segment",
-            "Enterprise Software": "2024 Revenue"
+            "Cybersecurity": "Market Segment"
         }
     },
     "emailJob": {
