@@ -29,6 +29,11 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v4
 
+    - name: Capture start time
+      id: start-time
+      run: |
+        echo "start=$(date +%s)" >> "$GITHUB_OUTPUT"
+
     - name: Setup Node.js
       uses: actions/setup-node@v4
       with:
@@ -195,6 +200,19 @@ jobs:
         if-no-files-found: warn
         retention-days: 14
 
+    - name: Calculate test duration
+      id: duration
+      if: always()
+      run: |
+        END_TIME=$(date +%s)
+        START_TIME=${{ steps.start-time.outputs.start }}
+        DURATION=$((END_TIME - START_TIME))
+        MINUTES=$((DURATION / 60))
+        SECONDS=$((DURATION % 60))
+        echo "total_seconds=$DURATION" >> "$GITHUB_OUTPUT"
+        echo "formatted=${MINUTES}m ${SECONDS}s" >> "$GITHUB_OUTPUT"
+        echo "Test suite ran for: ${MINUTES}m ${SECONDS}s"
+
     - name: Send Slack notification
       if: always()
       uses: slackapi/slack-github-action@v1.24.0
@@ -203,7 +221,7 @@ jobs:
           {
             "username": "GitHub Actions",
             "icon_emoji": ":github:",
-            "text": "${{ steps.test-results.outputs.failed > 0 && '🔴 CYPRESS TESTS FAILED' || '✅ CYPRESS TESTS PASSED' }}\n\n*Environment:* ${{ secrets.CYPRESS_APP_URL || 'Staging' }}\n*Branch:* ${{ github.ref_name }}\n\n*📊 Test Results*\n✅ Passed: ${{ steps.test-results.outputs.passed || 0 }}\n❌ Failed: ${{ steps.test-results.outputs.failed || 0 }}\n📝 Total: ${{ steps.test-results.outputs.total || 0 }}\n\n\n*📋 Test Run Summary*\n${{ steps.spec-summary.outputs.spec_summary }}\n\n*Console Errors:* ${{ steps.console-errors.outputs.total || 0 }}\n\n*AI Model Response Times*\n${{ steps.response-time.outputs.formatted_times }}\n\n<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|View Full Report> 📋"
+            "text": "${{ steps.test-results.outputs.failed > 0 && '🔴 CYPRESS TESTS FAILED' || '✅ CYPRESS TESTS PASSED' }}\n\n*Environment:* ${{ secrets.CYPRESS_APP_URL || 'Staging' }}\n*Branch:* ${{ github.head_ref || github.ref_name }}\n*Run by:* ${{ github.actor }}\n*Duration:* ${{ steps.duration.outputs.formatted }}\n\n\n*📊 Test Results*\n✅ Passed: ${{ steps.test-results.outputs.passed || 0 }}\n❌ Failed: ${{ steps.test-results.outputs.failed || 0 }}\n📝 Total: ${{ steps.test-results.outputs.total || 0 }}\n\n\n*📋 Test Run Summary*\n${{ steps.spec-summary.outputs.spec_summary }}\n\n*Console Errors:* ${{ steps.console-errors.outputs.total || 0 }}\n\n*AI Model Response Times*\n${{ steps.response-time.outputs.formatted_times }}\n\n<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|View Full Report> 📋"
             }
       env:
         SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
