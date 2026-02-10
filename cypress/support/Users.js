@@ -1,52 +1,8 @@
 import { login2 } from '../support/login.js';
 import { logoutUser } from './Auth.js';
+import { navigateToUserProfile, navigateToSubscriptionPage, navigateToAdminDashboard } from './navigate.js';
 
 const TIMEOUT = 10000;
-
-const navigateToUserProfile = () => {
-    cy.get('[data-testid="PersonIcon"]', { timeout: TIMEOUT })
-        .its('length')
-        .then((count) => {
-            const index = count === 1 ? 0 : 1;
-            cy.log(`Clicking PersonIcon at index ${index} (total: ${count})`);
-            
-            cy.get('[data-testid="PersonIcon"]')
-                .eq(index)
-                .should('exist')
-                .click({ force: true });
-        });
-    cy.contains('Profile', { timeout: TIMEOUT })
-        .should('be.visible')
-        .click({ force: true });
-
-    // wait for profile to load
-    cy.wait(2000);
-};
-
-const navigateToSubscriptionPage = () => {
-    cy.wait(2000);
-    cy.get('[data-testid="SubscriptionsIcon"]', { timeout: TIMEOUT })
-        .last()
-        .should('be.visible')
-        .click({ force: true });
-    cy.contains('Manage My Subscriptions', { timeout: TIMEOUT })
-        .should('be.visible')
-        .click({ force: true });
-};
-
-const navigateToAdminDashboard = () => {
-    cy.get('[data-testid="ManageAccountsIcon"]', { timeout: TIMEOUT })
-        .last()
-        .should('be.visible')
-        .click({ force: true });
-    
-    cy.contains('Admin Dashboard', { timeout: TIMEOUT })
-        .should('be.visible')
-        .click({ force: true });
-
-    // Verify admin dashboard loaded
-    cy.url({ timeout: 30000 }).should('include', '/admin');
-};
 
 const saveChanges = () => {
     cy.contains('Save Changes', { timeout: TIMEOUT })
@@ -211,8 +167,55 @@ const changePassword = (username, newPassword, originalPassword) => {
     cy.wait(3000);
 };
 
+// Page access constants
+const BASE_ANALYST_PAGES = [
+    '[aria-label="Your daily dashboard - morning briefing and tasks"]',
+    '[aria-label="Manage blocked news sources"]',
+    '[aria-label="Research Files"]',
+    '[aria-label="Review and triage company events, generate content"]',
+    '[aria-label="View and manage generated content"]',
+    '[aria-label="Manage companies and coverage"]',
+    '[aria-label="Create Signal"]',
+    '[aria-label="G2 Data Overview"]'
+];
+
+const ANALYST_PLUS_EXTRA_PAGES = [
+    '[aria-label="Customer-initiated leads - Salesforce, briefings, inquiries, and calls"]',
+    '[aria-label="Outbound leads - News events, earnings, G2, and intelligence"]',
+    '[aria-label="Analyst Comments"]'
+];
+
+const ROLE_PERMISSIONS = {
+    analyst: {
+        allowedPages: [...BASE_ANALYST_PAGES],
+        restrictedPages: [...ANALYST_PLUS_EXTRA_PAGES]
+    },
+    analystp: {
+        allowedPages: [...BASE_ANALYST_PAGES, ...ANALYST_PLUS_EXTRA_PAGES],
+        restrictedPages: []
+    },
+    admin: {
+        allowedPages: [...BASE_ANALYST_PAGES, ...ANALYST_PLUS_EXTRA_PAGES],
+        restrictedPages: []
+    }
+};
+
+const verifyPages = (role) => {
+    const { allowedPages, restrictedPages } = ROLE_PERMISSIONS[role];
+
+    // Verify allowed pages exist
+    allowedPages.forEach((selector) => {
+        cy.get(selector).should('exist');
+    });
+
+    // Verify restricted pages do not exist
+    restrictedPages.forEach((selector) => {
+        cy.get(selector).should('not.exist');
+    });
+};
+
 class Users {
-    static updateSubscription(subscriptionName) {
+    static  updateSubscription(subscriptionName) {
         it('Remove user subscription', () => {
             navigateToUserProfile();
             removeSubscriptionPlan(subscriptionName);
@@ -241,6 +244,11 @@ class Users {
         it('Revert password back to original', () => {
             // Need to re-authenticate after previous test changed password
             changePassword(username, originalPassword, newPassword);
+        });
+    }
+    static verifyUserPages(role) {
+        it(`should have correct page access for ${role} role`, () => {
+            verifyPages(role);
         });
     }
 }

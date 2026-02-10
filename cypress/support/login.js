@@ -82,7 +82,11 @@ export function login(username, password, forceLogout = false) {
                 
                 // Verify successful login after logging in
                 cy.url({ timeout: 30000 }).should('satisfy', (url) => {
-                    return url.includes('/feed') || url.includes('/home') || url.includes('/account_overview') || url.includes('/md_executive_summary');
+                    return url.includes('/feed') || 
+                           url.includes('/home') || 
+                           url.includes('/account_overview') || 
+                           url.includes('/md_executive_summary') || 
+                           url.includes('/analyst_home');
                 });
             }
             else if (url.includes('/login') || hasLoginForm) {
@@ -102,7 +106,11 @@ export function login(username, password, forceLogout = false) {
                 
                 // Verify successful login after logging in
                 cy.url({ timeout: 30000 }).should('satisfy', (url) => {
-                    return url.includes('/feed') || url.includes('/home') || url.includes('/account_overview') || url.includes('/md_executive_summary');
+                    return url.includes('/feed') || 
+                           url.includes('/home') || 
+                           url.includes('/account_overview') || 
+                           url.includes('/md_executive_summary') || 
+                           url.includes('/analyst_home');
                 });
             } else {
                 cy.log('Already logged in with correct user, skipping login flow');
@@ -144,8 +152,9 @@ export function login2(username, password) {
                 cy.url({ timeout: 30000 }).should('satisfy', (url) => {
                     return url.includes('/feed') || 
                            url.includes('/home') || 
-                           url.includes('/account_overview') ||
-                           url.includes('/md_executive_summary');
+                           url.includes('/account_overview') || 
+                           url.includes('/md_executive_summary') || 
+                           url.includes('/analyst_home');
                 });
             } else {
                 cy.log('Already logged in, skipping login flow');

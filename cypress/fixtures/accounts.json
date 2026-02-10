@@ -29,6 +29,18 @@
             "password": "Testing12345!",
             "fullname": "Chad Test0808"
         },
+        "analyst": {
+            "username": "analyst@qa.com",
+            "email": "analyst@qa.com",
+            "password": "Testing12345!",
+            "fullname": "Analyst (AWS)"
+        },
+        "analystp": {
+            "username": "analystp@qa.com",
+            "email": "analystp@qa.com",
+            "password": "Testing12345!",
+            "fullname": "Analyst Plus (AWS)"
+        },
         "subscribedUser": {
             "username": "chadtest0923",
             "email": "chad+test0923@milliononmars.com",
