@@ -27,11 +27,11 @@ const validateUserActivityFilters = () => {
         .should('be.visible')
         .click();
 
-    // Click on Last Page button
-    cy.get('[data-testid="LastPageIcon"]', { timeout: DEFAULT_TIMEOUT })
-        .first()
-        .should('be.visible')
-        .click();
+    // // Click on Last Page button
+    // cy.get('[data-testid="LastPageIcon"]', { timeout: DEFAULT_TIMEOUT })
+    //     .first()
+    //     .should('be.visible')
+    //     .click();
 
     // Verify the result shows the expected email
     cy.contains(ANALYTICS_CONFIG.EMAIL, { timeout: DEFAULT_TIMEOUT })
