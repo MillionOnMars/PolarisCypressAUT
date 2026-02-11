@@ -33,6 +33,7 @@ const validateUserActivityFilters = () => {
     //     .should('be.visible')
     //     .click();
 
+    
     // Verify the result shows the expected email
     cy.contains(ANALYTICS_CONFIG.EMAIL, { timeout: DEFAULT_TIMEOUT })
         .should('be.visible');
