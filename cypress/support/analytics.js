@@ -7,7 +7,9 @@ const DEFAULT_TIMEOUT = 15000;
 const ANALYTICS_CONFIG = {
     ORGANIZATION: 'ChadOrg_QAs',
     EMAIL: 'chad@milliononmars.com',
-    START_DATE: '2025-10-01',
+    START_DATE: '2025-11-03',
+    END_DATE: '2025-11-03',
+    RESULTS_DATE: '2025-10-01',
     MIN_COUNT_VALUE: 1,
 };
 
@@ -27,11 +29,17 @@ const validateUserActivityFilters = () => {
         .should('be.visible')
         .click();
 
-    // Click on Last Page button
-    cy.get('[data-testid="LastPageIcon"]', { timeout: DEFAULT_TIMEOUT })
-        .first()
-        .should('be.visible')
-        .click();
+    //select start date
+    cy.get('input[type="date"]').first()
+        .should('exist')
+        .clear()
+        .type(ANALYTICS_CONFIG.START_DATE);
+
+    //select end date
+    cy.get('input[type="date"]').last()
+        .should('exist')
+        .clear()
+        .type(ANALYTICS_CONFIG.END_DATE);
 
     // Verify the result shows the expected email
     cy.contains(ANALYTICS_CONFIG.EMAIL, { timeout: DEFAULT_TIMEOUT })
@@ -52,7 +60,7 @@ const validateEmails = () => {
     cy.get('input[type="date"]').first()
         .should('exist')
         .clear()
-        .type(ANALYTICS_CONFIG.START_DATE);
+        .type(ANALYTICS_CONFIG.RESULTS_DATE);
 
     //Click on search button
     cy.get('[data-testid="SearchIcon"]')
