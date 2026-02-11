@@ -9,6 +9,7 @@ const ANALYTICS_CONFIG = {
     EMAIL: 'chad@milliononmars.com',
     START_DATE: '2025-11-03',
     END_DATE: '2025-11-03',
+    RESULTS_DATE: '2025-10-01',
     MIN_COUNT_VALUE: 1,
 };
 
@@ -59,7 +60,7 @@ const validateEmails = () => {
     cy.get('input[type="date"]').first()
         .should('exist')
         .clear()
-        .type(ANALYTICS_CONFIG.START_DATE);
+        .type(ANALYTICS_CONFIG.RESULTS_DATE);
 
     //Click on search button
     cy.get('[data-testid="SearchIcon"]')
