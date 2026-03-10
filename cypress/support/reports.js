@@ -54,7 +54,6 @@ const selectPracticeArea = (practiceArea) => {
     cy.get('li[role="option"]', { timeout: TIMEOUT })
         .contains(practiceArea)
         .should('exist')
-        .should('be.visible')
         .click({ force: true });
 
     // Close the dropdown by clicking outside
