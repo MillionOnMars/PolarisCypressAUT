@@ -12,7 +12,7 @@ export const navigateToAdmin = () => {
         .should('be.visible')
         .click({ force: true });
 
-    cy.get('[data-testid="AdminPanelSettingsIcon"]', { timeout: TIMEOUT })
+    cy.get('li[role="menuitem"] [data-testid="AdminPanelSettingsIcon"]', { timeout: TIMEOUT })
         .should('exist')
         .should('be.visible')
         .click({ force: true });
