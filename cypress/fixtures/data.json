@@ -24,15 +24,15 @@
     "previewEmailTemplate": {
         "emailTemplateName": "Production Monthly Spotlight Email",
         "orgName": "AMD_QA",
-        "userName": "Chad Test0527",
-        "selectUser": "chad+test102112",
+        "userName": "chad+test102112",
+        "selectUser": "Chad Test0527",
         "previewTitle": "Curated Futurum"
     },
     "testEmail": {
         "emailTemplateName": "Production Monthly Spotlight Email",
         "orgName": "AMD_QA",
-        "userName": "Chad Test0527",
-        "selectUser": "chad+test102112",
+        "userName": "chad+test102112",
+        "selectUser": "Chad Test0527",
         "previewTitle": "Curated Futurum",
         "testRecipient": "chad+test0808@milliononmars.com"
     },
@@ -50,7 +50,7 @@
     "practiceAreas": {
         "subscribed": [
             "AI Platforms",
-            "Software Engineering",
+            "Software Lifecycle Engineering",
             "Cybersecurity"
         ],
         "unsubscribed": [

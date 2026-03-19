@@ -461,7 +461,7 @@ const selectOrganizationFromDropdown = (emailTemplateName, orgName) => {
 };
 
 const verifyUserDropdownLoads = (userName) => {
-    cy.contains(userName, { timeout: TIMEOUT })
+    cy.contains('button, [role="combobox"]', userName, { timeout: TIMEOUT })
         .should('exist')
         .should('be.visible')
         .click({ force: true });
