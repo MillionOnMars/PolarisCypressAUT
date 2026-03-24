@@ -61,12 +61,12 @@
         ],
         "specificNavItems": {
             "AI Platforms": "Market Forecast",
-            "Software Engineering": "DevOps Market",
+            "Software Lifecycle Engineering": "DevOps Market",
             "Cybersecurity": "Forecast Overview"
         },
         "expectedTiles": {
             "AI Platforms": "Market Scenario Assumptions",
-            "Software Engineering": "2025 Revenue",
+            "Software Lifecycle Engineering": "2025 Revenue",
             "Cybersecurity": "Market Segment"
         }
     },

@@ -10,7 +10,7 @@ const CONFIG = {
         'Send Email to Users',
         'Customer Portal',
         'CyberSecurity',
-        'Software Engineering',
+        'Software Lifecycle Engineering',
         'CIO Insights',
         'AI Devices',
         'Data Intelligence',
