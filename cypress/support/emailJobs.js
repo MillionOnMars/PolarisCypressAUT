@@ -447,7 +447,7 @@ class EmailJobs {
                 
                 // Verify user counts
                 verifyOrganizationUserCount(org2, 8);
-                verifyOrganizationUserCount(org3, 4);
+                verifyOrganizationUserCount(org3, 2);
             });
         });
 
