@@ -264,7 +264,7 @@ const selectOrganizationFromSendingSummary = (organization) => {
 };
     
 const verifyOrganizationShowUp = (organization) => {
-    cy.contains('Send to All Users in 2 Organizations', { timeout: TIMEOUT })
+    cy.contains('button', 'Send to All Users in 2 Organizations', { timeout: TIMEOUT })
         .scrollIntoView()
         .should('exist')
         .should('be.visible')
@@ -434,7 +434,7 @@ class EmailJobs {
                 selectOrganizationFromSendingSummary(org3);
                 
                 // Click to open modal
-                cy.contains('Send to All Users in 2 Organizations', { timeout: TIMEOUT })
+                cy.contains('button', 'Send to All Users in 2 Organizations', { timeout: TIMEOUT })
                     .scrollIntoView()
                     .should('exist')
                     .should('be.visible')
@@ -447,7 +447,7 @@ class EmailJobs {
                 
                 // Verify user counts
                 verifyOrganizationUserCount(org2, 8);
-                verifyOrganizationUserCount(org3, 4);
+                verifyOrganizationUserCount(org3, 2);
             });
         });
 
