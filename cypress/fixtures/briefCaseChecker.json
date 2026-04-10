@@ -1,0 +1,26 @@
+{
+    "staging":{
+        "SWOT Snapshot":{
+            "initialResponse": "(gather|search|conduct|produce|create|develop|help).*(data|analysis|SWOT)",
+            "responseChecker": "Executive SWOT Analysis",
+            "responseEndChecker": "Assumptions & Limitations"
+        },
+        "SWOT Analysis (from Prod)":{
+            "initialResponse": "(gather|search|conduct|produce|create|develop|help).*(data|analysis|SWOT)",
+            "responseChecker": "Executive SWOT Analysis",
+            "responseEndChecker": "Sources"
+        },
+        "SWOT SNAPSHOT PROD":{
+            "initialResponse": "(gather|search|conduct|produce|create|develop|help).*(data|analysis|SWOT)",
+            "responseChecker": "Executive SWOT Analysis",
+            "responseEndChecker": "Assumptions & Limitations"
+        }
+    },
+    "prod":{
+         "SWOT Snapshot":{
+            "initialResponse": "(gather|search|conduct|produce|create|develop|help).*(data|analysis|SWOT)",
+            "responseChecker": "Executive SWOT Analysis",
+            "responseEndChecker": "Assumptions & Limitations"
+        }
+    }
+}

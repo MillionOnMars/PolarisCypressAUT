@@ -1,0 +1,12 @@
+{
+    "Customer": "[data-testid='customer-accordion-summary']",
+    "Organization": "[data-testid='organization_insights-menu-button']",
+    "SWOT Snapshot": "[data-testid='organization_insights-item-swot-snapshot']",
+    "SWOT Analysis (from Prod)": "[data-testid='organization_insights-item-swot-analysis-(from-prod)']",
+    "SWOT SNAPSHOT PROD": "[data-testid='organization_insights-item-swot-snapshot-prod']",
+    "Practice Area": "[data-testid='practice_area_insights-menu-button']",
+    "AI Platform Market Data": "[data-testid='practice_area_insights-item-ai-platform-market-data']",
+    "Analyst": "[data-testid='analyst_tools-menu-button']",
+    "Market Coverage - Earnings": "[data-testid='analyst_tools-item-market-coverage---earnings']"
+
+}

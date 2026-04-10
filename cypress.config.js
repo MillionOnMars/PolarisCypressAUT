@@ -11,6 +11,7 @@ module.exports = defineConfig({
   retries: 2,
   e2e: {    
     specPattern: [
+      'cypress/e2e/GenAI_Latency.cy.js',
       'cypress/e2e/Data.cy.js',
       'cypress/e2e/FuturumAI.cy.js',
       'cypress/e2e/Users.cy.js',
@@ -24,6 +25,7 @@ module.exports = defineConfig({
       'cypress/e2e/Analytics.cy.js',
       'cypress/e2e/Migration.cy.js',
       'cypress/e2e/Research_Engine.cy.js'
+      
     ],
     supportFile: 'cypress/support/index.js',
     downloadsFolder: 'cypress/downloads',
