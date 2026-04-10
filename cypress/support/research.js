@@ -826,6 +826,18 @@ class Research {
             });
         });
     }
+
+     static selectTextModel(modelName) {
+        selectTextModel(modelName);
+     }
+
+     static openAI() {
+        openAI();
+     }
+
+     static deleteNotebook() {
+        deleteNotebook();
+     }
 }
 
-export default {Research, openAI, deleteNotebook, selectTextModel};
+export default Research;

@@ -3,7 +3,7 @@ import Common from '../support/common.js';
 import briefCaseChecker from '../fixtures/briefCaseChecker.json';
 import briefCaseSelectors from '../fixtures/briefCaseSelectors.json';
 import organizationMap from '../fixtures/organizationMap.json';
-let selectedModel; // variable to store the selected value AI model
+let selectedModel = 'Claude 4.6 Sonnet'; // variable to store the selected value AI model
 
 /**
  * Opens a new AU session by clicking the 'Create new analysis session' button,
@@ -300,7 +300,7 @@ class genAI {
                 Research.openAI();
                 openNewSession('');  
                 //selectRandomAIModel(); // There is an issue when seleclting Claude 4.6 Opus, we are investigating, for now we will hardcode to select Claude 4.5 Sonnet.
-                Research.selectTextModel('Claude 4.6 Sonnet');
+                Research.selectTextModel(selectedModel);
                 navigateToGenAIMBriefCaseMenu(mainMenu, subMenu, promptName, isSubMenuAnOrganization)
                 getGenAILatency(organization, promptName);
                 Research.deleteNotebook();

@@ -28,6 +28,8 @@ const selectOrganization = (orgName) => {
 };
 
 class Common {
-
+    static selectOrganization(orgName) {
+        selectOrganization(orgName);
+     }
 }
-export default {Common, selectOrganization};
+export default Common;
