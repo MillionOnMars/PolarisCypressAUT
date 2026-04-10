@@ -52,6 +52,12 @@
             "email": "chad+0923test@milliononmars.com",
             "password": "Testing12345!",
             "fullname": "chadtest09231"
+        },
+        "latencyUser": {
+            "username": "automation-latency",
+            "email": "automation-latency@milliononmars.com",
+            "password": "Testing12345!",
+            "fullname": "Automation Latency"
         }
     }
 }

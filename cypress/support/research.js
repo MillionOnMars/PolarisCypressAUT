@@ -828,4 +828,4 @@ class Research {
     }
 }
 
-export default Research;
+export default {Research, openAI, deleteNotebook, selectTextModel};

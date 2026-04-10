@@ -183,6 +183,51 @@ jobs:
           echo "No responseTime.json found"
         fi
 
+    - name: Get latency metrics
+      id: latency-metrics
+      if: always()
+      run: |
+        if [ -f "cypress/reports/latencyMetrics.json" ]; then
+          if jq -e 'type == "array"' cypress/reports/latencyMetrics.json > /dev/null; then
+            
+            COUNT=$(jq '. | length' cypress/reports/latencyMetrics.json)
+            FORMATTED_LATENCY=""
+
+            for i in $(seq 0 $((COUNT-1))); do
+              MODEL=$(jq -r ".[$i].aiModel" cypress/reports/latencyMetrics.json)
+              PROMPT=$(jq -r ".[$i].promptName" cypress/reports/latencyMetrics.json)
+              INITIAL=$(jq -r ".[$i].initialResponseLatency" cypress/reports/latencyMetrics.json)
+              ACTUAL=$(jq -r ".[$i].actualResponseLatency" cypress/reports/latencyMetrics.json)
+              STREAM=$(jq -r ".[$i].responseStreamingDuration" cypress/reports/latencyMetrics.json)
+              TOTAL=$(jq -r ".[$i].totalEndToEnd" cypress/reports/latencyMetrics.json)
+              EXCEED=$(jq -r ".[$i].exceedsThreshold" cypress/reports/latencyMetrics.json)
+
+              # Optional warning icon
+              if [ "$EXCEED" = "true" ]; then
+                STATUS="⚠️ Exceeds threshold"
+              else
+                STATUS="✅ Within threshold"
+              fi
+
+              FORMATTED_LATENCY="${FORMATTED_LATENCY}• ${MODEL} | ${PROMPT}\n"
+              FORMATTED_LATENCY="${FORMATTED_LATENCY}  - Initial: ${INITIAL}\n"
+              FORMATTED_LATENCY="${FORMATTED_LATENCY}  - Actual: ${ACTUAL}\n"
+              FORMATTED_LATENCY="${FORMATTED_LATENCY}  - Streaming: ${STREAM}\n"
+              FORMATTED_LATENCY="${FORMATTED_LATENCY}  - Total: ${TOTAL}\n"
+              FORMATTED_LATENCY="${FORMATTED_LATENCY}  - ${STATUS}\n\n"
+            done
+
+            echo "formatted_latency=$FORMATTED_LATENCY" >> "$GITHUB_OUTPUT"
+            echo "Found latency metrics for $COUNT entries"
+
+          else
+            echo "formatted_latency=• Invalid latencyMetrics format" >> "$GITHUB_OUTPUT"
+          fi
+        else
+          echo "formatted_latency=• No latency metrics found" >> "$GITHUB_OUTPUT"
+          echo "No latencyMetrics.json found"
+        fi
+
     - name: 🔍 Uploading Test Evidence (Screenshots/Videos) 🔍
       if: always()
       uses: actions/upload-artifact@v4
@@ -221,8 +266,47 @@ jobs:
           {
             "username": "GitHub Actions",
             "icon_emoji": ":github:",
-            "text": "${{ steps.test-results.outputs.failed > 0 && '🔴 CYPRESS TESTS FAILED' || '✅ CYPRESS TESTS PASSED' }}\n\n*Environment:* ${{ secrets.CYPRESS_APP_URL || 'Staging' }}\n*Branch:* ${{ github.head_ref || github.ref_name }}\n*Duration:* ${{ steps.duration.outputs.formatted }}\n\n*📊 Test Results*\n✅ Passed: ${{ steps.test-results.outputs.passed || 0 }}\n❌ Failed: ${{ steps.test-results.outputs.failed || 0 }}\n📝 Total: ${{ steps.test-results.outputs.total || 0 }}\n\n\n*📋 Test Run Summary*\n${{ steps.spec-summary.outputs.spec_summary }}\n\n*Console Errors:* ${{ steps.console-errors.outputs.total || 0 }}\n\n*AI Model Response Times*\n${{ steps.response-time.outputs.formatted_times }}\n\n<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|View Full Report> 📋"
+            "text": "${{ steps.test-results.outputs.failed > 0 && '🔴 CYPRESS TESTS FAILED' || '✅ CYPRESS TESTS PASSED' }}\n\n*Environment:* ${{ secrets.CYPRESS_APP_URL || 'Staging' }}\n*Branch:* ${{ github.head_ref || github.ref_name }}\n*Duration:* ${{ steps.duration.outputs.formatted }}\n\n*📊 Test Results*\n✅ Passed: ${{ steps.test-results.outputs.passed || 0 }}\n❌ Failed: ${{ steps.test-results.outputs.failed || 0 }}\n📝 Total: ${{ steps.test-results.outputs.total || 0 }}\n\n\n*📋 Test Run Summary*\n${{ steps.spec-summary.outputs.spec_summary }}\n\n*Console Errors:* ${{ steps.console-errors.outputs.total || 0 }}\n\n*AI Model Response Times*\n${{ steps.response-time.outputs.formatted_times }}\n\n*⚡ Latency Metrics*\n${{ steps.latency-metrics.outputs.formatted_latency }}\n\n<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|View Full Report> 📋"
             }
       env:
         SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+
+    - name: Check for exceeded latency thresholds
+      id: latency
+      if: always()
+      run: |
+        EXCEEDED=false
+
+        if [ -f "cypress/reports/latencyMetrics.json" ]; then
+          # Count entries where exceedsThreshold is true
+          EXCEEDED_COUNT=$(
+            jq '[.[]?
+                | select(type == "object" and .exceedsThreshold == true)
+                ] | length' cypress/reports/latencyMetrics.json
+          )
+
+          echo "Found $EXCEEDED_COUNT entries exceeding latency threshold"
+
+          if [ "$EXCEEDED_COUNT" -gt 0 ]; then
+            EXCEEDED=true
+            echo "There are $EXCEEDED_COUNT entries exceeding latency thresholds"
+          else
+            echo "No latency threshold violations found"
+          fi
+        else
+          echo "No latencyMetrics.json file found"
+        fi
+
+        echo "exceeded=$EXCEEDED" >> $GITHUB_OUTPUT
+
+    - name: Send Slack notification for latency threshold breach
+      if: steps.latency.outputs.exceeded == 'true'
+      uses: slackapi/slack-github-action@v1.24.0
+      with:
+        payload: |
+          {
+            "text": "⚠️ One or more GenAI responses exceeded latency thresholds! Please investigate. <#C0955U777QR|polaris-aut-results>."
+          }
+      env:
+        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL_GEN_AI_LATENCY }}
 

@@ -7,6 +7,10 @@ export function login(username, password, forceLogout = false) {
     // Wait for the page to load and check if we're on the login page
     cy.url().then((url) => {
         cy.log('Current URL:', url);
+        const environment = url.includes('staging') ? 'staging' : 'prod';
+        Cypress.env('environment', environment) ;
+
+        cy.log('Environment:',  Cypress.env('environment', environment));
         
         // Check if we're on login page by looking for login elements
         cy.get('body').then(($body) => {
