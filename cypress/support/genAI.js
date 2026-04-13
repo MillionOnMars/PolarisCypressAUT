@@ -203,7 +203,7 @@ const getGenAILatency = (briefCaseName, selectedModel) => {
                 const modelData = {
                     aiModel: selectedModel,
                     promptName: briefCaseName,
-                    initialResponseLatency: `${metrics.initialResponseLatency} secs`,
+                    initialResponseLatency: `${metrics.initialResponseLatency} secs.`,
                     actualResponseLatency: `${metrics.actualResponseLatency} secs.`,
                     responseStreamingDuration: `${metrics.responseStreamingDuration} secs.`,
                     totalEndToEnd: `${metrics.totalEndToEnd} secs.`
