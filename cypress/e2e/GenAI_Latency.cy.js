@@ -9,6 +9,6 @@ describe('Gen AI Latency Testing', () => {
         });
     });
 
-    GenAI.testGenAILBriefCaseLatency('IBM', 'Customer', 'IBM', 'SWOT SNAPSHOT PROD', true);
+    GenAI.testGenAILBriefCaseLatency('IBM', 'Customer', 'IBM', 'SWOT SNAPSHOT PROD', 'Claude 4.6 Opus', true);
  
 });

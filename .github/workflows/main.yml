@@ -196,8 +196,8 @@ jobs:
             for i in $(seq 0 $((COUNT-1))); do
               MODEL=$(jq -r ".[$i].aiModel" cypress/reports/latencyMetrics.json)
               PROMPT=$(jq -r ".[$i].promptName" cypress/reports/latencyMetrics.json)
-              INITIAL=$(jq -r ".[$i].initialResponseLatency" cypress/reports/latencyMetrics.json)
-              ACTUAL=$(jq -r ".[$i].actualResponseLatency" cypress/reports/latencyMetrics.json)
+              INITIAL=$(jq -r ".[$i].initialResponseLatency | try capture(\"(?<num>[0-9]+(\\.[0-9]+)?)\").num catch \"0\"" cypress/reports/latencyMetrics.json)
+              ACTUAL=$(jq -r ".[$i].actualResponseLatency | try capture(\"(?<num>[0-9]+(\\.[0-9]+)?)\").num catch \"0\"" cypress/reports/latencyMetrics.json)
               STREAM=$(jq -r ".[$i].responseStreamingDuration" cypress/reports/latencyMetrics.json)
               TOTAL=$(jq -r ".[$i].totalEndToEnd" cypress/reports/latencyMetrics.json)
               EXCEED=$(jq -r ".[$i].exceedsThreshold" cypress/reports/latencyMetrics.json)
@@ -209,12 +209,32 @@ jobs:
                 STATUS="✅ Within threshold"
               fi
 
+              # ---------------------------
+              # Initial Latency Status
+              # ---------------------------
+              INITIAL_STATUS=":white_check_mark:"
+              if awk "BEGIN {exit !($INITIAL >= 11 && $INITIAL <= 15)}"; then
+                INITIAL_STATUS=":warning:"
+              elif awk "BEGIN {exit !($INITIAL > 15)}"; then
+                INITIAL_STATUS=":x:"
+              fi
+
+              # ---------------------------
+              # Actual Latency Status
+              # ---------------------------
+              ACTUAL_STATUS=":white_check_mark:"
+              if awk "BEGIN {exit !($ACTUAL >= 41 && $ACTUAL <= 60)}"; then
+                ACTUAL_STATUS=":warning:"
+              elif awk "BEGIN {exit !($ACTUAL >= 61)}"; then
+                ACTUAL_STATUS=":x:"
+              fi
+
               FORMATTED_LATENCY="${FORMATTED_LATENCY}• ${MODEL} | ${PROMPT}\n"
-              FORMATTED_LATENCY="${FORMATTED_LATENCY}  - Initial: ${INITIAL}\n"
-              FORMATTED_LATENCY="${FORMATTED_LATENCY}  - Actual: ${ACTUAL}\n"
-              FORMATTED_LATENCY="${FORMATTED_LATENCY}  - Streaming: ${STREAM}\n"
-              FORMATTED_LATENCY="${FORMATTED_LATENCY}  - Total: ${TOTAL}\n"
-              FORMATTED_LATENCY="${FORMATTED_LATENCY}  - ${STATUS}\n\n"
+              FORMATTED_LATENCY="${FORMATTED_LATENCY}  🚀 Rapid Response: ${INITIAL}s ${INITIAL_STATUS}\n"
+              FORMATTED_LATENCY="${FORMATTED_LATENCY}  ⚡ Actual Response: ${ACTUAL}s ${ACTUAL_STATUS}\n"
+              FORMATTED_LATENCY="${FORMATTED_LATENCY}  🌊 Response Data Stream: ${STREAM}s\n"
+              FORMATTED_LATENCY="${FORMATTED_LATENCY}  📊 End-to-End Response: ${TOTAL}s\n\n"
+              FORMATTED_LATENCY="${FORMATTED_LATENCY}  ${STATUS}\n\n"
             done
 
             echo "formatted_latency=$FORMATTED_LATENCY" >> "$GITHUB_OUTPUT"
