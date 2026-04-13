@@ -3,7 +3,7 @@ import Common from '../support/common.js';
 import briefCaseChecker from '../fixtures/briefCaseChecker.json';
 import briefCaseSelectors from '../fixtures/briefCaseSelectors.json';
 import organizationMap from '../fixtures/organizationMap.json';
-let selectedModel = 'Claude 4.6 Sonnet'; // variable to store the selected value AI model
+let startTime;
 
 /**
  * Opens a new AU session by clicking the 'Create new analysis session' button,
@@ -59,6 +59,7 @@ const navigateToGenAIMBriefCaseMenu = (mainMenu, subMenu, promptName,isSubMenuAn
     
     //click specific prompt
     const promptSelector = briefCaseSelectors[promptName];
+    startTime = performance.now(); //start the timer for the latency measurement when clicking the prompt for rapid response.
     cy.get(promptSelector).should('exist').should('be.visible').click();
     
 }
@@ -119,48 +120,31 @@ const selectRandomAIModel = () => {
  * 
  * @returns {Promise<void>}
  */
-const getGenAILatency = (organization, briefCaseName) => {
+const getGenAILatency = (briefCaseName, selectedModel) => {
     const env = Cypress.env('environment');
     briefCaseName = briefCaseName ? briefCaseName : Cypress.env('genAI').briefCaseName;
     const checker = briefCaseChecker[env][briefCaseName];
-    console.log("organization:", JSON.stringify(organization))
-    console.log("orgMap:", JSON.stringify(organizationMap))
-    console.log("org:", JSON.stringify(organizationMap[organization]))
-    const orgConfig = organizationMap[organization][env];
-    const hasInitialResponse = orgConfig.hasInitialResponse;
 
-    let startTime;
-    let lap1; // Initial response
-    let lap2; // Final response start
-    let lap3; // Stream end
-    let adjustedLap1; // This will be used to calculate actual response latency by adjusting for cases where there is no initial response
+    let initialResponseEnd; // Initial response
+    let finalResponseStart; // Final response start
+    let streamEnd; // Stream end
 
-    cy.then(() => {
-        startTime = performance.now();
-    });
 
-    //LAP 1 — Initial response
-    if(hasInitialResponse == true){
-        const initialResponse = new RegExp(checker.initialResponse, 'i');
-        cy.contains(initialResponse, { timeout: 600000 }) //set timeout to 10 mins to allow for slow responses. 
-            .should('be.visible')
-            .then(() => {
-            lap1 = performance.now();
-        }); 
+    //Initial response
+    const initialResponse = new RegExp(checker.initialResponse, 'i');
+    cy.contains(initialResponse, { timeout: 600000 }) //set timeout to 10 mins to allow for slow responses. 
+        .should('be.visible')
+        .then(() => {
+        initialResponseEnd = performance.now();
+    }); 
 
-        console.log("isInitialResponse:", hasInitialResponse);
-    }
 
-    // LAP 2 — Final Response Start
+    //Final Response Start
     const responseChecker = checker.responseChecker;
     cy.contains('h1', responseChecker, { timeout: 600000 }) //set timeout to 10 mins to allow for slow responses. 
         .should('be.visible')
         .then(() => {
-        lap2 = performance.now();
-
-        //adjusted lap is if there is no initial response, then lap1 will be the same as start time, 
-        //if there is an initial response, then lap1 will be used to calculate the actual response latency
-        adjustedLap1 = hasInitialResponse == true ? lap1 : startTime;
+        finalResponseStart = performance.now();
 
     });
 
@@ -194,7 +178,7 @@ const getGenAILatency = (organization, briefCaseName) => {
                 cy.log('Stream fully completed...');
 
                 // LAP 3 — Response data streaming end
-                lap3 = performance.now();
+                streamEnd = performance.now();
                 
                 // Check for the AI model used in the prompt response area.
                 cy.get('body').then(($body) => {
@@ -211,16 +195,15 @@ const getGenAILatency = (organization, briefCaseName) => {
 
                 // Calculate durations in seconds
                 const metrics = {
-                    initialResponseLatency: toSeconds(adjustedLap1 - startTime),
-                    actualResponseLatency: toSeconds(lap2 - adjustedLap1),
-                    responseStreamingDuration: toSeconds(lap3 - lap2),
-                    totalEndToEnd: toSeconds(lap3 - startTime)
+                    initialResponseLatency: toSeconds(initialResponseEnd - startTime),
+                    actualResponseLatency: toSeconds(finalResponseStart - initialResponseEnd),
+                    responseStreamingDuration: toSeconds(streamEnd - finalResponseStart),
+                    totalEndToEnd: toSeconds(streamEnd - startTime)
                 };
                 const modelData = {
                     aiModel: selectedModel,
                     promptName: briefCaseName,
-                    hasInitialResponse: hasInitialResponse,
-                    initialResponseLatency: `${metrics.initialResponseLatency} secs`,
+                    initialResponseLatency: `${metrics.initialResponseLatency} secs.`,
                     actualResponseLatency: `${metrics.actualResponseLatency} secs.`,
                     responseStreamingDuration: `${metrics.responseStreamingDuration} secs.`,
                     totalEndToEnd: `${metrics.totalEndToEnd} secs.`
@@ -275,7 +258,7 @@ const checkIfLatencyBelowThreshold = (metrics) => {
 };
 
 class genAI {
-    static testGenAILBriefCaseLatency (organization, mainMenu, subMenu, promptName, isSubMenuAnOrganization){
+    static testGenAILBriefCaseLatency (organization, mainMenu, subMenu, promptName, selectedModel, isSubMenuAnOrganization){
         describe(`Gen AI Latency Testing for briefcase "${promptName}"`, () => {
             let orgName;
             before(() => {
@@ -286,9 +269,7 @@ class genAI {
 
                 // Map organization based on environment since some organizations have different names in staging vs prod
                 const env = Cypress.env('environment');
-                const orgKey = organization;
-                const orgConfig = organizationMap[organization][env];
-                orgName = orgConfig.name;
+                orgName = organizationMap[organization][env];
                 subMenu = isSubMenuAnOrganization ? orgName : subMenu;
                 cy.log(`Organization: ${organization}`);
                 cy.log(`SubMenu: ${subMenu}`);
@@ -299,10 +280,9 @@ class genAI {
                 Common.selectOrganization(orgName);
                 Research.openAI();
                 openNewSession('');  
-                //selectRandomAIModel(); // There is an issue when seleclting Claude 4.6 Opus, we are investigating, for now we will hardcode to select Claude 4.5 Sonnet.
                 Research.selectTextModel(selectedModel);
                 navigateToGenAIMBriefCaseMenu(mainMenu, subMenu, promptName, isSubMenuAnOrganization)
-                getGenAILatency(organization, promptName);
+                getGenAILatency(promptName, selectedModel);
                 Research.deleteNotebook();
             });
         });

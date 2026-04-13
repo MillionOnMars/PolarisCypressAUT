@@ -1,22 +1,10 @@
 {
     "IBM": {
-        "staging": {
-            "name": "IBM_QA",
-            "hasInitialResponse": true
-        },
-        "prod": {
-            "name": "IBM",
-            "hasInitialResponse": false
-        }
+        "staging": "IBM_QA",
+        "prod": "IBM"
     },
     "Dell": {
-        "staging": {
-            "name": "DELL",
-            "hasInitialResponse": false
-        },
-        "prod": {
-            "name": "Dell",
-            "hasInitialResponse": false
-        }
+        "staging": "DELL",
+        "prod": "Dell"
     }
 }
