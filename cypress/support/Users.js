@@ -239,10 +239,16 @@ class Users {
 
     static resetPassword(username, newPassword, originalPassword) {
         it('Change user password', () => {
+            // Login with the current (original) password before changing it
+            login2(username, originalPassword);
+            cy.wait(2000);
             changePassword(username, newPassword, originalPassword);
         });
         it('Revert password back to original', () => {
-            // Need to re-authenticate after previous test changed password
+            // Cypress clears session between tests — must login with the new password
+            // that was set by the previous test before reverting
+            login2(username, newPassword);
+            cy.wait(3000);
             changePassword(username, originalPassword, newPassword);
         });
     }
