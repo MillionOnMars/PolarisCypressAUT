@@ -248,6 +248,8 @@ class Users {
             // Cypress clears session between tests — must login with the new password
             // that was set by the previous test before reverting
             login2(username, newPassword);
+            // Wait for authenticated UI to confirm session is fully ready before proceeding
+            cy.get('[data-testid="PersonIcon"]', { timeout: 15000 }).should('be.visible');
             cy.wait(3000);
             changePassword(username, originalPassword, newPassword);
         });
