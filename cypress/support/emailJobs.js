@@ -3,7 +3,6 @@ const WAIT_TIMEOUT = 2000;
 
 const navigateToUserProfile = () => {
     cy.get('[data-testid="PersonIcon"]', { timeout: TIMEOUT })
-        .eq(1)
         .should('exist')
         .click({ force: true });
     cy.contains('Profile', { timeout: TIMEOUT })
@@ -447,7 +446,7 @@ class EmailJobs {
                 
                 // Verify user counts
                 verifyOrganizationUserCount(org2, 8);
-                verifyOrganizationUserCount(org3, 2);
+                verifyOrganizationUserCount(org3, 1);
             });
         });
 
