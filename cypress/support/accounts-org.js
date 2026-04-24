@@ -41,8 +41,13 @@ const updateOrg = (NewOrgName) => {
 
 const linkSalesforce = () => {
 
-    cy.get('.css-1g5jyb9', {timeout: TIMEOUT})
-        .should('exist').click().type('Acme');
+    // cy.get('.css-1g5jyb9', {timeout: TIMEOUT})
+    //     .should('exist').click().type(OrgName);
+    cy.contains('label', 'Link Salesforce Account')
+        .parent()
+        .find('input[role="combobox"]')
+        .clear()
+        .type('Acme (Sample)');
     cy.contains('Acme (Sample)', {matchCase: false, timeout: TIMEOUT})
         .should('exist')
         .click()
@@ -83,7 +88,8 @@ const removeSubscription = () => {
 }
 
 const deleteOrg = (OrgName) => {
-    cy.get('.css-1lv7pyi')
+    cy.get('input[value="all"]')
+        .clear()
         .type(OrgName);
     cy.contains(OrgName)
         .click();
