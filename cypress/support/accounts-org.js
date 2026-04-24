@@ -40,9 +40,6 @@ const updateOrg = (NewOrgName) => {
 }
 
 const linkSalesforce = () => {
-
-    // cy.get('.css-1g5jyb9', {timeout: TIMEOUT})
-    //     .should('exist').click().type(OrgName);
     cy.contains('label', 'Link Salesforce Account')
         .parent()
         .find('input[role="combobox"]')
