@@ -23,7 +23,7 @@ export function login(username, password, forceLogout = false) {
             if (forceLogout && isChadLoggedIn) {
                 cy.log('Chad Test0808! is logged in, logging out...');
                 
-                cy.get('[data-testid="SettingsSuggestIcon"]', { timeout: 10000 })
+                cy.get('[data-testid="SettingsSuggestOutlinedIcon"]', { timeout: 10000 })
                     .should('exist')
                     .should('be.visible')
                     .click({ force: true });
@@ -57,7 +57,7 @@ export function login(username, password, forceLogout = false) {
             else if (!forceLogout && !isChadLoggedIn && !hasLoginForm) {
                 cy.log('Different user is logged in, logging out...');
                 
-                cy.get('[data-testid="SettingsSuggestIcon"]', { timeout: 10000 })
+                cy.get('[data-testid="SettingsSuggestOutlinedIcon"]', { timeout: 10000 })
                     .should('exist')
                     .should('be.visible')
                     .click({ force: true });

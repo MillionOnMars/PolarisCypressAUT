@@ -1,7 +1,8 @@
 const TIMEOUT = 10000;
 
 const navigateToUserProfile = () => {
-    cy.get('[data-testid="PersonIcon"]', { timeout: TIMEOUT })
+    cy.get('[data-testid="PersonOutlinedIcon"]', { timeout: TIMEOUT })
+        .eq(1)
         .should('exist')
         .click({ force: true });
     cy.contains('Profile', { timeout: TIMEOUT })
