@@ -6,9 +6,10 @@ const DEFAULT_TIMEOUT = 15000;
 // Create reusable constants
 const ANALYTICS_CONFIG = {
     ORGANIZATION: 'ChadOrg_QAs',
-    EMAIL: 'chad@milliononmars.com',
-    START_DATE: '2025-11-03',
-    END_DATE: '2025-11-03',
+    EMAIL: 'QA-AUT@milliononmars.com',
+    EMAIL2: 'chad@milliononmars.com',
+    START_DATE: '2026-03-11',
+    END_DATE: '2026-03-11',
     RESULTS_DATE: '2025-10-01',
     MIN_COUNT_VALUE: 1,
 };
@@ -54,7 +55,7 @@ const validateEmails = () => {
     // Input Email
     cy.get('input[placeholder="Search by email..."]', { timeout: DEFAULT_TIMEOUT })
         .should('be.visible')
-        .type(ANALYTICS_CONFIG.EMAIL);
+        .type(ANALYTICS_CONFIG.EMAIL2);
 
     //select start date
     cy.get('input[type="date"]').first()
