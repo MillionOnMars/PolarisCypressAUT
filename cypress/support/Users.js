@@ -249,7 +249,7 @@ class Users {
             // that was set by the previous test before reverting
             login2(username, newPassword);
             // Wait for authenticated UI to confirm session is fully ready before proceeding
-            cy.get('[data-testid="PersonIcon"]', { timeout: 15000 }).should('be.visible');
+            cy.get('[data-testid="PersonOutlinedIcon"]', { timeout: 15000 }).eq(1).should('be.visible');
             cy.wait(3000);
             changePassword(username, originalPassword, newPassword);
         });

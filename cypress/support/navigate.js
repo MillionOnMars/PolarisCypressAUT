@@ -7,7 +7,7 @@ const TIMEOUT = 10000;
 export const navigateToAdmin = () => {
     cy.log('🔧 Navigating to Admin panel...');
     
-    cy.get('[data-testid="SettingsSuggestIcon"]', { timeout: TIMEOUT })
+    cy.get('[data-testid="SettingsSuggestOutlinedIcon"]', { timeout: TIMEOUT })
         .should('exist')
         .should('be.visible')
         .click({ force: true });
@@ -94,13 +94,13 @@ export const navigateToReports = () => {
 };
 
 export const navigateToUserProfile = () => {
-    cy.get('[data-testid="PersonIcon"]', { timeout: TIMEOUT })
+    cy.get('[data-testid="PersonOutlinedIcon"]', { timeout: TIMEOUT })
         .its('length')
         .then((count) => {
             const index = count === 1 ? 0 : 1;
-            cy.log(`Clicking PersonIcon at index ${index} (total: ${count})`);
-            
-            cy.get('[data-testid="PersonIcon"]')
+            cy.log(`Clicking PersonOutlinedIcon at index ${index} (total: ${count})`);
+
+            cy.get('[data-testid="PersonOutlinedIcon"]')
                 .eq(index)
                 .should('exist')
                 .click({ force: true });

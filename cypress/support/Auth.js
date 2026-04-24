@@ -27,7 +27,7 @@ const verifyLogout = () => {
 // Log out the user by interacting with the menu
 const logoutUser = () => {
     // Wait for user menu button and force click
-    cy.get('[data-testid="SettingsSuggestIcon"]', { timeout: TIMEOUT })
+    cy.get('[data-testid="SettingsSuggestOutlinedIcon"]', { timeout: TIMEOUT })
         .should('exist')
         .trigger('mouseover')
         .click({ force: true });
