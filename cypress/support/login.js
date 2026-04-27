@@ -2,7 +2,8 @@ export function login(username, password, forceLogout = false) {
     // Visit the Polaris URL
     cy.visit(Cypress.env('appUrl'))
 
-    cy.wait(5000);
+    cy.document().its('readyState').should('eq', 'complete');
+    cy.wait(10000);
 
     // Wait for the page to load and check if we're on the login page
     cy.url().then((url) => {
