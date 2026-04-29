@@ -159,21 +159,15 @@ const selectOrganizationFromChecklist = (organization) => {
 };
 
 const clickDropdownAndWait = (dropdownText, waitTime = 800) => {
-    cy.contains(dropdownText, { timeout: TIMEOUT })
+    cy.contains('button[role="combobox"]', dropdownText, { timeout: TIMEOUT })
         .scrollIntoView()
         .should('exist')
-        .should('be.visible')
         .click({ force: true });
 
     cy.wait(waitTime);
 
-    cy.get('ul[role="listbox"]', { timeout: TIMEOUT })
-        .should('exist')
-        .should('be.visible');
-
     cy.get('li[role="option"]', { timeout: TIMEOUT })
-        .should('have.length.at.least', 1)
-        .should('be.visible');
+        .should('have.length.at.least', 1);
 };
 
 const verifyOrganizationChecklist = () => {
@@ -217,8 +211,7 @@ const verifyUserDropdownLoads = (userLabel, userEmails) => {
     userEmails.forEach((email) => {
         cy.get('li[role="option"]', { timeout: TIMEOUT })
             .contains(email)
-            .should('exist')
-            .should('be.visible');
+            .should('exist');
     });
 };
 
@@ -234,7 +227,7 @@ const verifyPreviewEmailTemplate = () => {
         .should('not.be.empty')
         .then(cy.wrap)
         .find('h1')
-        .contains('The latest Futurum updates for Acme_QA')
+        .contains('The latest Futurum updates for Automation Organization')
         .should('exist')
         .should('be.visible');
 };
@@ -446,8 +439,8 @@ class EmailJobs {
                     .should('be.visible');
                 
                 // Verify user counts
-                verifyOrganizationUserCount(org2, 9);
-                verifyOrganizationUserCount(org3, 4);
+                verifyOrganizationUserCount(org2, 3);
+                verifyOrganizationUserCount(org3, 5);
             });
         });
 

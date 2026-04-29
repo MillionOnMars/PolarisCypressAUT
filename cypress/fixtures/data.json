@@ -74,20 +74,18 @@
         "name": "monthly IBM emails",
         "organization": "AMD_QA (3 users)",
         "org1": "AMD_QA",
-        "org2": "Acme_QA",
-        "org3": "AWS_QA",
+        "org2": "Automation Organization",
+        "org3": "Automation Organization 2",
         "emailJobName": "July 2025 Kevin",
         "emailJobName2": "Automation Test",
-        "user1": "chad+test03180",
+        "user1": "Chad Test05142",
         "userEmails": [
-            "chad+test03180@milliononmars.com",
-            "kevin+cypress@milliononmars.com"
+            "chad+test05142@milliononmars.com",
+            "Chad Test0509 (chad+test0509@milliononmars.com)"
         ],
         "alluseremails": [
-            "chad+test03180@milliononmars.com",
-            "kevin+cypress@milliononmars.com",
-            "allan@milliononmars.com",
-            "poy@milliononmars.com"
+            "chad+test05142@milliononmars.com",
+            "chad+test0509@milliononmars.com"
         ],
         "allorgnames": [
             "AMD_QA",
@@ -96,17 +94,16 @@
             "Arm_QA"
         ],
         "org2Users": [
-            "chad+test03180 (chad+test03180@milliononmars.com)",
-            "allan (allan@milliononmars.com)",
-            "Poy (poy@milliononmars.com)",
-            "Kevin Cypress (kevin+cypress@milliononmars.com)",
-            "chad+test102111 (chad+test102111@milliononmars.com)",
-            "chad+test102115 (chad+test102115@milliononmars.com)",
-            "chad+test102116 (chad+test102116@milliononmars.com)",
-            "cleo 1 (cleo+1@milliononmars.com)"
+            "Chad Test05142 (chad+test05142@milliononmars.com)",
+            "Chad Test0514 (chad+test05141@milliononmars.com)",
+            "Chad Test0509 (chad+test0509@milliononmars.com)"
         ],
         "org3Users": [
-            "julie+110b (julie+110b@milliononmars.com)"
+            "Chad Test0802 (chad+test0802@gmail.com)",
+            "Chad test080724 (chad+test080724@milliononmars.com)",
+            "chad+test021402 (chad+test021402@milliononmars.com)",
+            "chad+test102101 (chad+test102101@milliononmars.com)",
+            "chad+test102102 (chad+test102102@milliononmars.com)"
         ]
     },
     "report": {
