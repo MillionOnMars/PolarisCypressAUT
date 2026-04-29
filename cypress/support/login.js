@@ -2,7 +2,23 @@ export function login(username, password, forceLogout = false) {
     // Visit the Polaris URL
     cy.visit(Cypress.env('appUrl'))
 
+    cy.document().its('readyState').should('eq', 'complete');
     cy.wait(5000);
+
+    // Check for white page - retry up to 5 times if page lacks expected content
+    const checkForContent = (attempt = 1) => {
+        cy.get('body').then(($body) => {
+            const hasContent = $body.text().includes('Futurum') || $body.text().includes('Practice Areas');
+            if (!hasContent && attempt < 5) {
+                cy.log(`White page detected (attempt ${attempt}/5), waiting 5 seconds...`);
+                cy.wait(5000);
+                checkForContent(attempt + 1);
+            } else if (!hasContent) {
+                cy.log('Expected page content not found after 5 attempts, proceeding...');
+            }
+        });
+    };
+    checkForContent();
 
     // Wait for the page to load and check if we're on the login page
     cy.url().then((url) => {
