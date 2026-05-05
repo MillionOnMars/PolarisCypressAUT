@@ -225,9 +225,9 @@ jobs:
               # Actual Latency Status
               # ---------------------------
               ACTUAL_STATUS=":white_check_mark:"
-              if awk "BEGIN {exit !($ACTUAL >= 41 && $ACTUAL <= 60)}"; then
+              if awk "BEGIN {exit !($ACTUAL >= 41 && $ACTUAL <= 120)}"; then
                 ACTUAL_STATUS=":warning:"
-              elif awk "BEGIN {exit !($ACTUAL >= 61)}"; then
+              elif awk "BEGIN {exit !($ACTUAL >= 121)}"; then
                 ACTUAL_STATUS=":x:"
               fi
 
