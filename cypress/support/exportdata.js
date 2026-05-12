@@ -1,4 +1,4 @@
-const PracticeArea = ['AI Platforms','Cybersecurity','Semiconductors','Software Lifecycle Engineering','Enterprise Software','CIO Insights','CEO Insights','AI Devices','Channel Ecosystems']; // Add Practice Areas here - no data yet (Customer Experience, Quantum Computing, Communications Network, Data Intelligence,) - Customer Portal has its own Export Data.
+const PracticeArea = ['AI Platforms','Cybersecurity','Semiconductors','Software Lifecycle Engineering','Enterprise Software','CIO Insights','CEO Insights','Intelligent Devices','Channel Ecosystems']; // Add Practice Areas here - no data yet (Customer Experience, Quantum Computing, Communications Network, Data Intelligence,) - Customer Portal has its own Export Data.
 
 const getRandomPracticeArea = (count) => {
     return PracticeArea.sort(() => 0.5 - Math.random()).slice(0, count);
@@ -98,7 +98,7 @@ const practiceAreaConfig = {
             { path: 'cypress/downloads/Execution.csv', content: 'North America' }
         ]
     },
-    'AI Devices': {
+    'Intelligent Devices': {
         exports: [
             { xpath: "(//span[contains(text(),'Export')])[2]", wait: 5000 }
         ],

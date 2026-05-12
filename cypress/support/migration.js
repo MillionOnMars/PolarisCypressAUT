@@ -12,7 +12,7 @@ const CONFIG = {
         'CyberSecurity',
         'Software Lifecycle Engineering',
         'CIO Insights',
-        'AI Devices',
+        'Intelligent Devices',
         'Data Intelligence',
         'AI Platforms',
         'Semiconductors',
