@@ -54,7 +54,7 @@
             "Cybersecurity"
         ],
         "unsubscribed": [
-            "AI Devices",
+            "Intelligent Devices",
             "Data Intelligence",
             "CEO Insights",
             "Channel Ecosystems"
@@ -65,7 +65,7 @@
             "Cybersecurity": "Forecast Overview"
         },
         "expectedTiles": {
-            "AI Platforms": "Market Scenario Assumptions",
+            "AI Platforms": "Scenario Assumptions Table",
             "Software Lifecycle Engineering": "2025 Revenue",
             "Cybersecurity": "Market Segment"
         }
